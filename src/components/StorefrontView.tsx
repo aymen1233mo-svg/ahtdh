@@ -1254,7 +1254,7 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
       {/* ============================================================== */}
       {/* 3. SECTION "أقسامنا" (Exact Image 10 & Video) */}
       {/* ============================================================== */}
-      <section className="pt-8 px-4 max-w-md mx-auto">
+      <section className="pt-8 px-4 max-w-7xl mx-auto sm:px-6 lg:px-8">
         <div className="text-center mb-4">
           <div className="inline-flex items-center gap-1.5 text-xs text-[#008489] font-bold mb-1">
             <span className="w-2 h-2 rounded-full bg-[#008489]"></span>
@@ -1444,7 +1444,7 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
       {/* ============================================================== */}
       {/* 5. "خدمة رقمية متكاملة" & PRODUCTS GRID */}
       {/* ============================================================== */}
-      <section id="products-section" className="pt-8 px-4 max-w-2xl lg:max-w-4xl mx-auto scroll-mt-20">
+      <section id="products-section" className="pt-8 px-4 max-w-7xl mx-auto sm:px-6 lg:px-8 scroll-mt-20">
         <div className="text-center mb-4">
           <h3 className="text-base sm:text-lg font-black text-stone-900">
             {selectedSubCategory ? `قسم: ${selectedSubCategory}` : 'خدمة رقمية متكاملة'}
@@ -1487,8 +1487,8 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
           ))}
         </div>
 
-        {/* 2-COLUMNS PRODUCT GRID (Exact Image 4 & 7 on Mobile) */}
-        <div className="grid grid-cols-2 gap-3 mt-4">
+        {/* RESPONSIVE MULTI-COLUMN PRODUCT GRID */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 xl:grid-cols-5 gap-4 mt-4">
           {filteredProducts.map((prod) => {
             const isWish = wishlist.includes(prod.id);
             const isPdf = prod.format === 'PDF';
@@ -1632,7 +1632,7 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
       {/* ============================================================== */}
       {/* 6. "إحصائيات المتجر" - 2x2 STATS GRID (Exact Image 9) */}
       {/* ============================================================== */}
-      <section className="pt-10 px-4 max-w-md mx-auto">
+      <section className="pt-10 px-4 max-w-7xl mx-auto sm:px-6 lg:px-8">
         <div className="text-center mb-5">
           <div className="inline-flex items-center gap-1.5 text-xs text-[#008489] font-bold mb-1">
             <span className="w-2 h-2 rounded-full bg-[#008489]"></span>
@@ -1689,7 +1689,7 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
       {/* ============================================================== */}
       {/* 7. "عن المتجر / مميزات المتجر" - 2x2 FEATURES (Exact Image 3) */}
       {/* ============================================================== */}
-      <section className="pt-10 px-4 max-w-md mx-auto">
+      <section className="pt-10 px-4 max-w-7xl mx-auto sm:px-6 lg:px-8">
         <div className="text-center mb-6">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#e8f6f7] text-[#008489] text-xs font-bold mb-2">
             <span className="w-2 h-2 rounded-full bg-[#008489]"></span>
@@ -1773,7 +1773,7 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
       {/* ============================================================== */}
       {/* 8. "الأسئلة الشائعة" - ACCORDION (Exact Image 6) */}
       {/* ============================================================== */}
-      <section className="pt-10 px-4 max-w-md mx-auto">
+      <section className="pt-10 px-4 max-w-5xl mx-auto sm:px-6 lg:px-8">
         <div className="text-center mb-5">
           <div className="inline-flex items-center gap-1.5 text-xs text-[#008489] font-bold mb-1">
             <span className="w-2 h-2 rounded-full bg-[#008489]"></span>
@@ -1822,7 +1822,7 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
       {/* ============================================================== */}
       {/* 9. "هل لا تزال لديك أي تساؤلات؟" (Exact Image 6) */}
       {/* ============================================================== */}
-      <section className="pt-8 px-4 max-w-md mx-auto">
+      <section className="pt-8 px-4 max-w-3xl mx-auto sm:px-6 lg:px-8">
         <div className="bg-white rounded-2xl p-5 text-center space-y-2">
           <h4 className="text-base font-black text-stone-900">
             هل لا تزال لديك أي تساؤلات؟
@@ -1845,7 +1845,7 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
       {/* 10. QUICK NUMBERS STRIP (+3 طرق دفع, +100 الطلبات...) */}
       {/* ============================================================== */}
       <section className="mt-6 bg-gradient-to-l from-[#d8f0f2] to-[#ecf8f9] py-4 px-4 text-stone-800 border-y border-[#c6e6e8]">
-        <div className="max-w-md mx-auto grid grid-cols-3 text-center divide-x divide-x-reverse divide-stone-300/60">
+        <div className="max-w-5xl mx-auto grid grid-cols-3 text-center divide-x divide-x-reverse divide-stone-300/60">
           <div>
             <span className="text-lg font-black text-[#008489] block font-mono" dir="ltr">+3</span>
             <span className="text-[10px] text-stone-600 font-medium">طرق دفع</span>
@@ -1864,7 +1864,7 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
       {/* ============================================================== */}
       {/* 11. SALLA OFFICIAL FOOTER (Exact Image 11) */}
       {/* ============================================================== */}
-      <footer className="bg-white pt-8 pb-16 px-4 text-center max-w-md mx-auto space-y-6">
+      <footer className="bg-white pt-8 pb-16 px-4 sm:px-6 lg:px-8 text-center max-w-7xl mx-auto space-y-6">
         {/* Accordion: روابط تهمك */}
         <div className="border border-stone-200 rounded-xl overflow-hidden text-right">
           <button 

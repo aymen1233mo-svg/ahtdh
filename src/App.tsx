@@ -47,7 +47,7 @@ export default function App() {
   };
 
   return (
-    <div className="min-h-screen bg-stone-100/80 lg:bg-stone-200/60 text-stone-900 flex flex-col font-sans" dir="rtl">
+    <div className="min-h-screen bg-white text-stone-900 flex flex-col font-sans w-full" dir="rtl">
       {/* Splash Screen (Exact Image: سبلاش سكرين.jpg) */}
       <AnimatePresence>
         {showSplash && (
@@ -78,7 +78,7 @@ export default function App() {
       {/* Navigation header only shown when navigating inside sub-views like smart tools or audit report */}
       {activeTab !== 'storefront' && (
         <div className="bg-white border-b border-stone-200 px-4 py-3 sticky top-0 z-50 shadow-2xs">
-          <div className="max-w-5xl mx-auto flex items-center justify-between">
+          <div className="max-w-7xl mx-auto flex items-center justify-between">
             <button
               onClick={() => setActiveTab('storefront')}
               className="inline-flex items-center gap-2 text-[#008489] hover:text-[#007478] font-bold text-xs sm:text-sm transition-colors"
@@ -98,8 +98,8 @@ export default function App() {
         </div>
       )}
 
-      {/* Main Tab Render Container - Centered Vertical Orientation Column for Desktop */}
-      <main className="flex-1 max-w-4xl lg:max-w-5xl mx-auto w-full bg-white shadow-2xl border-x border-stone-200/80 my-0 lg:my-3 rounded-none lg:rounded-3xl overflow-hidden min-h-screen">
+      {/* Main Tab Render Container - Full Width Responsive for Desktop and Mobile */}
+      <main className="flex-1 w-full bg-white min-h-screen">
         {activeTab === 'storefront' && (
           <StorefrontView
             onOpenProductModal={(prod) => setSelectedProduct(prod)}
