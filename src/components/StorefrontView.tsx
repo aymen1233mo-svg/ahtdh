@@ -104,10 +104,28 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
   const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>('');
   
-  // Filter Tabs & Accordions
+  // Filter Tabs, Sub-categories & Accordions
   const [activeTab, setActiveTab] = useState<string>('جميع المنتجات');
+  const [selectedSubCategory, setSelectedSubCategory] = useState<string | null>(null);
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
-  const [expandedNavCategory, setExpandedNavCategory] = useState<string | null>(null);
+  const [expandedNavCategory, setExpandedNavCategory] = useState<string | null>('records');
+
+  const handleSelectDrawerSubCategory = (subCatName: string) => {
+    setIsMenuOpen(false);
+    if (subCatName === 'عرض الكل') {
+      setSelectedSubCategory(null);
+      setActiveTab('جميع المنتجات');
+    } else {
+      setSelectedSubCategory(subCatName);
+      setActiveTab(subCatName);
+    }
+    const section = document.getElementById('products-section');
+    if (section) {
+      section.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      window.scrollTo({ top: 800, behavior: 'smooth' });
+    }
+  };
 
   // Cart & Feedback State
   const [cartItems, setCartItems] = useState<{ product: ProductItem; quantity: number }[]>([
@@ -390,12 +408,45 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
     }
   ];
 
-  // Filter products by selected service tab
+  // Filter products by selected service tab or drawer sub-category
   const filteredProducts = STORE_PRODUCTS.filter((prod) => {
     if (searchQuery.trim() !== '') {
       return prod.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
              prod.description.toLowerCase().includes(searchQuery.toLowerCase());
     }
+
+    if (selectedSubCategory && selectedSubCategory !== 'عرض الكل') {
+      const q = selectedSubCategory.toLowerCase();
+      if (q.includes('لوحات مدرسية')) return prod.subCategory.includes('لوحات') || prod.category === 'school_records';
+      if (q.includes('ملفات الإنجاز')) return prod.category === 'portfolios_guides' || prod.subCategory.includes('إنجاز');
+      if (q.includes('مدير المدرسة') || q.includes('مدير مدرسة')) return prod.targetRole.includes('مدير');
+      if (q.includes('وكيل المدرسة') || q.includes('وكيل مدرسة')) return prod.targetRole.includes('وكيل');
+      if (q.includes('الموجه الطلابي')) return prod.targetRole.includes('وجه') || prod.targetRole.includes('إرشاد');
+      if (q.includes('النشاط الطلابي')) return prod.targetRole.includes('نشاط');
+      if (q.includes('المعلم')) return prod.targetRole.includes('معلم');
+      if (q.includes('اللجان والمهام')) return prod.name.includes('لجان') || prod.description.includes('لجان') || prod.category === 'school_records';
+      if (q.includes('الاختبارات النهائية')) return prod.name.includes('اختبار') || prod.category === 'smart_tools';
+      if (q.includes('رياض الأطفال')) return prod.name.includes('رياض') || prod.description.includes('رياض') || prod.subCategory.includes('أطفال');
+      if (q.includes('الخطة التشغيلية')) return prod.category === 'operational_plans';
+      if (q.includes('التقويم الذاتي')) return prod.subCategory.includes('التقويم') || prod.category === 'operational_plans';
+      if (q.includes('روابط شهادات')) return prod.category === 'certificates';
+      if (q.includes('شهادات بصيغة وورد')) return prod.category === 'certificates';
+      if (q.includes('المناسبات الوطنية')) return prod.category === 'certificates' || prod.name.includes('وطن');
+      if (q.includes('كشوفات إبتدائي')) return prod.category === 'tracking_sheets' || prod.name.includes('ابتدائي');
+      if (q.includes('كشوفات المتوسط')) return prod.category === 'tracking_sheets' || prod.name.includes('متوسط');
+      if (q.includes('كشوفات الثانوي')) return prod.category === 'tracking_sheets' || prod.name.includes('ثانوي');
+      if (q.includes('الحضور والغياب')) return prod.category === 'tracking_sheets' || prod.name.includes('غياب');
+      if (q.includes('كشوفات إكسل')) return prod.category === 'tracking_sheets' || prod.format === 'Excel (.xlsx)';
+
+      return (
+        prod.name.toLowerCase().includes(q) ||
+        prod.subCategory.toLowerCase().includes(q) ||
+        prod.category.toLowerCase().includes(q) ||
+        prod.targetRole.toLowerCase().includes(q) ||
+        prod.description.toLowerCase().includes(q)
+      );
+    }
+
     if (activeTab === 'جميع المنتجات') return true;
     if (activeTab === 'الأكثر مبيعاً') return prod.isBestseller || prod.rating >= 4.9;
     if (activeTab === 'التقويم الذاتي') return prod.subCategory.includes('التقويم') || prod.category === 'operational_plans';
@@ -994,16 +1045,29 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
       </section>
 
       {/* ============================================================== */}
-      {/* 5. "خدمة رقمية متكاملة" & 2-COLUMN PRODUCTS (Exact Image 4 & 7) */}
+      {/* 5. "خدمة رقمية متكاملة" & PRODUCTS GRID */}
       {/* ============================================================== */}
-      <section className="pt-8 px-4 max-w-md mx-auto">
+      <section id="products-section" className="pt-8 px-4 max-w-2xl lg:max-w-4xl mx-auto scroll-mt-20">
         <div className="text-center mb-4">
-          <h3 className="text-base font-black text-stone-900">
-            خدمة رقمية متكاملة
+          <h3 className="text-base sm:text-lg font-black text-stone-900">
+            {selectedSubCategory ? `قسم: ${selectedSubCategory}` : 'خدمة رقمية متكاملة'}
           </h3>
           <p className="text-xs text-stone-500 mt-0.5">
-            اكتشف خدماتنا الرقمية المميزة
+            {selectedSubCategory ? `عرض المنتجات المتاحة في قسم ${selectedSubCategory}` : 'اكتشف خدماتنا الرقمية والسجلات المدرسية المميزة'}
           </p>
+
+          {selectedSubCategory && (
+            <div className="mt-2 inline-flex items-center gap-2 bg-[#008489]/10 text-[#008489] px-3 py-1 rounded-full text-xs font-bold">
+              <span>تصفية بحسب: {selectedSubCategory}</span>
+              <button 
+                onClick={() => { setSelectedSubCategory(null); setActiveTab('جميع المنتجات'); }}
+                className="p-0.5 hover:bg-[#008489]/20 rounded-full cursor-pointer"
+                title="إلغاء التصفية"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Filter Pills from Image 4 & Image 7 */}
@@ -1011,9 +1075,12 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
           {serviceTabs.map((tab) => (
             <button
               key={tab}
-              onClick={() => setActiveTab(tab)}
-              className={`px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all ${
-                activeTab === tab
+              onClick={() => {
+                setSelectedSubCategory(null);
+                setActiveTab(tab);
+              }}
+              className={`px-3.5 py-1.5 rounded-full text-xs font-bold whitespace-nowrap transition-all cursor-pointer ${
+                activeTab === tab && !selectedSubCategory
                   ? 'bg-[#008489] text-white shadow-2xs'
                   : 'bg-white text-[#008489] border border-[#008489] hover:bg-stone-50'
               }`}
@@ -2082,75 +2149,97 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
                 </button>
               </div>
 
-              {/* Exact Menu Items from Image 1:
-                  - الأدوات الذكية
-                  - السجلات المدرسية (v)
-                  - شهادات وتهنئة (v)
-                  - كشوفات متابعة (v)
-                  - توثيق شواهد الأداء */}
+              {/* Exact Menu Items from Image 1 (image_86a064d5.png) & Image 2 (image_509e2f64.png) */}
               <nav className="space-y-4 text-sm font-bold text-stone-900 pt-2">
-                <a 
-                  href="#" 
-                  onClick={(e) => { e.preventDefault(); setIsMenuOpen(false); onOpenTool('prod-tahseen-v3'); }}
-                  className="block py-1 hover:text-[#008489]"
-                >
-                  الأدوات الذكية
-                </a>
-
-                <div>
-                  <button 
-                    onClick={() => setExpandedNavCategory(expandedNavCategory === 'records' ? null : 'records')}
-                    className="w-full flex items-center justify-between py-1 text-stone-900 hover:text-[#008489]"
-                  >
-                    <span>السجلات المدرسية</span>
-                    <ChevronDown className="w-4 h-4 text-stone-400" />
-                  </button>
-                  {expandedNavCategory === 'records' && (
-                    <div className="pr-4 py-2 space-y-2 text-xs font-normal text-stone-600">
-                      <a href="#" onClick={(e) => { e.preventDefault(); setIsMenuOpen(false); setActiveTab('التقويم الذاتي'); }} className="block">سجلات مدير المدرسة</a>
-                      <a href="#" onClick={(e) => { e.preventDefault(); setIsMenuOpen(false); setActiveTab('التقويم الذاتي'); }} className="block">سجلات وكيل المدرسة</a>
-                      <a href="#" onClick={(e) => { e.preventDefault(); setIsMenuOpen(false); setActiveTab('التقويم الذاتي'); }} className="block">سجلات الموجه الطلابي</a>
-                    </div>
-                  )}
-                </div>
-
-                <div>
-                  <button 
-                    onClick={() => setExpandedNavCategory(expandedNavCategory === 'certs' ? null : 'certs')}
-                    className="w-full flex items-center justify-between py-1 text-stone-900 hover:text-[#008489]"
-                  >
-                    <span>شهادات وتهنئة</span>
-                    <ChevronDown className="w-4 h-4 text-stone-400" />
-                  </button>
-                  {expandedNavCategory === 'certs' && (
-                    <div className="pr-4 py-2 space-y-2 text-xs font-normal text-stone-600">
-                      <a href="#" onClick={(e) => { e.preventDefault(); setIsMenuOpen(false); setActiveTab('روابط شهادات ذك...'); }} className="block">شهادات تفوق الطلاب</a>
-                      <a href="#" onClick={(e) => { e.preventDefault(); setIsMenuOpen(false); setActiveTab('روابط شهادات ذك...'); }} className="block">شهادات شكر المعلم</a>
-                    </div>
-                  )}
-                </div>
-
-                <div>
-                  <button 
-                    onClick={() => setExpandedNavCategory(expandedNavCategory === 'tracking' ? null : 'tracking')}
-                    className="w-full flex items-center justify-between py-1 text-stone-900 hover:text-[#008489]"
-                  >
-                    <span>كشوفات متابعة</span>
-                    <ChevronDown className="w-4 h-4 text-stone-400" />
-                  </button>
-                  {expandedNavCategory === 'tracking' && (
-                    <div className="pr-4 py-2 space-y-2 text-xs font-normal text-stone-600">
-                      <a href="#" onClick={(e) => { e.preventDefault(); setIsMenuOpen(false); setActiveTab('كشوفات المتابعة'); }} className="block">كشوفات إكسل الذكية</a>
-                      <a href="#" onClick={(e) => { e.preventDefault(); setIsMenuOpen(false); setActiveTab('كشوفات المتابعة'); }} className="block">رصد الغياب والانضباط</a>
-                    </div>
-                  )}
-                </div>
-
+                {/* 1. الأدوات الذكية */}
                 <div>
                   <a 
                     href="#" 
-                    onClick={(e) => { e.preventDefault(); setIsMenuOpen(false); setActiveTab('ملفات الإنجاز'); }}
-                    className="block py-1 hover:text-[#008489]"
+                    onClick={(e) => { 
+                      e.preventDefault(); 
+                      handleSelectDrawerSubCategory('الأدوات الذكية');
+                      onOpenTool('prod-tahseen-v3'); 
+                    }}
+                    className="block py-1 hover:text-[#008489] transition-colors"
+                  >
+                    الأدوات الذكية
+                  </a>
+                </div>
+
+                {/* 2. السجلات المدرسية (Exact Image 1) */}
+                <div>
+                  <button 
+                    onClick={() => setExpandedNavCategory(expandedNavCategory === 'records' ? null : 'records')}
+                    className="w-full flex items-center justify-between py-1 text-stone-900 hover:text-[#008489] transition-colors"
+                  >
+                    <span>السجلات المدرسية</span>
+                    <ChevronDown className={`w-4 h-4 text-stone-400 transition-transform ${expandedNavCategory === 'records' ? 'rotate-180 text-[#008489]' : ''}`} />
+                  </button>
+                  {expandedNavCategory === 'records' && (
+                    <div className="pr-4 py-2 space-y-2.5 text-xs font-semibold text-stone-600 border-r-2 border-[#008489]/30 mr-1 mt-1">
+                      <a href="#" onClick={(e) => { e.preventDefault(); handleSelectDrawerSubCategory('عرض الكل'); }} className="block hover:text-[#008489]">عرض الكل</a>
+                      <a href="#" onClick={(e) => { e.preventDefault(); handleSelectDrawerSubCategory('لوحات مدرسية ( جديد )'); }} className="block hover:text-[#008489]">لوحات مدرسية ( جديد )</a>
+                      <a href="#" onClick={(e) => { e.preventDefault(); handleSelectDrawerSubCategory('ملفات الإنجاز'); }} className="block hover:text-[#008489]">ملفات الإنجاز</a>
+                      <a href="#" onClick={(e) => { e.preventDefault(); handleSelectDrawerSubCategory('مدير المدرسة'); }} className="block hover:text-[#008489]">مدير المدرسة</a>
+                      <a href="#" onClick={(e) => { e.preventDefault(); handleSelectDrawerSubCategory('الخطة التشغيلية'); }} className="block hover:text-[#008489]">الخطة التشغيلية</a>
+                      <a href="#" onClick={(e) => { e.preventDefault(); handleSelectDrawerSubCategory('التقويم الذاتي'); }} className="block hover:text-[#008489]">التقويم الذاتي</a>
+                      <a href="#" onClick={(e) => { e.preventDefault(); handleSelectDrawerSubCategory('وكيل المدرسة'); }} className="block hover:text-[#008489]">وكيل المدرسة</a>
+                      <a href="#" onClick={(e) => { e.preventDefault(); handleSelectDrawerSubCategory('الموجه الطلابي'); }} className="block hover:text-[#008489]">الموجه الطلابي</a>
+                      <a href="#" onClick={(e) => { e.preventDefault(); handleSelectDrawerSubCategory('النشاط الطلابي'); }} className="block hover:text-[#008489]">النشاط الطلابي</a>
+                      <a href="#" onClick={(e) => { e.preventDefault(); handleSelectDrawerSubCategory('المعلم'); }} className="block hover:text-[#008489]">المعلم</a>
+                      <a href="#" onClick={(e) => { e.preventDefault(); handleSelectDrawerSubCategory('اللجان والمهام'); }} className="block hover:text-[#008489]">اللجان والمهام</a>
+                      <a href="#" onClick={(e) => { e.preventDefault(); handleSelectDrawerSubCategory('الاختبارات النهائية'); }} className="block hover:text-[#008489]">الاختبارات النهائية</a>
+                      <a href="#" onClick={(e) => { e.preventDefault(); handleSelectDrawerSubCategory('رياض الأطفال'); }} className="block hover:text-[#008489]">رياض الأطفال</a>
+                    </div>
+                  )}
+                </div>
+
+                {/* 3. شهادات وتهنئة (Exact Image 2) */}
+                <div>
+                  <button 
+                    onClick={() => setExpandedNavCategory(expandedNavCategory === 'certs' ? null : 'certs')}
+                    className="w-full flex items-center justify-between py-1 text-stone-900 hover:text-[#008489] transition-colors"
+                  >
+                    <span>شهادات وتهنئة</span>
+                    <ChevronDown className={`w-4 h-4 text-stone-400 transition-transform ${expandedNavCategory === 'certs' ? 'rotate-180 text-[#008489]' : ''}`} />
+                  </button>
+                  {expandedNavCategory === 'certs' && (
+                    <div className="pr-4 py-2 space-y-2.5 text-xs font-semibold text-stone-600 border-r-2 border-[#008489]/30 mr-1 mt-1">
+                      <a href="#" onClick={(e) => { e.preventDefault(); handleSelectDrawerSubCategory('عرض الكل'); }} className="block hover:text-[#008489]">عرض الكل</a>
+                      <a href="#" onClick={(e) => { e.preventDefault(); handleSelectDrawerSubCategory('روابط شهادات'); }} className="block hover:text-[#008489]">روابط شهادات</a>
+                      <a href="#" onClick={(e) => { e.preventDefault(); handleSelectDrawerSubCategory('شهادات بصيغة وورد (word)'); }} className="block hover:text-[#008489]">شهادات بصيغة وورد (word)</a>
+                      <a href="#" onClick={(e) => { e.preventDefault(); handleSelectDrawerSubCategory('المناسبات الوطنية'); }} className="block hover:text-[#008489]">المناسبات الوطنية</a>
+                    </div>
+                  )}
+                </div>
+
+                {/* 4. كشوفات متابعة (Exact Image 2) */}
+                <div>
+                  <button 
+                    onClick={() => setExpandedNavCategory(expandedNavCategory === 'tracking' ? null : 'tracking')}
+                    className="w-full flex items-center justify-between py-1 text-stone-900 hover:text-[#008489] transition-colors"
+                  >
+                    <span>كشوفات متابعة</span>
+                    <ChevronDown className={`w-4 h-4 text-stone-400 transition-transform ${expandedNavCategory === 'tracking' ? 'rotate-180 text-[#008489]' : ''}`} />
+                  </button>
+                  {expandedNavCategory === 'tracking' && (
+                    <div className="pr-4 py-2 space-y-2.5 text-xs font-semibold text-stone-600 border-r-2 border-[#008489]/30 mr-1 mt-1">
+                      <a href="#" onClick={(e) => { e.preventDefault(); handleSelectDrawerSubCategory('عرض الكل'); }} className="block hover:text-[#008489]">عرض الكل</a>
+                      <a href="#" onClick={(e) => { e.preventDefault(); handleSelectDrawerSubCategory('كشوفات إبتدائي'); }} className="block hover:text-[#008489]">كشوفات إبتدائي</a>
+                      <a href="#" onClick={(e) => { e.preventDefault(); handleSelectDrawerSubCategory('كشوفات المتوسط'); }} className="block hover:text-[#008489]">كشوفات المتوسط</a>
+                      <a href="#" onClick={(e) => { e.preventDefault(); handleSelectDrawerSubCategory('كشوفات الثانوي'); }} className="block hover:text-[#008489]">كشوفات الثانوي</a>
+                      <a href="#" onClick={(e) => { e.preventDefault(); handleSelectDrawerSubCategory('الحضور والغياب'); }} className="block hover:text-[#008489]">الحضور والغياب</a>
+                      <a href="#" onClick={(e) => { e.preventDefault(); handleSelectDrawerSubCategory('كشوفات إكسل'); }} className="block hover:text-[#008489]">كشوفات إكسل</a>
+                    </div>
+                  )}
+                </div>
+
+                {/* 5. توثيق شواهد الأداء */}
+                <div>
+                  <a 
+                    href="#" 
+                    onClick={(e) => { e.preventDefault(); handleSelectDrawerSubCategory('ملفات الإنجاز'); }}
+                    className="block py-1 hover:text-[#008489] transition-colors"
                   >
                     توثيق شواهد الأداء
                   </a>
