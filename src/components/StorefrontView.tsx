@@ -49,6 +49,44 @@ interface StorefrontViewProps {
   onOpenAudit: () => void;
 }
 
+const AnimatedCounter: React.FC<{ value: number; prefix?: string; suffix?: string; duration?: number }> = ({
+  value,
+  prefix = '+',
+  suffix = '',
+  duration = 2
+}) => {
+  const [count, setCount] = useState(0);
+  const [hasAnimated, setHasAnimated] = useState(false);
+
+  return (
+    <motion.span
+      dir="ltr"
+      whileInView={{ opacity: 1 }}
+      onViewportEnter={() => {
+        if (hasAnimated) return;
+        setHasAnimated(true);
+        let start = 0;
+        const steps = 50;
+        const stepTime = (duration * 1000) / steps;
+        const increment = value / steps;
+        const timer = setInterval(() => {
+          start += increment;
+          if (start >= value) {
+            setCount(value);
+            clearInterval(timer);
+          } else {
+            setCount(Math.floor(start));
+          }
+        }, stepTime);
+      }}
+      viewport={{ once: true }}
+      className="text-xl sm:text-2xl lg:text-3xl font-black text-stone-900 font-mono tracking-tight"
+    >
+      {prefix}{count.toLocaleString('en-US')}{suffix}
+    </motion.span>
+  );
+};
+
 export const StorefrontView: React.FC<StorefrontViewProps> = ({ 
   onOpenProductModal, 
   onOpenTool,
@@ -348,162 +386,169 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
       {/* ============================================================== */}
       {/* 2. HERO CARD BANNER: "تحسين" (Exact VideoCapture_٢٠٢٦١١٠٦-٠١٥٧٣٧.jpg) */}
       {/* ============================================================== */}
-      <section className="px-4 pt-4 sm:pt-6 max-w-md sm:max-w-xl md:max-w-2xl mx-auto">
-        <div className="text-center">
-          {/* Dark Teal Hero Card Sitting directly on clean page background */}
-          <div className="bg-[#0b444b] text-white rounded-3xl p-5 sm:p-7 shadow-lg border border-[#14565f] overflow-hidden">
-            {/* Top subtitle */}
-            <span className="text-[11px] sm:text-xs text-stone-300 font-medium block mb-3 opacity-90">
-              وزارة التعليم • التقويم الذاتي والاعتماد المدرسي
-            </span>
-
-            {/* Squircle App Icon in Mint Gradient */}
-            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center shadow-md mx-auto mb-3">
-              <svg className="w-8 h-8 text-white" viewBox="0 0 24 24" fill="currentColor">
-                <rect x="4" y="10" width="3.5" height="10" rx="1.75" />
-                <rect x="10.25" y="4" width="3.5" height="16" rx="1.75" />
-                <rect x="16.5" y="8" width="3.5" height="12" rx="1.75" />
-              </svg>
-            </div>
-
-            {/* Brand Title */}
-            <h3 className="text-2xl sm:text-3xl font-black text-white tracking-wide mb-1.5">
-              تحسين
-            </h3>
-
-            {/* Subtitle */}
-            <p className="text-xs sm:text-sm text-stone-200 leading-relaxed max-w-sm mx-auto mb-3.5 opacity-95">
-              حلّل نتيجة التقويم الذاتي و ابن خطة التحسين والتطوير في دقائق
+      {/* ============================================================== */}
+      {/* 2. HERO CARD BANNER: "تحسين" (Exact Image image_e3cbc9f3.png & image_92db6b7f.png) */}
+      {/* ============================================================== */}
+      <section className="bg-[#eef7f8] lg:bg-[#ebf6f7] py-6 sm:py-8 lg:py-14 px-4 sm:px-6 lg:px-8 border-b border-[#e1f0f2]">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+          
+          {/* Right Column in RTL = Text Side (image_e3cbc9f3.png) */}
+          <div className="lg:col-span-7 order-1 lg:order-2 text-center lg:text-right space-y-4">
+            <h1 className="text-xl sm:text-3xl lg:text-4xl xl:text-5xl font-black text-[#093c42] leading-tight tracking-tight">
+              حوّل نتيجة التقويم الذاتي إلى خطة تحسين في دقائق
+            </h1>
+            <p className="text-xs sm:text-sm lg:text-base text-stone-600 leading-relaxed max-w-2xl mx-auto lg:mx-0">
+              ارفع تقرير الأداء المدرسي من منصة تميز، وتبني لك أداة «تحسين» خطة التحسين والتطوير كاملة بترقيم الإصدار الثالث — ملف وورد قابل للتعديل مع نسخة PDF. تم شراؤها أكثر من ١٢٠٠ مرة بتقييم ٤,٩ من ٥.
             </p>
-
-            {/* Three Pill Badges */}
-            <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 text-[9px] sm:text-[10px] mb-5">
-              <span className="bg-white/10 text-white px-2.5 py-1 rounded-full border border-white/15 font-semibold backdrop-blur-xs">
-                خطة PDF جاهزة
-              </span>
-              <span className="bg-white/10 text-white px-2.5 py-1 rounded-full border border-white/15 font-semibold backdrop-blur-xs">
-                52 مؤشراً
-              </span>
-              <span className="bg-white/10 text-white px-2.5 py-1 rounded-full border border-white/15 font-semibold backdrop-blur-xs">
-                الإصدار الثالث 1447هـ
-              </span>
+            <div className="pt-2 flex justify-center lg:justify-start">
+              <button
+                onClick={() => onOpenTool('prod-tahseen-v3')}
+                className="px-8 py-3.5 bg-white text-[#008489] hover:bg-stone-50 border-2 border-[#008489] font-bold rounded-2xl text-xs sm:text-sm lg:text-base transition-all shadow-xs flex items-center justify-center gap-2 cursor-pointer hover:shadow-md hover:-translate-y-0.5"
+              >
+                <span>جرّب أداة تحسين</span>
+                <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 text-[#008489]" />
+              </button>
             </div>
+          </div>
 
-            {/* Realistic Dashboard Mockup Card (Exact Image in Image 3) */}
-            <div className="bg-white text-stone-800 rounded-xl p-3 sm:p-4 text-right shadow-2xl border border-stone-200/60 max-w-lg mx-auto">
-              {/* Header inside report */}
-              <div className="flex items-center justify-between border-b border-stone-100 pb-2 mb-2 text-[8px] sm:text-[9px] text-stone-500 font-bold">
-                <div className="flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
-                  <span>المملكة العربية السعودية • وزارة التعليم</span>
-                </div>
-                <span className="text-[7px] text-stone-400">لوحة نتائج التقويم الذاتي</span>
+          {/* Left Column in RTL = Dark Teal Card (image_e3cbc9f3.png) */}
+          <div className="lg:col-span-5 order-2 lg:order-1 max-w-md sm:max-w-lg mx-auto lg:max-w-none w-full">
+            <div className="bg-[#0b444b] text-white rounded-3xl p-5 sm:p-7 shadow-2xl border border-[#14565f] overflow-hidden transition-transform duration-300 hover:scale-[1.01]">
+              {/* Top subtitle */}
+              <span className="text-[11px] sm:text-xs text-stone-300 font-medium block mb-3 text-center opacity-90">
+                وزارة التعليم • التقويم الذاتي والاعتماد المدرسي
+              </span>
+
+              {/* Squircle App Icon in Mint Gradient */}
+              <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center shadow-md mx-auto mb-3">
+                <svg className="w-8 h-8 text-white" viewBox="0 0 24 24" fill="currentColor">
+                  <rect x="4" y="10" width="3.5" height="10" rx="1.75" />
+                  <rect x="10.25" y="4" width="3.5" height="16" rx="1.75" />
+                  <rect x="16.5" y="8" width="3.5" height="12" rx="1.75" />
+                </svg>
               </div>
 
-              {/* 4 Metric Chips Row */}
-              <div className="grid grid-cols-4 gap-1.5 mb-2.5 text-center text-[7.5px] sm:text-[8.5px]">
-                <div className="bg-orange-50 border border-orange-200 rounded p-1">
-                  <span className="block font-black text-orange-600 text-[10px] sm:text-xs">66.6%</span>
-                  <span className="text-stone-500 text-[6.5px] sm:text-[7.5px]">الأداء العام</span>
-                </div>
-                <div className="bg-emerald-50 border border-emerald-200 rounded p-1">
-                  <span className="block font-black text-emerald-700 text-[10px] sm:text-xs">39</span>
-                  <span className="text-stone-500 text-[6.5px] sm:text-[7.5px]">مؤشرات متمكنة</span>
-                </div>
-                <div className="bg-teal-50 border border-teal-200 rounded p-1">
-                  <span className="block font-black text-teal-700 text-[10px] sm:text-xs">37</span>
-                  <span className="text-stone-500 text-[6.5px] sm:text-[7.5px]">مؤشرات منجزة</span>
-                </div>
-                <div className="bg-rose-50 border border-rose-200 rounded p-1">
-                  <span className="block font-black text-rose-600 text-[10px] sm:text-xs">10</span>
-                  <span className="text-stone-500 text-[6.5px] sm:text-[7.5px]">فرص تحسين</span>
-                </div>
+              {/* Brand Title */}
+              <h3 className="text-2xl sm:text-3xl font-black text-white text-center tracking-wide mb-1.5">
+                تحسين
+              </h3>
+
+              {/* Subtitle */}
+              <p className="text-xs sm:text-sm text-stone-200 text-center leading-relaxed max-w-sm mx-auto mb-3.5 opacity-95">
+                حلّل نتيجة التقويم الذاتي و ابن خطة التحسين والتطوير في دقائق
+              </p>
+
+              {/* Three Pill Badges */}
+              <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 text-[9px] sm:text-[10px] mb-5">
+                <span className="bg-white/10 text-white px-2.5 py-1 rounded-full border border-white/15 font-semibold backdrop-blur-xs">
+                  خطة PDF جاهزة
+                </span>
+                <span className="bg-white/10 text-white px-2.5 py-1 rounded-full border border-white/15 font-semibold backdrop-blur-xs">
+                  52 مؤشراً
+                </span>
+                <span className="bg-white/10 text-white px-2.5 py-1 rounded-full border border-white/15 font-semibold backdrop-blur-xs">
+                  الإصدار الثالث 1447هـ
+                </span>
               </div>
 
-              {/* Visual Bars Section */}
-              <div className="grid grid-cols-2 gap-2 text-[8px] bg-stone-50/70 p-2 rounded-lg border border-stone-100">
-                {/* Horizontal Progress Bars */}
-                <div className="space-y-1.5">
-                  <div>
-                    <div className="flex justify-between text-[7px] font-semibold text-stone-600 mb-0.5">
-                      <span>مجال الإدارة المدرسية</span>
-                      <span className="text-emerald-700 font-bold">88%</span>
+              {/* Realistic Dashboard Mockup Card */}
+              <div className="bg-white text-stone-800 rounded-xl p-3 sm:p-4 text-right shadow-2xl border border-stone-200/60 max-w-lg mx-auto">
+                {/* Header inside report */}
+                <div className="flex items-center justify-between border-b border-stone-100 pb-2 mb-2 text-[8px] sm:text-[9px] text-stone-500 font-bold">
+                  <div className="flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+                    <span>المملكة العربية السعودية • وزارة التعليم</span>
+                  </div>
+                  <span className="text-[7px] text-stone-400">لوحة نتائج التقويم الذاتي</span>
+                </div>
+
+                {/* 4 Metric Chips Row */}
+                <div className="grid grid-cols-4 gap-1.5 mb-2.5 text-center text-[7.5px] sm:text-[8.5px]">
+                  <div className="bg-orange-50 border border-orange-200 rounded p-1">
+                    <span className="block font-black text-orange-600 text-[10px] sm:text-xs">66.6%</span>
+                    <span className="text-stone-500 text-[6.5px] sm:text-[7.5px]">الأداء العام</span>
+                  </div>
+                  <div className="bg-emerald-50 border border-emerald-200 rounded p-1">
+                    <span className="block font-black text-emerald-700 text-[10px] sm:text-xs">39</span>
+                    <span className="text-stone-500 text-[6.5px] sm:text-[7.5px]">مؤشرات متمكنة</span>
+                  </div>
+                  <div className="bg-teal-50 border border-teal-200 rounded p-1">
+                    <span className="block font-black text-teal-700 text-[10px] sm:text-xs">37</span>
+                    <span className="text-stone-500 text-[6.5px] sm:text-[7.5px]">مؤشرات منجزة</span>
+                  </div>
+                  <div className="bg-rose-50 border border-rose-200 rounded p-1">
+                    <span className="block font-black text-rose-600 text-[10px] sm:text-xs">10</span>
+                    <span className="text-stone-500 text-[6.5px] sm:text-[7.5px]">فرص تحسين</span>
+                  </div>
+                </div>
+
+                {/* Visual Bars Section */}
+                <div className="grid grid-cols-2 gap-2 text-[8px] bg-stone-50/70 p-2 rounded-lg border border-stone-100">
+                  {/* Horizontal Progress Bars */}
+                  <div className="space-y-1.5">
+                    <div>
+                      <div className="flex justify-between text-[7px] font-semibold text-stone-600 mb-0.5">
+                        <span>مجال الإدارة المدرسية</span>
+                        <span className="text-emerald-700 font-bold">88%</span>
+                      </div>
+                      <div className="w-full bg-stone-200 h-1.5 rounded-full overflow-hidden">
+                        <div className="bg-emerald-600 h-full w-[88%]"></div>
+                      </div>
                     </div>
-                    <div className="w-full bg-stone-200 h-1.5 rounded-full overflow-hidden">
-                      <div className="bg-emerald-600 h-full w-[88%]"></div>
+                    <div>
+                      <div className="flex justify-between text-[7px] font-semibold text-stone-600 mb-0.5">
+                        <span>مجال التعليم والتعلّم</span>
+                        <span className="text-teal-700 font-bold">78%</span>
+                      </div>
+                      <div className="w-full bg-stone-200 h-1.5 rounded-full overflow-hidden">
+                        <div className="bg-[#008489] h-full w-[78%]"></div>
+                      </div>
+                    </div>
+                    <div>
+                      <div className="flex justify-between text-[7px] font-semibold text-stone-600 mb-0.5">
+                        <span>مجال نواتج التعلّم</span>
+                        <span className="text-orange-600 font-bold">74%</span>
+                      </div>
+                      <div className="w-full bg-stone-200 h-1.5 rounded-full overflow-hidden">
+                        <div className="bg-orange-500 h-full w-[74%]"></div>
+                      </div>
                     </div>
                   </div>
-                  <div>
-                    <div className="flex justify-between text-[7px] font-semibold text-stone-600 mb-0.5">
-                      <span>مجال التعليم والتعلّم</span>
-                      <span className="text-teal-700 font-bold">78%</span>
+
+                  {/* Vertical Column Bars */}
+                  <div className="flex items-end justify-around h-16 pt-2 border-r border-stone-200/80 pr-1">
+                    <div className="flex flex-col items-center gap-0.5">
+                      <span className="text-[6.5px] font-bold text-orange-600">88%</span>
+                      <div className="w-3.5 bg-orange-400 rounded-t-sm h-12"></div>
+                      <span className="text-[6px] text-stone-400">الإدارة</span>
                     </div>
-                    <div className="w-full bg-stone-200 h-1.5 rounded-full overflow-hidden">
-                      <div className="bg-[#008489] h-full w-[78%]"></div>
+                    <div className="flex flex-col items-center gap-0.5">
+                      <span className="text-[6.5px] font-bold text-orange-600">78%</span>
+                      <div className="w-3.5 bg-orange-400 rounded-t-sm h-10"></div>
+                      <span className="text-[6px] text-stone-400">التعليم</span>
                     </div>
-                  </div>
-                  <div>
-                    <div className="flex justify-between text-[7px] font-semibold text-stone-600 mb-0.5">
-                      <span>مجال نواتج التعلّم</span>
-                      <span className="text-orange-600 font-bold">74%</span>
+                    <div className="flex flex-col items-center gap-0.5">
+                      <span className="text-[6.5px] font-bold text-orange-600">74%</span>
+                      <div className="w-3.5 bg-orange-400 rounded-t-sm h-9"></div>
+                      <span className="text-[6px] text-stone-400">النواتج</span>
                     </div>
-                    <div className="w-full bg-stone-200 h-1.5 rounded-full overflow-hidden">
-                      <div className="bg-orange-500 h-full w-[74%]"></div>
+                    <div className="flex flex-col items-center gap-0.5">
+                      <span className="text-[6.5px] font-bold text-orange-600">82%</span>
+                      <div className="w-3.5 bg-orange-400 rounded-t-sm h-11"></div>
+                      <span className="text-[6px] text-stone-400">البيئة</span>
                     </div>
                   </div>
                 </div>
 
-                {/* Vertical Column Bars */}
-                <div className="flex items-end justify-around h-16 pt-2 border-r border-stone-200/80 pr-1">
-                  <div className="flex flex-col items-center gap-0.5">
-                    <span className="text-[6.5px] font-bold text-orange-600">88%</span>
-                    <div className="w-3.5 bg-orange-400 rounded-t-sm h-12"></div>
-                    <span className="text-[6px] text-stone-400">الإدارة</span>
-                  </div>
-                  <div className="flex flex-col items-center gap-0.5">
-                    <span className="text-[6.5px] font-bold text-orange-600">78%</span>
-                    <div className="w-3.5 bg-orange-400 rounded-t-sm h-10"></div>
-                    <span className="text-[6px] text-stone-400">التعليم</span>
-                  </div>
-                  <div className="flex flex-col items-center gap-0.5">
-                    <span className="text-[6.5px] font-bold text-orange-600">74%</span>
-                    <div className="w-3.5 bg-orange-400 rounded-t-sm h-9"></div>
-                    <span className="text-[6px] text-stone-400">النواتج</span>
-                  </div>
-                  <div className="flex flex-col items-center gap-0.5">
-                    <span className="text-[6.5px] font-bold text-orange-600">82%</span>
-                    <div className="w-3.5 bg-orange-400 rounded-t-sm h-11"></div>
-                    <span className="text-[6px] text-stone-400">البيئة</span>
-                  </div>
+                {/* Bottom Priority Bar */}
+                <div className="mt-2 bg-rose-50 border border-rose-200/80 rounded px-2 py-1 flex items-center justify-between text-[7px] text-rose-800">
+                  <span className="font-bold">أولويات التحسين (الفرص):</span>
+                  <span className="truncate">تطوير استراتيجيات القياس والتقويم المستمر لرفع نواتج التعلم</span>
                 </div>
-              </div>
-
-              {/* Bottom Priority Bar */}
-              <div className="mt-2 bg-rose-50 border border-rose-200/80 rounded px-2 py-1 flex items-center justify-between text-[7px] text-rose-800">
-                <span className="font-bold">أولويات التحسين (الفرص):</span>
-                <span className="truncate">تطوير استراتيجيات القياس والتقويم المستمر لرفع نواتج التعلم</span>
               </div>
             </div>
           </div>
 
-          {/* Heading below Card (Exact Image 3) */}
-          <h2 className="text-lg sm:text-2xl font-black text-[#0e3b43] tracking-tight leading-snug mt-5 mb-2">
-            حوّل نتيجة التقويم الذاتي إلى خطة تحسين في دقائق
-          </h2>
-
-          {/* Description below Heading */}
-          <p className="text-xs sm:text-sm text-stone-600 leading-relaxed max-w-md mx-auto mb-4">
-            ارفع تقرير الأداء المدرسي من منصة تميز، وتبني لك أداة «تحسين» خطة التحسين...
-          </p>
-
-          {/* Action Button: White pill with green border and arrow (Exact Image 3) */}
-          <button
-            onClick={() => onOpenTool('prod-tahseen-v3')}
-            className="w-full sm:w-auto px-8 py-3 bg-white text-[#008489] hover:bg-stone-50 border-2 border-[#008489] font-bold rounded-2xl text-xs sm:text-sm transition-all shadow-xs flex items-center justify-center gap-2 mx-auto"
-          >
-            <span>جرّب أداة تحسين</span>
-            <ArrowLeft className="w-4 h-4 text-[#008489]" />
-          </button>
         </div>
       </section>
 
@@ -608,84 +653,92 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
       </section>
 
       {/* ============================================================== */}
-      {/* 4. SOLID TEAL BANNER: "الأدوات الذكية" + CARDS (Exact Image 8) */}
+      {/* 4. SOLID TEAL BANNER: "الأدوات الذكية" + CARDS (Exact Image cb5e14b7.png) */}
       {/* ============================================================== */}
-      <section className="mt-8 bg-[#008b9b] text-white py-8 px-4 text-center">
-        <div className="max-w-md mx-auto space-y-3">
-          <h3 className="text-xl font-black tracking-tight">
-            الأدوات الذكية
-          </h3>
-          <p className="text-xs text-emerald-100 leading-relaxed font-normal">
-            ارفع ملفك أو أدخل بياناتك، وتطلع لك تقاريرك وخططك الرسمية بصيغتي PDF وورد — من الجوال أو الكمبيوتر بدون برامج.
-          </p>
-          <div className="pt-2">
-            <button
-              onClick={() => onOpenTool('prod-tahseen-v3')}
-              className="px-6 py-2.5 bg-white text-[#008b9b] hover:bg-stone-50 font-bold rounded-xl text-xs transition-colors shadow-sm inline-flex items-center gap-2"
-            >
-              <span>تصفح كل الأدوات</span>
-              <ArrowLeft className="w-4 h-4 text-[#008b9b]" />
-            </button>
+      <section className="mt-8 bg-[#008b9b] text-white py-10 lg:py-16 px-4 sm:px-6 lg:px-8 overflow-hidden">
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+          
+          {/* Right Column in RTL = Text Side */}
+          <div className="lg:col-span-5 order-1 text-center lg:text-right space-y-4">
+            <h3 className="text-2xl sm:text-3xl lg:text-4xl font-black tracking-tight leading-tight">
+              الأدوات الذكية
+            </h3>
+            <p className="text-xs sm:text-sm lg:text-base text-emerald-100 leading-relaxed font-normal max-w-lg mx-auto lg:mx-0">
+              ارفع ملفك أو أدخل بياناتك، وتطلع لك تقاريرك وخططك الرسمية بصيغتي PDF وورد — من الجوال أو الكمبيوتر بدون برامج.
+            </p>
+            <div className="pt-2 flex justify-center lg:justify-start">
+              <button
+                onClick={() => onOpenTool('prod-tahseen-v3')}
+                className="px-8 py-3.5 bg-white text-[#008b9b] hover:bg-stone-50 font-bold rounded-2xl text-xs sm:text-sm lg:text-base transition-all shadow-md inline-flex items-center gap-2 cursor-pointer hover:shadow-lg hover:-translate-y-0.5"
+              >
+                <span>تصفح كل الأدوات</span>
+                <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 text-[#008b9b]" />
+              </button>
+            </div>
           </div>
-        </div>
 
-        {/* Horizontal scroll of Smart Tools cards inside teal banner (Image 8) */}
-        <div className="max-w-md mx-auto mt-6 flex items-center gap-3 overflow-x-auto no-scrollbar py-2 text-right">
-          {smartToolsList.map((tool, index) => (
-            <motion.div
-              key={tool.id}
-              initial={{ opacity: 0, x: 80, y: index % 2 === 0 ? 15 : -15 }}
-              whileInView={{ opacity: 1, x: 0, y: 0 }}
-              animate={{ y: index % 2 === 0 ? [-6, 6, -6] : [6, -6, 6] }}
-              transition={{ 
-                x: { duration: 0.5, delay: index * 0.12, ease: 'easeOut' },
-                y: { repeat: Infinity, duration: 5, ease: 'easeInOut', delay: index * 0.2 }
-              }}
-              viewport={{ once: true }}
-              onClick={() => onOpenTool(tool.id)}
-              className="bg-white text-stone-900 rounded-2xl p-3.5 min-w-[210px] max-w-[220px] shrink-0 shadow-md border border-stone-200 cursor-pointer flex flex-col justify-between"
-            >
-              <div>
-                {/* Visual mockup thumbnail */}
-                <div className="h-28 bg-[#f5fbfb] rounded-xl p-2.5 mb-2 border border-[#dcf0f1] flex flex-col justify-between text-center">
-                  <div className="text-[10px] font-bold text-[#008b9b]">طريقة الاستخدام بعد الشراء</div>
-                  <div className="text-[9px] text-stone-500 line-clamp-3 leading-relaxed">
-                    {tool.workflowText}
-                  </div>
-                  <div className="text-[9px] text-emerald-700 font-semibold">جاهز للاستخدام الفوري</div>
-                </div>
-
-                <div className="inline-block bg-[#f59e0b] text-white text-[10px] font-bold px-2 py-0.5 rounded-md mb-1.5">
-                  {tool.badge}
-                </div>
-
-                <h4 className="text-xs font-bold text-stone-900 leading-snug line-clamp-2">
-                  {tool.title}
-                </h4>
-              </div>
-
-              <div className="mt-3 pt-2 border-t border-stone-100 flex items-center justify-between">
-                <div>
-                  <span className="text-xs font-black text-[#008b9b] font-mono">{tool.price} ر.س</span>
-                  {tool.originalPrice && (
-                    <span className="text-[9px] text-stone-400 line-through mr-1 font-mono">{tool.originalPrice} ر.س</span>
-                  )}
-                </div>
-
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    const prod = STORE_PRODUCTS.find(p => p.id === tool.id);
-                    if (prod) handleAddToCart(prod, e);
+          {/* Left Column in RTL = Parallax Floating Cards (Image cb5e14b7.png) */}
+          <div className="lg:col-span-7 order-2">
+            <div className="flex items-center justify-center lg:justify-start gap-4 overflow-x-auto no-scrollbar py-4 px-1 text-right">
+              {smartToolsList.map((tool, index) => (
+                <motion.div
+                  key={tool.id}
+                  initial={{ opacity: 0, x: 60, y: index % 2 === 0 ? 25 : -25 }}
+                  whileInView={{ opacity: 1, x: 0, y: 0 }}
+                  animate={{ y: index % 2 === 0 ? [-8, 8, -8] : [8, -8, 8] }}
+                  transition={{ 
+                    x: { duration: 0.5, delay: index * 0.12, ease: 'easeOut' },
+                    y: { repeat: Infinity, duration: 4.5, ease: 'easeInOut', delay: index * 0.25 }
                   }}
-                  className="px-2.5 py-1 bg-[#008b9b] text-white text-[11px] font-bold rounded-lg flex items-center gap-1 shadow-2xs"
+                  whileHover={{ scale: 1.03, zIndex: 10 }}
+                  viewport={{ once: true }}
+                  onClick={() => onOpenTool(tool.id)}
+                  className="bg-white text-stone-900 rounded-2xl p-4 min-w-[220px] max-w-[240px] shrink-0 shadow-xl border border-stone-200 cursor-pointer flex flex-col justify-between"
                 >
-                  <ShoppingCart className="w-3 h-3" />
-                  <span>أضف</span>
-                </button>
-              </div>
-            </motion.div>
-          ))}
+                  <div>
+                    {/* Visual mockup thumbnail */}
+                    <div className="h-32 bg-[#f5fbfb] rounded-xl p-3 mb-2.5 border border-[#dcf0f1] flex flex-col justify-between text-center">
+                      <div className="text-[10px] font-bold text-[#008b9b]">طريقة الاستخدام بعد الشراء</div>
+                      <div className="text-[9px] text-stone-500 line-clamp-3 leading-relaxed">
+                        {tool.workflowText}
+                      </div>
+                      <div className="text-[9px] text-emerald-700 font-semibold">جاهز للاستخدام الفوري</div>
+                    </div>
+
+                    <div className="inline-block bg-[#f59e0b] text-white text-[10px] font-bold px-2 py-0.5 rounded-md mb-1.5">
+                      {tool.badge}
+                    </div>
+
+                    <h4 className="text-xs font-bold text-stone-900 leading-snug line-clamp-2">
+                      {tool.title}
+                    </h4>
+                  </div>
+
+                  <div className="mt-3 pt-2.5 border-t border-stone-100 flex items-center justify-between">
+                    <div>
+                      <span className="text-xs sm:text-sm font-black text-[#008b9b] font-mono">{tool.price} ر.س</span>
+                      {tool.originalPrice && (
+                        <span className="text-[9px] text-stone-400 line-through mr-1 font-mono">{tool.originalPrice} ر.س</span>
+                      )}
+                    </div>
+
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        const prod = STORE_PRODUCTS.find(p => p.id === tool.id);
+                        if (prod) handleAddToCart(prod, e);
+                      }}
+                      className="px-3 py-1.5 bg-[#008b9b] hover:bg-[#007b8a] text-white text-[11px] font-bold rounded-xl flex items-center gap-1 shadow-2xs transition-colors"
+                    >
+                      <ShoppingCart className="w-3.5 h-3.5" />
+                      <span>أضف</span>
+                    </button>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+
         </div>
       </section>
 
