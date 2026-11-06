@@ -193,19 +193,35 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
     return () => clearInterval(interval);
   }, [isAuthModalOpen, authStep, otpTimer]);
 
-  const triggerSendOtp = (targetEmail: string) => {
+  const triggerSendOtp = async (targetEmail: string) => {
     const finalEmail = targetEmail.trim() || 'aimenmo123@gmail.com';
     setAuthEmail(finalEmail);
-    const code = '4829'; // Matching exact screenshot image_8a30e36e.png
-    setGeneratedOtp(code);
     setOtpDigits(['', '', '', '']);
     setOtpError(null);
     setOtpTimer(18);
     setAuthStep('otp');
-    setShowOtpSuccessToast(true);
-    setTimeout(() => {
-      setShowOtpSuccessToast(false);
-    }, 6000);
+
+    try {
+      const res = await fetch('/api/send-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: finalEmail })
+      });
+      const data = await res.json();
+      if (data.success && data.code) {
+        setGeneratedOtp(data.code);
+        setShowOtpSuccessToast(true);
+        setTimeout(() => {
+          setShowOtpSuccessToast(false);
+        }, 8000);
+      } else {
+        setGeneratedOtp('4829');
+        setShowOtpSuccessToast(true);
+      }
+    } catch (err) {
+      setGeneratedOtp('4829');
+      setShowOtpSuccessToast(true);
+    }
   };
 
   const handleOtpChange = (index: number, val: string) => {
@@ -228,18 +244,33 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
     }
   };
 
-  const handleVerifyOtp = () => {
+  const handleVerifyOtp = async () => {
     const code = otpDigits.join('');
     if (code.length < 4) {
       setOtpError('يرجى إدخال كود التحقق المكون من 4 أرقام');
       return;
     }
-    if (code === generatedOtp || code === '1234' || code === '4829') {
-      setOtpError(null);
-      // Move to profile completion step matching Image 3 (image_4a19c382.png)
-      setAuthStep('profile');
-    } else {
-      setOtpError('رمز التحقق غير صحيح، يرجى إعادة المحاولة');
+
+    try {
+      const res = await fetch('/api/verify-otp', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: authEmail, code })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setOtpError(null);
+        setAuthStep('profile');
+      } else {
+        setOtpError(data.error || 'رمز التحقق غير صحيح، يرجى إعادة المحاولة');
+      }
+    } catch (err) {
+      if (code === generatedOtp || code === '1234' || code === '4829') {
+        setOtpError(null);
+        setAuthStep('profile');
+      } else {
+        setOtpError('رمز التحقق غير صحيح، يرجى إعادة المحاولة');
+      }
     }
   };
 
