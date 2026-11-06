@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { 
   Search, 
   ShoppingBag,
@@ -504,10 +505,12 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
         {/* Carousel with cards matching Image 8 & Video */}
         <div className="flex items-center gap-3 overflow-x-auto no-scrollbar py-2 px-1">
           {personaCards.map((persona) => (
-            <div
+            <motion.div
               key={persona.id}
+              whileHover={{ y: -3, scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               onClick={() => setActiveTab('الأكثر مبيعاً')}
-              className="bg-white border border-stone-200 rounded-2xl p-3 min-w-[150px] max-w-[160px] shrink-0 text-center shadow-2xs hover:border-[#008489] transition-all cursor-pointer flex flex-col justify-between"
+              className="bg-white border border-stone-200 rounded-2xl p-3 min-w-[150px] max-w-[160px] shrink-0 text-center shadow-2xs hover:border-[#008489] transition-colors cursor-pointer flex flex-col justify-between"
             >
               <div className="h-32 bg-[#f4f7f9] rounded-xl flex items-center justify-center p-1.5 mb-2 relative overflow-hidden border border-[#e2edf1]">
                 {persona.id === 'activity' ? (
@@ -577,7 +580,7 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
                 </span>
                 <h4 className="text-xs font-bold text-stone-900">{persona.title}</h4>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
       </section>
@@ -694,10 +697,13 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
             const isSmartTool = prod.category === 'smart_tools';
 
             return (
-              <div
+              <motion.div
                 key={prod.id}
+                whileHover={{ y: -4, scale: 1.01 }}
+                whileTap={{ scale: 0.98 }}
+                transition={{ duration: 0.2 }}
                 onClick={() => onOpenProductModal(prod)}
-                className="bg-white border border-stone-200 rounded-2xl p-2.5 shadow-2xs hover:border-[#008489] transition-all cursor-pointer flex flex-col justify-between"
+                className="bg-white border border-stone-200 rounded-2xl p-2.5 shadow-2xs hover:border-[#008489] transition-colors cursor-pointer flex flex-col justify-between"
               >
                 <div>
                   {/* Card Thumbnail Box with Ministry of Education Emblem Mockup (Exact Image 10 & 1) */}
@@ -819,7 +825,7 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
                     <ShoppingCart className="w-3.5 h-3.5" />
                   </button>
                 </div>
-              </div>
+              </motion.div>
             );
           })}
         </div>
