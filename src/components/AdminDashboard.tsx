@@ -52,6 +52,12 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToStorefro
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
+  // Admin Auth
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [adminUser, setAdminUser] = useState('');
+  const [adminPass, setAdminPass] = useState('');
+  const [authError, setAuthError] = useState('');
+
   // Form state for adding/editing product
   const [formName, setFormName] = useState('');
   const [formCategory, setFormCategory] = useState<StoreCategory>('smart_tools');
@@ -66,10 +72,42 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToStorefro
   // Settings local state
   const [localSettings, setLocalSettings] = useState(settings);
 
+  const handleAdminLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (adminUser === '1' && adminPass === '123') {
+      setIsAuthenticated(true);
+      setAuthError('');
+    } else {
+      setAuthError('اسم المستخدم أو كلمة المرور غير صحيحة');
+    }
+  };
+
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-stone-100 flex items-center justify-center p-4">
+        <form onSubmit={handleAdminLogin} className="bg-white p-8 rounded-3xl shadow-xl w-full max-w-sm space-y-4 text-right">
+          <h2 className="text-xl font-black text-stone-900 text-center">دخول لوحة التحكم</h2>
+          <div>
+            <label className="block text-xs font-bold text-stone-700 mb-1">اسم المستخدم</label>
+            <input type="text" value={adminUser} onChange={(e) => setAdminUser(e.target.value)} className="w-full p-3 bg-stone-50 border border-stone-200 rounded-xl text-xs" />
+          </div>
+          <div>
+            <label className="block text-xs font-bold text-stone-700 mb-1">كلمة المرور</label>
+            <input type="password" value={adminPass} onChange={(e) => setAdminPass(e.target.value)} className="w-full p-3 bg-stone-50 border border-stone-200 rounded-xl text-xs" />
+          </div>
+          {authError && <p className="text-xs text-rose-600 font-bold">{authError}</p>}
+          <button type="submit" className="w-full p-3 bg-[#008489] text-white rounded-xl text-xs font-bold">دخول</button>
+          <button type="button" onClick={onBackToStorefront} className="w-full p-3 bg-stone-100 text-stone-700 rounded-xl text-xs font-bold">العودة للمتجر</button>
+        </form>
+      </div>
+    );
+  }
+
   const showToast = (msg: string) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(null), 3000);
   };
+
 
   const handleOpenAddModal = () => {
     setEditingProduct(null);
