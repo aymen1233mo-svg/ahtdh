@@ -25,6 +25,37 @@ export interface ProductItem {
   reviewsCount: number;
   isBestseller?: boolean;
   image?: string;
+  hidden?: boolean;
+}
+
+export interface StoreSettings {
+  name: string;
+  subtitle: string;
+  logoText: string;
+  whatsapp: string;
+  whatsappFormatted: string;
+  email: string;
+  telegram: string;
+  vatNumber: string;
+  freelanceDoc: string;
+  heroTitle: string;
+  heroSubtitle: string;
+  heroButtonText: string;
+  welcomeDiscountPercent: number;
+  copyrightText: string;
+  copyrightPhone: string;
+  bannerNotice: string;
+}
+
+export interface SectionVisibility {
+  showHeroBanner: boolean;
+  showCategoriesSection: boolean;
+  showProductsSection: boolean;
+  showStatsSection: boolean;
+  showFeaturesSection: boolean;
+  showFaqSection: boolean;
+  showContactBox: boolean;
+  showWelcomeGiftTab: boolean;
 }
 
 export interface StoreAuditMetric {

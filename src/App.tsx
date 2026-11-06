@@ -1,11 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { StorefrontView } from './components/StorefrontView';
+import { AdminDashboard } from './components/AdminDashboard';
 import { OverviewAudit } from './components/OverviewAudit';
 import { CatalogExplorer } from './components/CatalogExplorer';
 import { SmartToolsSimulator } from './components/SmartToolsSimulator';
 import { WorkflowMatrix } from './components/WorkflowMatrix';
 import { StoreReportExport } from './components/StoreReportExport';
+import { StoreProvider } from './context/StoreContext';
 import { STORE_INFO } from './data/storeData';
 import { ProductItem } from './types';
 import { 
@@ -18,11 +20,12 @@ import {
   Share2, 
   Check, 
   Sparkles,
-  ArrowLeft 
+  ArrowLeft,
+  Settings 
 } from 'lucide-react';
 
-export default function App() {
-  const [activeTab, setActiveTab] = useState<'storefront' | 'tools' | 'overview' | 'catalog' | 'workflows'>('storefront');
+function AppContent() {
+  const [activeTab, setActiveTab] = useState<'storefront' | 'admin' | 'tools' | 'overview' | 'catalog' | 'workflows'>('storefront');
   const [isExportOpen, setIsExportOpen] = useState<boolean>(false);
   const [selectedProduct, setSelectedProduct] = useState<ProductItem | null>(null);
   const [copiedLink, setCopiedLink] = useState<boolean>(false);
@@ -76,7 +79,7 @@ export default function App() {
       </AnimatePresence>
 
       {/* Navigation header only shown when navigating inside sub-views like smart tools or audit report */}
-      {activeTab !== 'storefront' && (
+      {activeTab !== 'storefront' && activeTab !== 'admin' && (
         <div className="bg-white border-b border-stone-200 px-4 py-3 sticky top-0 z-50 shadow-2xs">
           <div className="max-w-7xl mx-auto flex items-center justify-between">
             <button
@@ -105,7 +108,12 @@ export default function App() {
             onOpenProductModal={(prod) => setSelectedProduct(prod)}
             onOpenTool={handleOpenTool}
             onOpenAudit={() => setActiveTab('overview')}
+            onOpenAdmin={() => setActiveTab('admin')}
           />
+        )}
+
+        {activeTab === 'admin' && (
+          <AdminDashboard onBackToStorefront={() => setActiveTab('storefront')} />
         )}
 
         {activeTab === 'tools' && (
@@ -275,5 +283,13 @@ export default function App() {
         onClose={() => setIsExportOpen(false)}
       />
     </div>
+  );
+}
+
+export default function App() {
+  return (
+    <StoreProvider>
+      <AppContent />
+    </StoreProvider>
   );
 }

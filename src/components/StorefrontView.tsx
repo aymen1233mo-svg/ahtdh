@@ -48,11 +48,13 @@ import {
 } from 'lucide-react';
 import { STORE_INFO, STORE_CATEGORIES, STORE_PRODUCTS } from '../data/storeData';
 import { ProductItem } from '../types';
+import { useStore } from '../context/StoreContext';
 
 interface StorefrontViewProps {
   onOpenProductModal: (prod: ProductItem) => void;
   onOpenTool: (toolId: string) => void;
   onOpenAudit: () => void;
+  onOpenAdmin?: () => void;
 }
 
 const AnimatedCounter: React.FC<{ value: number; prefix?: string; suffix?: string; duration?: number }> = ({
@@ -96,8 +98,10 @@ const AnimatedCounter: React.FC<{ value: number; prefix?: string; suffix?: strin
 export const StorefrontView: React.FC<StorefrontViewProps> = ({ 
   onOpenProductModal, 
   onOpenTool,
-  onOpenAudit
+  onOpenAudit,
+  onOpenAdmin
 }) => {
+  const { products, settings, sectionVisibility } = useStore();
   // Navigation & Drawers State
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const [isCartOpen, setIsCartOpen] = useState<boolean>(false);
@@ -448,7 +452,8 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
   ];
 
   // Filter products by selected service tab or drawer sub-category
-  const filteredProducts = STORE_PRODUCTS.filter((prod) => {
+  const filteredProducts = products.filter((prod) => {
+    if (prod.hidden) return false;
     if (searchQuery.trim() !== '') {
       return prod.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
              prod.description.toLowerCase().includes(searchQuery.toLowerCase());
@@ -595,6 +600,17 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
 
                     {/* Menu Items (Exact Image 4) */}
                     <div className="py-1.5 text-xs font-bold text-stone-800">
+                      <button 
+                        onClick={() => { setIsUserMenuOpen(false); onOpenAdmin && onOpenAdmin(); }}
+                        className="w-full px-4 py-2.5 flex items-center justify-between hover:bg-teal-50 text-[#008489] transition-colors"
+                      >
+                        <span className="flex items-center gap-2.5">
+                          <Settings className="w-4 h-4 text-[#008489]" />
+                          <span>لوحة التحكم الإدارية</span>
+                        </span>
+                        <span className="bg-[#008489] text-white text-[9px] px-1.5 py-0.5 rounded font-bold">تعديل</span>
+                      </button>
+
                       <button 
                         onClick={() => { setIsUserMenuOpen(false); alert('لا توجد إشعارات جديدة حالياً'); }}
                         className="w-full px-4 py-2.5 flex items-center justify-between hover:bg-stone-50 transition-colors"
@@ -1082,33 +1098,30 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
       ) : (
         <>
           {/* ============================================================== */}
+          {/* 2. HERO CARD BANNER: "تحسين" (Dynamic from StoreContext settings) */}
           {/* ============================================================== */}
-          {/* 2. HERO CARD BANNER: "تحسين" (Exact VideoCapture_٢٠٢٦١١٠٦-٠١٥٧٣٧.jpg) */}
-          {/* ============================================================== */}
-          {/* ============================================================== */}
-          {/* 2. HERO CARD BANNER: "تحسين" (Exact Image image_e3cbc9f3.png & image_92db6b7f.png) */}
-          {/* ============================================================== */}
-          <section className="bg-[#eef7f8] lg:bg-[#ebf6f7] py-6 sm:py-8 lg:py-14 px-4 sm:px-6 lg:px-8 border-b border-[#e1f0f2]">
-        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
-          
-          {/* Right Column in RTL = Text Side (image_e3cbc9f3.png) */}
-          <div className="lg:col-span-7 order-1 lg:order-2 text-center lg:text-right space-y-4">
-            <h1 className="text-xl sm:text-3xl lg:text-4xl xl:text-5xl font-black text-[#093c42] leading-tight tracking-tight">
-              حوّل نتيجة التقويم الذاتي إلى خطة تحسين في دقائق
-            </h1>
-            <p className="text-xs sm:text-sm lg:text-base text-stone-600 leading-relaxed max-w-2xl mx-auto lg:mx-0">
-              ارفع تقرير الأداء المدرسي من منصة تميز، وتبني لك أداة «تحسين» خطة التحسين والتطوير كاملة بترقيم الإصدار الثالث — ملف وورد قابل للتعديل مع نسخة PDF. تم شراؤها أكثر من ١٢٠٠ مرة بتقييم ٤,٩ من ٥.
-            </p>
-            <div className="pt-2 flex justify-center lg:justify-start">
-              <button
-                onClick={() => onOpenTool('prod-tahseen-v3')}
-                className="px-8 py-3.5 bg-white text-[#008489] hover:bg-stone-50 border-2 border-[#008489] font-bold rounded-2xl text-xs sm:text-sm lg:text-base transition-all shadow-xs flex items-center justify-center gap-2 cursor-pointer hover:shadow-md hover:-translate-y-0.5"
-              >
-                <span>جرّب أداة تحسين</span>
-                <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 text-[#008489]" />
-              </button>
-            </div>
-          </div>
+          {sectionVisibility.showHeroBanner && (
+            <section className="bg-[#eef7f8] lg:bg-[#ebf6f7] py-6 sm:py-8 lg:py-14 px-4 sm:px-6 lg:px-8 border-b border-[#e1f0f2]">
+              <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+                
+                {/* Right Column in RTL = Text Side */}
+                <div className="lg:col-span-7 order-1 lg:order-2 text-center lg:text-right space-y-4">
+                  <h1 className="text-xl sm:text-3xl lg:text-4xl xl:text-5xl font-black text-[#093c42] leading-tight tracking-tight">
+                    {settings.heroTitle}
+                  </h1>
+                  <p className="text-xs sm:text-sm lg:text-base text-stone-600 leading-relaxed max-w-2xl mx-auto lg:mx-0">
+                    {settings.heroSubtitle}
+                  </p>
+                  <div className="pt-2 flex justify-center lg:justify-start">
+                    <button
+                      onClick={() => onOpenTool('prod-tahseen-v3')}
+                      className="px-8 py-3.5 bg-white text-[#008489] hover:bg-stone-50 border-2 border-[#008489] font-bold rounded-2xl text-xs sm:text-sm lg:text-base transition-all shadow-xs flex items-center justify-center gap-2 cursor-pointer hover:shadow-md hover:-translate-y-0.5"
+                    >
+                      <span>{settings.heroButtonText}</span>
+                      <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 text-[#008489]" />
+                    </button>
+                  </div>
+                </div>
 
           {/* Left Column in RTL = Dark Teal Card (image_e3cbc9f3.png) */}
           <div className="lg:col-span-5 order-2 lg:order-1 max-w-md sm:max-w-lg mx-auto lg:max-w-none w-full">
@@ -1250,11 +1263,13 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
 
         </div>
       </section>
+      )}
 
       {/* ============================================================== */}
-      {/* 3. SECTION "أقسامنا" (Exact Image 10 & Video) */}
+      {/* 3. SECTION "أقسامنا" */}
       {/* ============================================================== */}
-      <section className="pt-8 px-4 max-w-7xl mx-auto sm:px-6 lg:px-8">
+      {sectionVisibility.showCategoriesSection && (
+        <section className="pt-8 px-4 max-w-7xl mx-auto sm:px-6 lg:px-8">
         <div className="text-center mb-4">
           <div className="inline-flex items-center gap-1.5 text-xs text-[#008489] font-bold mb-1">
             <span className="w-2 h-2 rounded-full bg-[#008489]"></span>
@@ -1350,6 +1365,7 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
           ))}
         </div>
       </section>
+      )}
 
       {/* ============================================================== */}
       {/* 4. SOLID TEAL BANNER: "الأدوات الذكية" + CARDS (Exact Image cb5e14b7.png) */}
@@ -1444,7 +1460,8 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
       {/* ============================================================== */}
       {/* 5. "خدمة رقمية متكاملة" & PRODUCTS GRID */}
       {/* ============================================================== */}
-      <section id="products-section" className="pt-8 px-4 max-w-7xl mx-auto sm:px-6 lg:px-8 scroll-mt-20">
+      {sectionVisibility.showProductsSection && (
+        <section id="products-section" className="pt-8 px-4 max-w-7xl mx-auto sm:px-6 lg:px-8 scroll-mt-20">
         <div className="text-center mb-4">
           <h3 className="text-base sm:text-lg font-black text-stone-900">
             {selectedSubCategory ? `قسم: ${selectedSubCategory}` : 'خدمة رقمية متكاملة'}
@@ -1627,12 +1644,14 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
             );
           })}
         </div>
-      </section>
+        </section>
+      )}
 
       {/* ============================================================== */}
-      {/* 6. "إحصائيات المتجر" - 2x2 STATS GRID (Exact Image 9) */}
+      {/* 6. "إحصائيات المتجر" */}
       {/* ============================================================== */}
-      <section className="pt-10 px-4 max-w-7xl mx-auto sm:px-6 lg:px-8">
+      {sectionVisibility.showStatsSection && (
+        <section className="pt-10 px-4 max-w-7xl mx-auto sm:px-6 lg:px-8">
         <div className="text-center mb-5">
           <div className="inline-flex items-center gap-1.5 text-xs text-[#008489] font-bold mb-1">
             <span className="w-2 h-2 rounded-full bg-[#008489]"></span>
@@ -1684,12 +1703,14 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
             <span className="text-xs text-stone-500 mt-0.5">منتج وأداة مدرسية</span>
           </div>
         </div>
-      </section>
+        </section>
+      )}
 
       {/* ============================================================== */}
-      {/* 7. "عن المتجر / مميزات المتجر" - 2x2 FEATURES (Exact Image 3) */}
+      {/* 7. "عن المتجر / مميزات المتجر" */}
       {/* ============================================================== */}
-      <section className="pt-10 px-4 max-w-7xl mx-auto sm:px-6 lg:px-8">
+      {sectionVisibility.showFeaturesSection && (
+        <section className="pt-10 px-4 max-w-7xl mx-auto sm:px-6 lg:px-8">
         <div className="text-center mb-6">
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#e8f6f7] text-[#008489] text-xs font-bold mb-2">
             <span className="w-2 h-2 rounded-full bg-[#008489]"></span>
@@ -1768,12 +1789,14 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
             </p>
           </div>
         </div>
-      </section>
+        </section>
+      )}
 
       {/* ============================================================== */}
-      {/* 8. "الأسئلة الشائعة" - ACCORDION (Exact Image 6) */}
+      {/* 8. "الأسئلة الشائعة" */}
       {/* ============================================================== */}
-      <section className="pt-10 px-4 max-w-5xl mx-auto sm:px-6 lg:px-8">
+      {sectionVisibility.showFaqSection && (
+        <section className="pt-10 px-4 max-w-5xl mx-auto sm:px-6 lg:px-8">
         <div className="text-center mb-5">
           <div className="inline-flex items-center gap-1.5 text-xs text-[#008489] font-bold mb-1">
             <span className="w-2 h-2 rounded-full bg-[#008489]"></span>
@@ -1818,6 +1841,7 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
           })}
         </div>
       </section>
+      )}
 
       {/* ============================================================== */}
       {/* 9. "هل لا تزال لديك أي تساؤلات؟" (Exact Image 6) */}
