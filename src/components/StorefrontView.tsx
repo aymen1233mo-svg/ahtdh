@@ -317,57 +317,161 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
       </header>
 
       {/* ============================================================== */}
-      {/* 2. HERO CARD BANNER: "حوّل نتيجة التقويم الذاتي..." (Exact Image 3) */}
       {/* ============================================================== */}
-      <section className="px-4 pt-4 max-w-md mx-auto">
-        <div className="bg-[#f0f9fa] border border-[#d2edee] rounded-2xl p-5 text-center shadow-xs overflow-hidden">
-          {/* Framed Graphic Artwork from Image 3 */}
-          <div className="bg-[#0f464c] text-white rounded-xl p-5 shadow-sm max-w-xs mx-auto mb-4 border border-[#1b5e66]">
-            <span className="text-[10px] text-stone-300 block mb-1">
-              وزارة التعليم - التقويم الذاتي والاعتماد المدرسي
+      {/* 2. HERO CARD BANNER: "تحسين" (Exact VideoCapture_٢٠٢٦١١٠٦-٠١٥٧٣٧.jpg) */}
+      {/* ============================================================== */}
+      <section className="px-4 pt-4 sm:pt-6 max-w-md sm:max-w-xl md:max-w-2xl mx-auto">
+        <div className="text-center">
+          {/* Dark Teal Hero Card Sitting directly on clean page background */}
+          <div className="bg-[#0b444b] text-white rounded-3xl p-5 sm:p-7 shadow-lg border border-[#14565f] overflow-hidden">
+            {/* Top subtitle */}
+            <span className="text-[11px] sm:text-xs text-stone-300 font-medium block mb-3 opacity-90">
+              وزارة التعليم • التقويم الذاتي والاعتماد المدرسي
             </span>
-            <div className="inline-block px-3 py-1 bg-white/10 rounded-lg text-emerald-300 font-black text-lg mb-2">
-              تحسين
-            </div>
-            <p className="text-xs text-stone-200 leading-snug mb-3">
-              حلل نتيجة التقويم الذاتي و ابن خطة التحسين والتطوير في دقائق
-            </p>
-            <div className="flex items-center justify-center gap-1.5 text-[9px] text-stone-300">
-              <span className="bg-white/10 px-2 py-0.5 rounded">الإصدار الثالث 1447هـ</span>
-              <span>·</span>
-              <span className="bg-white/10 px-2 py-0.5 rounded">52 مؤشراً</span>
-              <span>·</span>
-              <span className="bg-white/10 px-2 py-0.5 rounded">خطة PDF جاهزة</span>
+
+            {/* Squircle App Icon in Mint Gradient */}
+            <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center shadow-md mx-auto mb-3">
+              <svg className="w-8 h-8 text-white" viewBox="0 0 24 24" fill="currentColor">
+                <rect x="4" y="10" width="3.5" height="10" rx="1.75" />
+                <rect x="10.25" y="4" width="3.5" height="16" rx="1.75" />
+                <rect x="16.5" y="8" width="3.5" height="12" rx="1.75" />
+              </svg>
             </div>
 
-            {/* Dashboard chart mockup inside image */}
-            <div className="bg-white text-stone-800 rounded-lg p-2.5 mt-3 text-right text-[9px] space-y-1.5 font-mono shadow-inner">
-              <div className="flex justify-between border-b pb-1">
-                <span className="font-bold text-[#008489]">مؤشر القيادة المدرسية</span>
-                <span className="text-emerald-700 font-bold">88%</span>
+            {/* Brand Title */}
+            <h3 className="text-2xl sm:text-3xl font-black text-white tracking-wide mb-1.5">
+              تحسين
+            </h3>
+
+            {/* Subtitle */}
+            <p className="text-xs sm:text-sm text-stone-200 leading-relaxed max-w-sm mx-auto mb-3.5 opacity-95">
+              حلّل نتيجة التقويم الذاتي و ابن خطة التحسين والتطوير في دقائق
+            </p>
+
+            {/* Three Pill Badges */}
+            <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 text-[9px] sm:text-[10px] mb-5">
+              <span className="bg-white/10 text-white px-2.5 py-1 rounded-full border border-white/15 font-semibold backdrop-blur-xs">
+                خطة PDF جاهزة
+              </span>
+              <span className="bg-white/10 text-white px-2.5 py-1 rounded-full border border-white/15 font-semibold backdrop-blur-xs">
+                52 مؤشراً
+              </span>
+              <span className="bg-white/10 text-white px-2.5 py-1 rounded-full border border-white/15 font-semibold backdrop-blur-xs">
+                الإصدار الثالث 1447هـ
+              </span>
+            </div>
+
+            {/* Realistic Dashboard Mockup Card (Exact Image in Image 3) */}
+            <div className="bg-white text-stone-800 rounded-xl p-3 sm:p-4 text-right shadow-2xl border border-stone-200/60 max-w-lg mx-auto">
+              {/* Header inside report */}
+              <div className="flex items-center justify-between border-b border-stone-100 pb-2 mb-2 text-[8px] sm:text-[9px] text-stone-500 font-bold">
+                <div className="flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+                  <span>المملكة العربية السعودية • وزارة التعليم</span>
+                </div>
+                <span className="text-[7px] text-stone-400">لوحة نتائج التقويم الذاتي</span>
               </div>
-              <div className="flex justify-between border-b pb-1">
-                <span className="font-bold text-[#008489]">مؤشر نواتج التعلم</span>
-                <span className="text-amber-700 font-bold">74%</span>
+
+              {/* 4 Metric Chips Row */}
+              <div className="grid grid-cols-4 gap-1.5 mb-2.5 text-center text-[7.5px] sm:text-[8.5px]">
+                <div className="bg-orange-50 border border-orange-200 rounded p-1">
+                  <span className="block font-black text-orange-600 text-[10px] sm:text-xs">66.6%</span>
+                  <span className="text-stone-500 text-[6.5px] sm:text-[7.5px]">الأداء العام</span>
+                </div>
+                <div className="bg-emerald-50 border border-emerald-200 rounded p-1">
+                  <span className="block font-black text-emerald-700 text-[10px] sm:text-xs">39</span>
+                  <span className="text-stone-500 text-[6.5px] sm:text-[7.5px]">مؤشرات متمكنة</span>
+                </div>
+                <div className="bg-teal-50 border border-teal-200 rounded p-1">
+                  <span className="block font-black text-teal-700 text-[10px] sm:text-xs">37</span>
+                  <span className="text-stone-500 text-[6.5px] sm:text-[7.5px]">مؤشرات منجزة</span>
+                </div>
+                <div className="bg-rose-50 border border-rose-200 rounded p-1">
+                  <span className="block font-black text-rose-600 text-[10px] sm:text-xs">10</span>
+                  <span className="text-stone-500 text-[6.5px] sm:text-[7.5px]">فرص تحسين</span>
+                </div>
               </div>
-              <div className="w-full bg-stone-100 h-1.5 rounded-full overflow-hidden">
-                <div className="bg-[#008489] h-full w-[81%]"></div>
+
+              {/* Visual Bars Section */}
+              <div className="grid grid-cols-2 gap-2 text-[8px] bg-stone-50/70 p-2 rounded-lg border border-stone-100">
+                {/* Horizontal Progress Bars */}
+                <div className="space-y-1.5">
+                  <div>
+                    <div className="flex justify-between text-[7px] font-semibold text-stone-600 mb-0.5">
+                      <span>مجال الإدارة المدرسية</span>
+                      <span className="text-emerald-700 font-bold">88%</span>
+                    </div>
+                    <div className="w-full bg-stone-200 h-1.5 rounded-full overflow-hidden">
+                      <div className="bg-emerald-600 h-full w-[88%]"></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div className="flex justify-between text-[7px] font-semibold text-stone-600 mb-0.5">
+                      <span>مجال التعليم والتعلّم</span>
+                      <span className="text-teal-700 font-bold">78%</span>
+                    </div>
+                    <div className="w-full bg-stone-200 h-1.5 rounded-full overflow-hidden">
+                      <div className="bg-[#008489] h-full w-[78%]"></div>
+                    </div>
+                  </div>
+                  <div>
+                    <div className="flex justify-between text-[7px] font-semibold text-stone-600 mb-0.5">
+                      <span>مجال نواتج التعلّم</span>
+                      <span className="text-orange-600 font-bold">74%</span>
+                    </div>
+                    <div className="w-full bg-stone-200 h-1.5 rounded-full overflow-hidden">
+                      <div className="bg-orange-500 h-full w-[74%]"></div>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Vertical Column Bars */}
+                <div className="flex items-end justify-around h-16 pt-2 border-r border-stone-200/80 pr-1">
+                  <div className="flex flex-col items-center gap-0.5">
+                    <span className="text-[6.5px] font-bold text-orange-600">88%</span>
+                    <div className="w-3.5 bg-orange-400 rounded-t-sm h-12"></div>
+                    <span className="text-[6px] text-stone-400">الإدارة</span>
+                  </div>
+                  <div className="flex flex-col items-center gap-0.5">
+                    <span className="text-[6.5px] font-bold text-orange-600">78%</span>
+                    <div className="w-3.5 bg-orange-400 rounded-t-sm h-10"></div>
+                    <span className="text-[6px] text-stone-400">التعليم</span>
+                  </div>
+                  <div className="flex flex-col items-center gap-0.5">
+                    <span className="text-[6.5px] font-bold text-orange-600">74%</span>
+                    <div className="w-3.5 bg-orange-400 rounded-t-sm h-9"></div>
+                    <span className="text-[6px] text-stone-400">النواتج</span>
+                  </div>
+                  <div className="flex flex-col items-center gap-0.5">
+                    <span className="text-[6.5px] font-bold text-orange-600">82%</span>
+                    <div className="w-3.5 bg-orange-400 rounded-t-sm h-11"></div>
+                    <span className="text-[6px] text-stone-400">البيئة</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Bottom Priority Bar */}
+              <div className="mt-2 bg-rose-50 border border-rose-200/80 rounded px-2 py-1 flex items-center justify-between text-[7px] text-rose-800">
+                <span className="font-bold">أولويات التحسين (الفرص):</span>
+                <span className="truncate">تطوير استراتيجيات القياس والتقويم المستمر لرفع نواتج التعلم</span>
               </div>
             </div>
           </div>
 
-          {/* Headline & Description */}
-          <h2 className="text-base sm:text-lg font-black text-stone-900 tracking-tight leading-snug mb-2">
+          {/* Heading below Card (Exact Image 3) */}
+          <h2 className="text-lg sm:text-2xl font-black text-[#0e3b43] tracking-tight leading-snug mt-5 mb-2">
             حوّل نتيجة التقويم الذاتي إلى خطة تحسين في دقائق
           </h2>
-          <p className="text-xs text-stone-600 leading-relaxed max-w-sm mx-auto mb-4">
-            ارفع تقرير الأداء المدرسي من منصة تميز، وتبني لك أداة «تحسين» خطة التحسين والتط...
+
+          {/* Description below Heading */}
+          <p className="text-xs sm:text-sm text-stone-600 leading-relaxed max-w-md mx-auto mb-4">
+            ارفع تقرير الأداء المدرسي من منصة تميز، وتبني لك أداة «تحسين» خطة التحسين...
           </p>
 
-          {/* Action Button: White pill with green border and arrow */}
+          {/* Action Button: White pill with green border and arrow (Exact Image 3) */}
           <button
             onClick={() => onOpenTool('prod-tahseen-v3')}
-            className="w-full sm:w-auto px-6 py-2.5 bg-white text-[#008489] hover:bg-stone-50 border-2 border-[#008489] font-bold rounded-xl text-xs transition-all shadow-xs flex items-center justify-center gap-2 mx-auto"
+            className="w-full sm:w-auto px-8 py-3 bg-white text-[#008489] hover:bg-stone-50 border-2 border-[#008489] font-bold rounded-2xl text-xs sm:text-sm transition-all shadow-xs flex items-center justify-center gap-2 mx-auto"
           >
             <span>جرّب أداة تحسين</span>
             <ArrowLeft className="w-4 h-4 text-[#008489]" />
@@ -774,65 +878,83 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
       </section>
 
       {/* ============================================================== */}
-      {/* 7. "عن المتجر / مميزات المتجر" - 2x2 FEATURES (Exact Image 2) */}
+      {/* 7. "عن المتجر / مميزات المتجر" - 2x2 FEATURES (Exact Image 3) */}
       {/* ============================================================== */}
       <section className="pt-10 px-4 max-w-md mx-auto">
-        <div className="text-center mb-5">
-          <div className="inline-flex items-center gap-1.5 text-xs text-[#008489] font-bold mb-1">
+        <div className="text-center mb-6">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#e8f6f7] text-[#008489] text-xs font-bold mb-2">
             <span className="w-2 h-2 rounded-full bg-[#008489]"></span>
             <span>عن المتجر</span>
           </div>
-          <h3 className="text-base font-black text-stone-900">
+          <h3 className="text-xl font-black text-[#093c42]">
             مميزات المتجر
           </h3>
-          <p className="text-xs text-stone-500 mt-0.5">
+          <p className="text-xs text-stone-500 mt-1">
             نقدم لكم منتجات مدرسية فريدة ومبتكرة
           </p>
         </div>
 
-        {/* 2x2 Features Grid with circular cyan icons from Image 2 */}
-        <div className="grid grid-cols-2 gap-4">
-          {/* Feature 1: 100% Original Products */}
+        {/* 2x2 Features Grid with circular teal icons from Image 3 */}
+        <div className="grid grid-cols-2 gap-y-6 gap-x-4">
+          {/* Feature 1: 100% Original Products (Top Right in RTL) */}
           <div className="text-center flex flex-col items-center">
-            <div className="w-16 h-16 rounded-full bg-[#008489] text-white flex items-center justify-center mb-3 shadow-xs">
-              <Sparkles className="w-8 h-8 stroke-[1.8]" />
+            <div className="w-16 h-16 rounded-full bg-[#008489] text-white flex items-center justify-center mb-3 shadow-sm">
+              <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="12" cy="12" r="3" />
+                <path d="M12 2a4 4 0 0 1 4 4 4 4 0 0 1-4 4 4 4 0 0 1-4-4 4 4 0 0 1 4-4z" />
+                <path d="M12 14a4 4 0 0 1 4 4 4 4 0 0 1-4 4 4 4 0 0 1-4-4 4 4 0 0 1 4-4z" />
+                <path d="M2 12a4 4 0 0 1 4-4 4 4 0 0 1 4 4 4 4 0 0 1-4 4 4 4 0 0 1-4-4z" />
+                <path d="M14 12a4 4 0 0 1 4-4 4 4 0 0 1 4 4 4 4 0 0 1-4 4 4 4 0 0 1-4-4z" />
+              </svg>
             </div>
-            <h4 className="text-xs font-bold text-stone-900 mb-0.5">منتجات أصلية</h4>
-            <span className="text-xs font-bold text-stone-900 mb-1.5 font-mono">%100</span>
-            <p className="text-[11px] text-stone-500 leading-relaxed max-w-[140px]">
+            <h4 className="text-sm font-bold text-[#093c42] mb-1">منتجات أصلية</h4>
+            <span className="text-base font-black text-[#093c42] mb-1.5 font-sans">%100</span>
+            <p className="text-[11px] text-stone-500 leading-relaxed max-w-[150px]">
               أفكار و محتوى منتجات المتجر بتصميم حصري لمتجرنا
             </p>
           </div>
 
-          {/* Feature 2: Customer Service */}
+          {/* Feature 2: Customer Service (Top Left in RTL) */}
           <div className="text-center flex flex-col items-center">
-            <div className="w-16 h-16 rounded-full bg-[#008489] text-white flex items-center justify-center mb-3 shadow-xs">
-              <Phone className="w-8 h-8 stroke-[1.8]" />
+            <div className="w-16 h-16 rounded-full bg-[#008489] text-white flex items-center justify-center mb-3 shadow-sm">
+              <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 18v-6a9 9 0 0 1 18 0v6" />
+                <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z" />
+                <path d="M19 16v2a4 4 0 0 1-4 4h-2" />
+              </svg>
             </div>
-            <h4 className="text-xs font-bold text-stone-900 mb-1.5">خدمة عملاء</h4>
-            <p className="text-[11px] text-stone-500 leading-relaxed max-w-[140px]">
+            <h4 className="text-sm font-bold text-[#093c42] mb-2">خدمة عملاء</h4>
+            <p className="text-[11px] text-stone-500 leading-relaxed max-w-[150px]">
               فريق دعم محترف جاهز لخدمتك في أي وقت والرد على استفساراتك.
             </p>
           </div>
 
-          {/* Feature 3: Safe Return */}
+          {/* Feature 3: Safe Return (Bottom Right in RTL) */}
           <div className="text-center flex flex-col items-center">
-            <div className="w-16 h-16 rounded-full bg-[#008489] text-white flex items-center justify-center mb-3 shadow-xs">
-              <RefreshCw className="w-8 h-8 stroke-[1.8]" />
+            <div className="w-16 h-16 rounded-full bg-[#008489] text-white flex items-center justify-center mb-3 shadow-sm">
+              <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+                <path d="M3 3v5h5" />
+              </svg>
             </div>
-            <h4 className="text-xs font-bold text-stone-900 mb-1.5">استرجاع آمن</h4>
-            <p className="text-[11px] text-stone-500 leading-relaxed max-w-[140px]">
-              نوفر ضمان ذهبي لتعزيز ثقة العميل واسترجاع آمن لمدة 3 أيام
+            <h4 className="text-sm font-bold text-[#093c42] mb-2">استرجاع آمن</h4>
+            <p className="text-[11px] text-stone-500 leading-relaxed max-w-[150px]">
+              نوفر ضمان ذهبي لتعزيز ثقة العميل واسترجاع آمن لمدة ٣ أيام
             </p>
           </div>
 
-          {/* Feature 4: Discounts */}
+          {/* Feature 4: Discounts (Bottom Left in RTL) */}
           <div className="text-center flex flex-col items-center">
-            <div className="w-16 h-16 rounded-full bg-[#008489] text-white flex items-center justify-center mb-3 shadow-xs">
-              <Award className="w-8 h-8 stroke-[1.8]" />
+            <div className="w-16 h-16 rounded-full bg-[#008489] text-white flex items-center justify-center mb-3 shadow-sm">
+              <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M3.85 8.62a4 4 0 0 1 4.78-4.77 4 4 0 0 1 6.74 0 4 4 0 0 1 4.78 4.78 4 4 0 0 1 0 6.74 4 4 0 0 1-4.77 4.78 4 4 0 0 1-6.75 0 4 4 0 0 1-4.78-4.77 4 4 0 0 1 0-6.76Z" />
+                <line x1="15" y1="9" x2="9" y2="15" />
+                <circle cx="9.5" cy="9.5" r="0.75" fill="currentColor" />
+                <circle cx="14.5" cy="14.5" r="0.75" fill="currentColor" />
+              </svg>
             </div>
-            <h4 className="text-xs font-bold text-stone-900 mb-1.5">عروض وخصومات</h4>
-            <p className="text-[11px] text-stone-500 leading-relaxed max-w-[140px]">
+            <h4 className="text-sm font-bold text-[#093c42] mb-2">عروض وخصومات</h4>
+            <p className="text-[11px] text-stone-500 leading-relaxed max-w-[150px]">
               استمتع بعروض حصرية وخصومات دورية على أفضل المنتجات.
             </p>
           </div>
@@ -1083,18 +1205,21 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
       {/* ============================================================== */}
       {/* 12. FLOATING CONTROLS (Exact from Screenshots & Video) */}
       {/* ============================================================== */}
-      {/* Green WhatsApp Button (Bottom-Right) */}
+      {/* WhatsApp Button (Bottom-Right, exact Image 1, 2, 3, 4) */}
       <a
         href={`https://wa.me/${STORE_INFO.contact.whatsapp.replace('+', '')}?text=${encodeURIComponent('السلام عليكم، استفسار بخصوص منتجات المتجر')}`}
         target="_blank"
         rel="noopener noreferrer"
-        className="fixed bottom-5 right-5 z-40 bg-[#25D366] hover:bg-[#20ba59] text-white p-3.5 rounded-full shadow-lg transition-transform hover:scale-110 flex items-center justify-center"
+        className="fixed bottom-5 right-5 z-40 bg-[#25D366] hover:bg-[#20ba59] text-white p-3 sm:p-3.5 rounded-full shadow-lg transition-transform hover:scale-105 flex items-center justify-center cursor-pointer"
         title="تواصل معنا عبر واتساب"
+        aria-label="تواصل عبر واتساب"
       >
-        <Phone className="w-6 h-6 fill-white" />
+        <svg className="w-6 h-6 fill-white" viewBox="0 0 24 24">
+          <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
+        </svg>
       </a>
 
-      {/* Scroll to top button (Bottom-Left teal button) */}
+      {/* Scroll to top button (Bottom-Left teal button, exact Image 2, 4) */}
       {showScrollTop && (
         <button
           onClick={scrollToTop}
@@ -1105,13 +1230,13 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
         </button>
       )}
 
-      {/* Blue "الهدية الترحيبية" tab on the far left edge (Exact Image 2, 4, 6, 8, 9, 11) */}
+      {/* Dark Teal "الهدية الترحيبية" tab on the far left edge (Exact Image 2, 3, 4) */}
       <div 
         onClick={() => setShowWelcomeGift(true)}
-        className="fixed left-0 top-1/2 -translate-y-1/2 z-30 bg-[#0284c7] hover:bg-[#0369a1] text-white px-2 py-3 rounded-r-xl shadow-lg cursor-pointer flex flex-col items-center gap-1 select-none transition-transform hover:translate-x-0.5 text-[10px] font-bold"
+        className="fixed left-0 top-1/2 -translate-y-1/2 z-30 bg-[#093c42] hover:bg-[#072d32] text-white px-2 py-3.5 rounded-r-xl shadow-xl cursor-pointer flex flex-col items-center gap-1.5 select-none transition-transform hover:translate-x-0.5 text-[10px] font-bold border-y border-r border-[#155d67]"
       >
-        <Gift className="w-4 h-4" />
-        <span className="[writing-mode:vertical-rl] tracking-wider">الهدية الترحيبية</span>
+        <span className="[writing-mode:vertical-rl] tracking-wider text-[11px]">الهدية الترحيبية</span>
+        <span className="text-sm">🎁</span>
       </div>
 
       {/* ============================================================== */}
@@ -1195,8 +1320,14 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
       {/* 14. SLIDING HAMBURGER MENU DRAWER (Exact Image 1) */}
       {/* ============================================================== */}
       {isMenuOpen && (
-        <div className="fixed inset-0 z-50 bg-stone-950/60 backdrop-blur-xs flex justify-end">
-          <div className="bg-white w-full max-w-xs h-full shadow-2xl p-5 flex flex-col justify-between overflow-y-auto animate-in slide-in-from-right duration-200 text-right">
+        <div 
+          className="fixed inset-0 z-50 bg-stone-950/60 backdrop-blur-xs flex justify-start"
+          onClick={() => setIsMenuOpen(false)}
+        >
+          <div 
+            onClick={(e) => e.stopPropagation()}
+            className="bg-white w-[85vw] max-w-xs h-full shadow-2xl p-5 flex flex-col justify-between overflow-y-auto animate-in slide-in-from-right duration-200 text-right"
+          >
             <div>
               {/* Header inside drawer from Image 1: logo on right, close button on left */}
               <div className="flex items-center justify-between pb-4 border-b border-stone-100 mb-4">
