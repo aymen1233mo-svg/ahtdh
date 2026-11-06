@@ -1,0 +1,243 @@
+import React, { useState } from 'react';
+import { StorefrontView } from './components/StorefrontView';
+import { OverviewAudit } from './components/OverviewAudit';
+import { CatalogExplorer } from './components/CatalogExplorer';
+import { SmartToolsSimulator } from './components/SmartToolsSimulator';
+import { WorkflowMatrix } from './components/WorkflowMatrix';
+import { StoreReportExport } from './components/StoreReportExport';
+import { STORE_INFO } from './data/storeData';
+import { ProductItem } from './types';
+import { 
+  ExternalLink, 
+  ShieldCheck, 
+  Store, 
+  X, 
+  CheckCircle2, 
+  Zap, 
+  Share2, 
+  Check, 
+  Sparkles,
+  ArrowLeft 
+} from 'lucide-react';
+
+export default function App() {
+  const [activeTab, setActiveTab] = useState<'storefront' | 'tools' | 'overview' | 'catalog' | 'workflows'>('storefront');
+  const [isExportOpen, setIsExportOpen] = useState<boolean>(false);
+  const [selectedProduct, setSelectedProduct] = useState<ProductItem | null>(null);
+  const [copiedLink, setCopiedLink] = useState<boolean>(false);
+
+  const handleOpenTool = (toolId: string) => {
+    setActiveTab('tools');
+  };
+
+  const handleShareProduct = (prod: ProductItem) => {
+    const text = `منتج من متجر احتياجك التعليمي:\n${prod.name}\nالسعر: ${prod.price} ر.س\nالصيغة: ${prod.format}\nرابط المتجر: ${STORE_INFO.fullUrl}`;
+    navigator.clipboard.writeText(text);
+    setCopiedLink(true);
+    setTimeout(() => setCopiedLink(false), 2000);
+  };
+
+  return (
+    <div className="min-h-screen bg-white text-stone-900 flex flex-col font-sans" dir="rtl">
+      {/* Navigation header only shown when navigating inside sub-views like smart tools or audit report */}
+      {activeTab !== 'storefront' && (
+        <div className="bg-white border-b border-stone-200 px-4 py-3 sticky top-0 z-50 shadow-2xs">
+          <div className="max-w-7xl mx-auto flex items-center justify-between">
+            <button
+              onClick={() => setActiveTab('storefront')}
+              className="inline-flex items-center gap-2 text-[#008489] hover:text-[#007478] font-bold text-xs sm:text-sm transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4 rotate-180" />
+              <span>العودة لمتجر احتياجك التعليمي</span>
+            </button>
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => setIsExportOpen(true)}
+                className="px-3 py-1.5 text-xs font-semibold text-stone-700 bg-stone-100 hover:bg-stone-200 rounded-lg border border-stone-200 transition-colors"
+              >
+                تصدير تقرير الفحص
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Main Tab Render */}
+      <main className="flex-1">
+        {activeTab === 'storefront' && (
+          <StorefrontView
+            onOpenProductModal={(prod) => setSelectedProduct(prod)}
+            onOpenTool={handleOpenTool}
+            onOpenAudit={() => setActiveTab('overview')}
+          />
+        )}
+
+        {activeTab === 'tools' && (
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-6">
+            <SmartToolsSimulator />
+          </div>
+        )}
+
+        {activeTab === 'overview' && (
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-6">
+            <OverviewAudit
+              onSwitchToCatalog={() => setActiveTab('catalog')}
+              onSwitchToTools={() => setActiveTab('tools')}
+            />
+          </div>
+        )}
+
+        {activeTab === 'workflows' && (
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-6">
+            <WorkflowMatrix />
+          </div>
+        )}
+
+        {activeTab === 'catalog' && (
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 pt-6">
+            <CatalogExplorer onOpenTool={handleOpenTool} />
+          </div>
+        )}
+      </main>
+
+      {/* Product Detail Modal */}
+      {selectedProduct && (
+        <div className="fixed inset-0 z-50 bg-stone-950/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-stone-200">
+            {/* Modal Header */}
+            <div className="p-6 border-b border-stone-200 flex items-start justify-between gap-4 sticky top-0 bg-white z-10">
+              <div>
+                <div className="flex items-center gap-2 text-xs text-stone-500 mb-1">
+                  <span className="font-bold text-emerald-800">{selectedProduct.subCategory}</span>
+                  <span>·</span>
+                  <span>موجه إلى: {selectedProduct.targetRole}</span>
+                  <span>·</span>
+                  <span className="bg-stone-100 px-2 py-0.5 rounded text-stone-800 font-semibold">{selectedProduct.format}</span>
+                </div>
+                <h3 className="text-lg sm:text-xl font-black text-stone-900">
+                  {selectedProduct.name}
+                </h3>
+              </div>
+              <button
+                onClick={() => setSelectedProduct(null)}
+                className="w-8 h-8 rounded-full bg-stone-100 hover:bg-stone-200 flex items-center justify-center text-stone-500 transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            {/* Modal Content */}
+            <div className="p-6 space-y-6 text-xs sm:text-sm">
+              {/* Description */}
+              <div>
+                <h4 className="font-bold text-stone-900 text-sm mb-2">الوصف التفصيلي والهدف:</h4>
+                <p className="text-stone-700 leading-relaxed bg-stone-50 p-4 rounded-xl border border-stone-100">
+                  {selectedProduct.description}
+                </p>
+              </div>
+
+              {/* Tasks Solved */}
+              <div>
+                <h4 className="font-bold text-stone-900 text-sm mb-2">المهام الميدانية والإدارية المنجزة:</h4>
+                <div className="space-y-2">
+                  {selectedProduct.tasksAccomplished.map((task, idx) => (
+                    <div key={idx} className="flex items-start gap-2 bg-emerald-50/50 p-3 rounded-lg border border-emerald-100/60">
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
+                      <span className="text-stone-800 font-medium">{task}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Exact Features & File Contents */}
+              <div>
+                <h4 className="font-bold text-stone-900 text-sm mb-2">المواصفات ومكونات الحزمة الرقمية:</h4>
+                <ul className="space-y-1.5 text-stone-700 list-disc list-inside bg-stone-50 p-4 rounded-xl border border-stone-100">
+                  {selectedProduct.features.map((feat, idx) => (
+                    <li key={idx} className="leading-relaxed">{feat}</li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Instant Delivery Mechanism Box */}
+              <div className="bg-stone-900 text-stone-200 p-4 rounded-xl space-y-2 text-xs">
+                <div className="flex items-center gap-2 font-bold text-emerald-400">
+                  <Zap className="w-4 h-4" />
+                  <span>آلية التسليم الفوري التلقائي:</span>
+                </div>
+                <p className="text-stone-300 leading-relaxed">
+                  بمجرد إتمام الدفع، يتم تفعيل الرابط وإرساله فوراً إلى واتساب العميل المسجل مع ظهوره الدائم في خانة "طلباتي" بالمتجر، ولا يتطلب أي انتظار لموافقة يدوية.
+                </p>
+              </div>
+
+              {/* Pricing & Guarantee Bar */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl bg-amber-50/50 border border-amber-200/60">
+                <div>
+                  <div className="flex items-baseline gap-2">
+                    <span className="text-2xl font-black text-stone-900">{selectedProduct.price} ر.س</span>
+                    {selectedProduct.originalPrice && (
+                      <span className="text-sm text-stone-400 line-through">{selectedProduct.originalPrice} ر.س</span>
+                    )}
+                  </div>
+                  <span className="text-xs text-amber-800 font-medium block mt-1">
+                    يشمله الضمان الذهبي والاسترجاع خلال 3 أيام
+                  </span>
+                </div>
+
+                {selectedProduct.tamaraAvailable && (
+                  <div className="text-xs text-stone-600 sm:text-left">
+                    <span className="font-semibold text-stone-800 block">متاح التقسيط عبر تمارا وتابي:</span>
+                    <span>على 4 دفعات بدون أي فوائد</span>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Modal Actions */}
+            <div className="p-6 border-t border-stone-200 bg-stone-50 rounded-b-2xl flex flex-wrap items-center justify-between gap-3">
+              <button
+                onClick={() => handleShareProduct(selectedProduct)}
+                className="px-4 py-2.5 text-xs font-semibold text-stone-700 bg-white hover:bg-stone-100 rounded-lg border border-stone-200 flex items-center gap-1.5 transition-colors"
+              >
+                {copiedLink ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Share2 className="w-3.5 h-3.5" />}
+                <span>{copiedLink ? 'تم نسخ تفاصيل المنتج' : 'مشاركة / نسخ التفاصيل'}</span>
+              </button>
+
+              <div className="flex items-center gap-2">
+                {selectedProduct.category === 'smart_tools' && (
+                  <button
+                    onClick={() => {
+                      const id = selectedProduct.id;
+                      setSelectedProduct(null);
+                      handleOpenTool(id);
+                    }}
+                    className="px-4 py-2.5 text-xs font-bold text-white bg-emerald-700 hover:bg-emerald-800 rounded-lg transition-colors flex items-center gap-1.5"
+                  >
+                    <Sparkles className="w-3.5 h-3.5" />
+                    <span>تجربة الأداة التفاعلية</span>
+                  </button>
+                )}
+
+                <a
+                  href={STORE_INFO.fullUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-5 py-2.5 text-xs font-bold text-white bg-stone-900 hover:bg-stone-800 rounded-lg shadow-sm transition-colors flex items-center gap-1.5"
+                >
+                  <span>شراء المنتج من المتجر الأصلي</span>
+                  <ExternalLink className="w-3.5 h-3.5" />
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Export Report Modal */}
+      <StoreReportExport
+        isOpen={isExportOpen}
+        onClose={() => setIsExportOpen(false)}
+      />
+    </div>
+  );
+}
