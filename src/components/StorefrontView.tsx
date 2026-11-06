@@ -37,7 +37,8 @@ import {
   ArrowUp,
   MessageCircle,
   HelpCircle,
-  Check
+  Check,
+  Globe
 } from 'lucide-react';
 import { STORE_INFO, STORE_CATEGORIES, STORE_PRODUCTS } from '../data/storeData';
 import { ProductItem } from '../types';
@@ -271,11 +272,8 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
           </button>
 
           <div className="cursor-pointer flex items-center" onClick={scrollToTop}>
-            {/* SVG Logo: exact representation of vertical rounded bars in teal with orange dot on top left */}
             <svg className="h-7 w-auto" viewBox="0 0 135 42" fill="none" xmlns="http://www.w3.org/2000/svg">
-              {/* Orange circle dot */}
               <circle cx="28" cy="8" r="4" fill="#f59e0b" />
-              {/* Vertical teal bars */}
               <rect x="23" y="16" width="9" height="23" rx="4.5" fill="#008489" />
               <rect x="36" y="21" width="9" height="18" rx="4.5" fill="#008489" />
               <rect x="49" y="10" width="9" height="29" rx="4.5" fill="#008489" />
@@ -287,8 +285,32 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
           </div>
         </div>
 
-        {/* Left side: Avatar/Medal Badge, Search Icon, Cart with Badge 0 */}
+        {/* Center: Desktop Search Bar (Exact Image 83be15fe.png) */}
+        <div className="hidden md:flex items-center flex-1 max-w-lg mx-8 relative">
+          <input 
+            type="text" 
+            placeholder="ابحث" 
+            value={searchQuery}
+            onChange={(e) => {
+              setSearchQuery(e.target.value);
+              setIsSearchOpen(true);
+            }}
+            className="w-full bg-white border border-stone-300 rounded-full py-2 pr-10 pl-4 text-xs focus:outline-none focus:border-[#008489] text-right shadow-2xs"
+          />
+          <Search className="w-4 h-4 text-stone-400 absolute right-3.5 top-1/2 -translate-y-1/2" />
+        </div>
+
+        {/* Left side: Language, Account, Search, Cart */}
         <div className="flex items-center gap-2.5 sm:gap-3">
+          <button 
+            onClick={() => alert('المتجر يدعم اللغة العربية بالكامل')}
+            className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold text-stone-700 hover:text-[#008489] transition-colors"
+            title="اللغة العربية"
+          >
+            <span>اللغة العربية</span>
+            <Globe className="w-4 h-4 text-stone-600" />
+          </button>
+
           <button 
             onClick={() => setIsAuthModalOpen(true)}
             className="p-1 text-stone-700 hover:text-[#008489] transition-colors"
@@ -301,7 +323,7 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
 
           <button 
             onClick={() => setIsSearchOpen(true)}
-            className="p-1 text-stone-700 hover:text-[#008489] transition-colors"
+            className="md:hidden p-1 text-stone-700 hover:text-[#008489] transition-colors"
             title="بحث في المتجر"
           >
             <Search className="w-5 h-5 stroke-[2.2]" />
@@ -612,10 +634,14 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
           {smartToolsList.map((tool, index) => (
             <motion.div
               key={tool.id}
-              initial={{ opacity: 0, x: 80 }}
-              whileInView={{ opacity: 1, x: 0 }}
+              initial={{ opacity: 0, x: 80, y: index % 2 === 0 ? 15 : -15 }}
+              whileInView={{ opacity: 1, x: 0, y: 0 }}
+              animate={{ y: index % 2 === 0 ? [-6, 6, -6] : [6, -6, 6] }}
+              transition={{ 
+                x: { duration: 0.5, delay: index * 0.12, ease: 'easeOut' },
+                y: { repeat: Infinity, duration: 5, ease: 'easeInOut', delay: index * 0.2 }
+              }}
               viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: index * 0.12, ease: 'easeOut' }}
               onClick={() => onOpenTool(tool.id)}
               className="bg-white text-stone-900 rounded-2xl p-3.5 min-w-[210px] max-w-[220px] shrink-0 shadow-md border border-stone-200 cursor-pointer flex flex-col justify-between"
             >
