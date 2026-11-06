@@ -2168,27 +2168,23 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
             initial={{ opacity: 0, y: -20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -20, scale: 0.95 }}
-            className="fixed top-5 left-1/2 -translate-x-1/2 z-50 w-[92vw] max-w-md bg-[#00c853] text-white p-4 rounded-2xl shadow-2xl flex items-center justify-between gap-3 border border-emerald-400"
+            className="fixed top-5 left-1/2 -translate-x-1/2 z-50 w-[92vw] max-w-sm bg-[#008489] text-white p-4 rounded-2xl shadow-2xl flex items-center justify-between gap-3 border border-[#007478]"
           >
+            <div className="flex items-center gap-3 flex-1 text-right">
+              <div className="w-9 h-9 rounded-full bg-white text-[#008489] flex items-center justify-center shrink-0 shadow-xs">
+                <CheckCircle2 className="w-6 h-6 stroke-[2.5]" />
+              </div>
+              <p className="text-xs sm:text-sm font-black leading-snug">
+                تم ارسال كود التحقق, يرجى ادخاله للاستمرار
+              </p>
+            </div>
+
             <button
               onClick={() => setShowOtpSuccessToast(false)}
               className="w-7 h-7 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center text-white shrink-0 transition-colors"
             >
               <X className="w-4 h-4" />
             </button>
-
-            <div className="flex-1 text-right">
-              <p className="text-xs sm:text-sm font-black leading-snug">
-                تم ارسال كود التحقق, يرجى ادخاله للاستمرار
-              </p>
-              <p className="text-[10px] text-white/95 font-mono mt-0.5" dir="ltr">
-                كود التحقق للتجربة: <span className="font-bold underline text-yellow-200">{generatedOtp}</span>
-              </p>
-            </div>
-
-            <div className="w-9 h-9 rounded-full bg-white text-[#00c853] flex items-center justify-center shrink-0 shadow-xs">
-              <CheckCircle2 className="w-6 h-6 stroke-[2.5]" />
-            </div>
           </motion.div>
         )}
       </AnimatePresence>
