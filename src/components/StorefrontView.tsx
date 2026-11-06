@@ -105,7 +105,7 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
   const [searchQuery, setSearchQuery] = useState<string>('');
   
   // Filter Tabs & Accordions
-  const [activeTab, setActiveTab] = useState<string>('الأكثر مبيعاً');
+  const [activeTab, setActiveTab] = useState<string>('جميع المنتجات');
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
   const [expandedNavCategory, setExpandedNavCategory] = useState<string | null>(null);
 
@@ -332,14 +332,15 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
     }
   ];
 
-  // Exact Filter Pills from Image 4 & Image 7
+  // Exact Filter Pills with "جميع المنتجات"
   const serviceTabs = [
+    'جميع المنتجات',
     'الأكثر مبيعاً',
     'المنتجات الجديدة',
     'ملفات الإنجاز',
     'التقويم الذاتي',
     'كشوفات المتابعة',
-    'روابط شهادات ذك...'
+    'شهادات وتهنئة'
   ];
 
   // Smart Tools cards inside the Solid Teal Section (Image 8)
@@ -395,11 +396,12 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
       return prod.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
              prod.description.toLowerCase().includes(searchQuery.toLowerCase());
     }
+    if (activeTab === 'جميع المنتجات') return true;
     if (activeTab === 'الأكثر مبيعاً') return prod.isBestseller || prod.rating >= 4.9;
     if (activeTab === 'التقويم الذاتي') return prod.subCategory.includes('التقويم') || prod.category === 'operational_plans';
     if (activeTab === 'كشوفات المتابعة') return prod.category === 'tracking_sheets';
     if (activeTab === 'ملفات الإنجاز') return prod.category === 'portfolios_guides';
-    if (activeTab === 'روابط شهادات ذك...') return prod.category === 'certificates';
+    if (activeTab === 'شهادات وتهنئة' || activeTab === 'روابط شهادات ذك...') return prod.category === 'certificates';
     return true;
   });
 
@@ -1529,9 +1531,17 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
           </div>
         </div>
 
-        {/* Copyright (Exact Image 11): "صُنع بإتقان على | 2026 منصة سلة" */}
-        <div className="pt-2 text-stone-500 text-xs">
-          صُنع بإتقان على | 2026 منصة سلة
+        {/* Copyright: "صُنع بإتقان على | 2026 شركة اتقان سوفت" with WhatsApp link to +967777146387 */}
+        <div className="pt-2 text-stone-500 text-xs flex items-center justify-center gap-1">
+          <span>صُنع بإتقان على | 2026</span>
+          <a
+            href="https://wa.me/967777146387?text=%D8%A7%D9%84%D8%B3%D9%84%D8%A7%D9%85%20%D8%B9%D9%84%D9%8A%D9%83%D9%85%D8%8C%20%D8%A7%D8%B3%D8%AA%D9%81%D8%B3%D8%A7%D8%B1%20%D8%A8%D8%AE%D8%B5%D9%88%D8%B5%20%D8%AE%D8%AF%D9%85%D8%A7%D8%AA%20%D8%B4%D8%B1%D9%83%D8%A9%20%D8%A7%D8%AA%D9%82%D8%A7%D9%86%20%D8%B3%D9%88%D9%81%D8%AA"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[#008489] hover:underline font-bold transition-colors inline-flex items-center gap-1"
+          >
+            <span>شركة اتقان سوفت</span>
+          </a>
         </div>
 
         {/* Payment Methods Badges Row */}
