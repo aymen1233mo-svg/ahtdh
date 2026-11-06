@@ -76,6 +76,11 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
   const [popupEmail, setPopupEmail] = useState<string>('');
   const [popupSubmitted, setPopupSubmitted] = useState<boolean>(false);
 
+  // Auth Modal State (Exact Image Login)
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState<boolean>(false);
+  const [authEmail, setAuthEmail] = useState<string>('');
+  const [authSubmitted, setAuthSubmitted] = useState<boolean>(false);
+
   // Scroll to top listener
   useEffect(() => {
     const handleScroll = () => {
@@ -284,9 +289,9 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
         {/* Left side: Avatar/Medal Badge, Search Icon, Cart with Badge 0 */}
         <div className="flex items-center gap-2.5 sm:gap-3">
           <button 
-            onClick={onOpenAudit}
+            onClick={() => setIsAuthModalOpen(true)}
             className="p-1 text-stone-700 hover:text-[#008489] transition-colors"
-            title="توثيق واعتماد المتجر"
+            title="تسجيل الدخول / حسابي"
           >
             <div className="w-6 h-6 rounded-full border-2 border-stone-800 flex items-center justify-center">
               <User className="w-3.5 h-3.5 stroke-[2.2] text-stone-800" />
@@ -1312,6 +1317,117 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
                 </button>
               </form>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* ============================================================== */}
+      {/* AUTH / LOGIN MODAL (Exact Image: تسجسل حساب.jpg) */}
+      {/* ============================================================== */}
+      {isAuthModalOpen && (
+        <div className="fixed inset-0 z-50 bg-stone-950/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-sm w-full p-6 text-center space-y-5 shadow-2xl border border-stone-200 relative animate-in fade-in zoom-in-95 duration-200">
+            {/* Close button X on top left */}
+            <button
+              onClick={() => setIsAuthModalOpen(false)}
+              className="absolute top-4 left-4 w-7 h-7 rounded-full bg-stone-100 text-stone-700 flex items-center justify-center hover:bg-stone-200 transition-colors"
+              aria-label="إغلاق"
+            >
+              <X className="w-4 h-4" />
+            </button>
+
+            {/* Title with User Icon */}
+            <div className="flex items-center justify-center gap-2 pt-2">
+              <span className="text-base font-black text-stone-900">تسجيل الدخول</span>
+              <div className="w-9 h-9 rounded-full bg-[#e6f3f4] text-[#008489] flex items-center justify-center">
+                <User className="w-5 h-5 stroke-[2.2]" />
+              </div>
+            </div>
+
+            {authSubmitted ? (
+              <div className="bg-emerald-50 text-emerald-800 p-4 rounded-2xl text-xs font-bold">
+                تم إرسال رابط الدخول إلى بريدك الإلكتروني بنجاح!
+              </div>
+            ) : (
+              <form 
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  if (authEmail) setAuthSubmitted(true);
+                }} 
+                className="space-y-3.5 text-right"
+              >
+                <div>
+                  <label className="block text-xs font-bold text-stone-700 mb-1.5">البريد الإلكتروني</label>
+                  <input
+                    type="email"
+                    required
+                    value={authEmail}
+                    onChange={(e) => setAuthEmail(e.target.value)}
+                    placeholder="your@email.com"
+                    className="w-full px-4 py-3 text-xs bg-stone-50 border border-stone-300 rounded-xl focus:outline-none focus:border-[#008489] text-left font-mono"
+                    dir="ltr"
+                  />
+                </div>
+                <button
+                  type="submit"
+                  className="w-full py-3 bg-[#008489] hover:bg-[#007478] text-white rounded-xl text-xs font-bold transition-colors shadow-sm cursor-pointer"
+                >
+                  دخول
+                </button>
+              </form>
+            )}
+
+            {/* Divider */}
+            <div className="relative flex py-2 items-center">
+              <div className="flex-grow border-t border-stone-200"></div>
+              <span className="flex-shrink mx-3 text-[11px] text-stone-400 font-medium">أو سجل دخولك من خلال</span>
+              <div className="flex-grow border-t border-stone-200"></div>
+            </div>
+
+            {/* Social Logins */}
+            <div className="flex items-center justify-center gap-3 pt-1">
+              <button 
+                onClick={() => { alert('تم تسجيل الدخول بنجاح عبر Apple'); setIsAuthModalOpen(false); }}
+                className="w-11 h-11 rounded-full bg-stone-900 text-white flex items-center justify-center shadow-xs hover:bg-stone-800 transition-transform hover:scale-105 cursor-pointer"
+                title="تسجيل الدخول عبر Apple"
+              >
+                <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                  <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.8 6.55c.57-.69 0.96-1.65.85-2.61-.84.03-1.87.56-2.45 1.25-.52.61-.98 1.58-.85 2.52.95.07 1.88-.47 2.45-1.16z"/>
+                </svg>
+              </button>
+              <button 
+                onClick={() => { alert('تم تسجيل الدخول بنجاح عبر Google'); setIsAuthModalOpen(false); }}
+                className="w-11 h-11 rounded-full bg-white border border-stone-200 text-stone-800 flex items-center justify-center shadow-xs hover:bg-stone-50 transition-transform hover:scale-105 cursor-pointer"
+                title="تسجيل الدخول عبر Google"
+              >
+                <svg className="w-5 h-5" viewBox="0 0 24 24">
+                  <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/>
+                  <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.2v3.15C3.16 21.32 7.23 24 12 24z"/>
+                  <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.2C.44 8.1 0 9.98 0 12s.44 3.9 1.2 5.42l4.08-3.15z"/>
+                  <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.23 0 3.16 2.68 1.2 6.58l4.08 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
+                </svg>
+              </button>
+              <button 
+                onClick={() => { alert('تم تسجيل الدخول بنجاح عبر Facebook'); setIsAuthModalOpen(false); }}
+                className="w-11 h-11 rounded-full bg-[#1877F2] text-white flex items-center justify-center shadow-xs hover:opacity-95 transition-transform hover:scale-105 cursor-pointer"
+                title="تسجيل الدخول عبر Facebook"
+              >
+                <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                </svg>
+              </button>
+              <a 
+                href={`https://wa.me/${STORE_INFO.contact.whatsapp.replace('+', '')}?text=${encodeURIComponent('السلام عليكم، أود تسجيل الدخول أو الاستفسار')}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-11 h-11 rounded-full bg-[#25D366] text-white flex items-center justify-center shadow-xs hover:opacity-95 transition-transform hover:scale-105"
+                title="تسجيل عبر واتساب"
+              >
+                <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                  <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
+                </svg>
+              </a>
+            </div>
           </div>
         </div>
       )}
