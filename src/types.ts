@@ -24,6 +24,7 @@ export interface ProductItem {
   rating: number;
   reviewsCount: number;
   isBestseller?: boolean;
+  image?: string;
 }
 
 export interface StoreAuditMetric {

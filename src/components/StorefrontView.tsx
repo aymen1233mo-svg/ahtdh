@@ -101,6 +101,8 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
   // Navigation & Drawers State
   const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
   const [isCartOpen, setIsCartOpen] = useState<boolean>(false);
+  const [isCartPageOpen, setIsCartPageOpen] = useState<boolean>(false);
+  const [desktopNavCategory, setDesktopNavCategory] = useState<'records' | 'certs' | 'tracking' | null>(null);
   const [isSearchOpen, setIsSearchOpen] = useState<boolean>(false);
   const [searchQuery, setSearchQuery] = useState<string>('');
   
@@ -110,8 +112,13 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
   const [expandedNavCategory, setExpandedNavCategory] = useState<string | null>('records');
 
+  // Coupon state for Cart page
+  const [couponInput, setCouponInput] = useState<string>('');
+  const [appliedCoupon, setAppliedCoupon] = useState<string>('');
+
   const handleSelectDrawerSubCategory = (subCatName: string) => {
     setIsMenuOpen(false);
+    setIsCartPageOpen(false);
     if (subCatName === 'عرض الكل') {
       setSelectedSubCategory(null);
       setActiveTab('جميع المنتجات');
@@ -127,9 +134,10 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
     }
   };
 
-  // Cart & Feedback State
+  // Cart & Feedback State (2 items matching image_c6af6495.png)
   const [cartItems, setCartItems] = useState<{ product: ProductItem; quantity: number }[]>([
-    { product: STORE_PRODUCTS[0], quantity: 1 }
+    { product: STORE_PRODUCTS[0], quantity: 1 },
+    { product: STORE_PRODUCTS[1] || STORE_PRODUCTS[0], quantity: 1 }
   ]);
   const [wishlist, setWishlist] = useState<string[]>(['prod-nafs-analysis']);
   const [showScrollTop, setShowScrollTop] = useState<boolean>(false);
@@ -670,10 +678,13 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
           </button>
 
           <button 
-            onClick={() => setIsCartOpen(true)}
-            className="p-1 text-stone-700 hover:text-[#008489] transition-colors relative"
+            onClick={() => setIsCartPageOpen(!isCartPageOpen)}
+            className="p-1 text-stone-700 hover:text-[#008489] transition-colors relative flex items-center gap-1.5 cursor-pointer"
             title="سلة المشتريات"
           >
+            <span className="hidden sm:inline-block font-mono font-bold text-xs text-stone-800">
+              {cartTotal.toFixed(1)} ر.س
+            </span>
             <div className="relative">
               <ShoppingBag className="w-5 h-5 stroke-[2.2]" />
               <span className="absolute -top-1.5 -left-1.5 bg-[#ef4444] text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
@@ -685,13 +696,368 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
       </header>
 
       {/* ============================================================== */}
+      {/* DESKTOP HORIZONTAL CATEGORY MEGA NAV BAR (Exact Image image_c6af6495.png) */}
       {/* ============================================================== */}
-      {/* 2. HERO CARD BANNER: "تحسين" (Exact VideoCapture_٢٠٢٦١١٠٦-٠١٥٧٣٧.jpg) */}
+      <nav className="hidden lg:flex items-center justify-center gap-8 bg-white border-b border-stone-200/90 px-6 py-2.5 text-xs font-bold text-stone-800 z-30 relative shadow-2xs">
+        {/* 1. الأدوات الذكية */}
+        <button 
+          onClick={() => {
+            setIsCartPageOpen(false);
+            handleSelectDrawerSubCategory('الأدوات الذكية');
+            onOpenTool('prod-tahseen-v3');
+          }}
+          className="hover:text-[#008489] transition-colors py-1 cursor-pointer"
+        >
+          الأدوات الذكية
+        </button>
+
+        {/* 2. السجلات المدرسية ∨ */}
+        <div 
+          className="relative"
+          onMouseEnter={() => setDesktopNavCategory('records')}
+          onMouseLeave={() => setDesktopNavCategory(null)}
+        >
+          <button 
+            onClick={() => setDesktopNavCategory(desktopNavCategory === 'records' ? null : 'records')}
+            className="flex items-center gap-1 hover:text-[#008489] transition-colors py-1 cursor-pointer"
+          >
+            <span>السجلات المدرسية</span>
+            <ChevronDown className={`w-3.5 h-3.5 text-stone-500 transition-transform ${desktopNavCategory === 'records' ? 'rotate-180 text-[#008489]' : ''}`} />
+          </button>
+          {desktopNavCategory === 'records' && (
+            <div className="absolute right-0 top-full mt-1 w-56 bg-white border border-stone-200 rounded-xl shadow-xl py-2 z-50 animate-in fade-in zoom-in-95 duration-150 text-right">
+              <a href="#" onClick={(e) => { e.preventDefault(); setIsCartPageOpen(false); handleSelectDrawerSubCategory('عرض الكل'); setDesktopNavCategory(null); }} className="block px-4 py-2 hover:bg-stone-50 text-stone-700 hover:text-[#008489]">عرض الكل</a>
+              <a href="#" onClick={(e) => { e.preventDefault(); setIsCartPageOpen(false); handleSelectDrawerSubCategory('لوحات مدرسية ( جديد )'); setDesktopNavCategory(null); }} className="block px-4 py-2 hover:bg-stone-50 text-stone-700 hover:text-[#008489]">لوحات مدرسية ( جديد )</a>
+              <a href="#" onClick={(e) => { e.preventDefault(); setIsCartPageOpen(false); handleSelectDrawerSubCategory('ملفات الإنجاز'); setDesktopNavCategory(null); }} className="block px-4 py-2 hover:bg-stone-50 text-stone-700 hover:text-[#008489]">ملفات الإنجاز</a>
+              <a href="#" onClick={(e) => { e.preventDefault(); setIsCartPageOpen(false); handleSelectDrawerSubCategory('مدير المدرسة'); setDesktopNavCategory(null); }} className="block px-4 py-2 hover:bg-stone-50 text-stone-700 hover:text-[#008489]">مدير المدرسة</a>
+              <a href="#" onClick={(e) => { e.preventDefault(); setIsCartPageOpen(false); handleSelectDrawerSubCategory('الخطة التشغيلية'); setDesktopNavCategory(null); }} className="block px-4 py-2 hover:bg-stone-50 text-stone-700 hover:text-[#008489]">الخطة التشغيلية</a>
+              <a href="#" onClick={(e) => { e.preventDefault(); setIsCartPageOpen(false); handleSelectDrawerSubCategory('التقويم الذاتي'); setDesktopNavCategory(null); }} className="block px-4 py-2 hover:bg-stone-50 text-stone-700 hover:text-[#008489]">التقويم الذاتي</a>
+              <a href="#" onClick={(e) => { e.preventDefault(); setIsCartPageOpen(false); handleSelectDrawerSubCategory('وكيل المدرسة'); setDesktopNavCategory(null); }} className="block px-4 py-2 hover:bg-stone-50 text-stone-700 hover:text-[#008489]">وكيل المدرسة</a>
+              <a href="#" onClick={(e) => { e.preventDefault(); setIsCartPageOpen(false); handleSelectDrawerSubCategory('الموجه الطلابي'); setDesktopNavCategory(null); }} className="block px-4 py-2 hover:bg-stone-50 text-stone-700 hover:text-[#008489]">الموجه الطلابي</a>
+              <a href="#" onClick={(e) => { e.preventDefault(); setIsCartPageOpen(false); handleSelectDrawerSubCategory('النشاط الطلابي'); setDesktopNavCategory(null); }} className="block px-4 py-2 hover:bg-stone-50 text-stone-700 hover:text-[#008489]">النشاط الطلابي</a>
+              <a href="#" onClick={(e) => { e.preventDefault(); setIsCartPageOpen(false); handleSelectDrawerSubCategory('المعلم'); setDesktopNavCategory(null); }} className="block px-4 py-2 hover:bg-stone-50 text-stone-700 hover:text-[#008489]">المعلم</a>
+            </div>
+          )}
+        </div>
+
+        {/* 3. شهادات وتهنئة ∨ */}
+        <div 
+          className="relative"
+          onMouseEnter={() => setDesktopNavCategory('certs')}
+          onMouseLeave={() => setDesktopNavCategory(null)}
+        >
+          <button 
+            onClick={() => setDesktopNavCategory(desktopNavCategory === 'certs' ? null : 'certs')}
+            className="flex items-center gap-1 hover:text-[#008489] transition-colors py-1 cursor-pointer"
+          >
+            <span>شهادات وتهنئة</span>
+            <ChevronDown className={`w-3.5 h-3.5 text-stone-500 transition-transform ${desktopNavCategory === 'certs' ? 'rotate-180 text-[#008489]' : ''}`} />
+          </button>
+          {desktopNavCategory === 'certs' && (
+            <div className="absolute right-0 top-full mt-1 w-56 bg-white border border-stone-200 rounded-xl shadow-xl py-2 z-50 animate-in fade-in zoom-in-95 duration-150 text-right">
+              <a href="#" onClick={(e) => { e.preventDefault(); setIsCartPageOpen(false); handleSelectDrawerSubCategory('عرض الكل'); setDesktopNavCategory(null); }} className="block px-4 py-2 hover:bg-stone-50 text-stone-700 hover:text-[#008489]">عرض الكل</a>
+              <a href="#" onClick={(e) => { e.preventDefault(); setIsCartPageOpen(false); handleSelectDrawerSubCategory('روابط شهادات'); setDesktopNavCategory(null); }} className="block px-4 py-2 hover:bg-stone-50 text-stone-700 hover:text-[#008489]">روابط شهادات</a>
+              <a href="#" onClick={(e) => { e.preventDefault(); setIsCartPageOpen(false); handleSelectDrawerSubCategory('شهادات بصيغة وورد (word)'); setDesktopNavCategory(null); }} className="block px-4 py-2 hover:bg-stone-50 text-stone-700 hover:text-[#008489]">شهادات بصيغة وورد (word)</a>
+              <a href="#" onClick={(e) => { e.preventDefault(); setIsCartPageOpen(false); handleSelectDrawerSubCategory('المناسبات الوطنية'); setDesktopNavCategory(null); }} className="block px-4 py-2 hover:bg-stone-50 text-stone-700 hover:text-[#008489]">المناسبات الوطنية</a>
+            </div>
+          )}
+        </div>
+
+        {/* 4. كشوفات متابعة ∨ */}
+        <div 
+          className="relative"
+          onMouseEnter={() => setDesktopNavCategory('tracking')}
+          onMouseLeave={() => setDesktopNavCategory(null)}
+        >
+          <button 
+            onClick={() => setDesktopNavCategory(desktopNavCategory === 'tracking' ? null : 'tracking')}
+            className="flex items-center gap-1 hover:text-[#008489] transition-colors py-1 cursor-pointer"
+          >
+            <span>كشوفات متابعة</span>
+            <ChevronDown className={`w-3.5 h-3.5 text-stone-500 transition-transform ${desktopNavCategory === 'tracking' ? 'rotate-180 text-[#008489]' : ''}`} />
+          </button>
+          {desktopNavCategory === 'tracking' && (
+            <div className="absolute right-0 top-full mt-1 w-56 bg-white border border-stone-200 rounded-xl shadow-xl py-2 z-50 animate-in fade-in zoom-in-95 duration-150 text-right">
+              <a href="#" onClick={(e) => { e.preventDefault(); setIsCartPageOpen(false); handleSelectDrawerSubCategory('عرض الكل'); setDesktopNavCategory(null); }} className="block px-4 py-2 hover:bg-stone-50 text-stone-700 hover:text-[#008489]">عرض الكل</a>
+              <a href="#" onClick={(e) => { e.preventDefault(); setIsCartPageOpen(false); handleSelectDrawerSubCategory('كشوفات إبتدائي'); setDesktopNavCategory(null); }} className="block px-4 py-2 hover:bg-stone-50 text-stone-700 hover:text-[#008489]">كشوفات إبتدائي</a>
+              <a href="#" onClick={(e) => { e.preventDefault(); setIsCartPageOpen(false); handleSelectDrawerSubCategory('كشوفات المتوسط'); setDesktopNavCategory(null); }} className="block px-4 py-2 hover:bg-stone-50 text-stone-700 hover:text-[#008489]">كشوفات المتوسط</a>
+              <a href="#" onClick={(e) => { e.preventDefault(); setIsCartPageOpen(false); handleSelectDrawerSubCategory('كشوفات الثانوي'); setDesktopNavCategory(null); }} className="block px-4 py-2 hover:bg-stone-50 text-stone-700 hover:text-[#008489]">كشوفات الثانوي</a>
+              <a href="#" onClick={(e) => { e.preventDefault(); setIsCartPageOpen(false); handleSelectDrawerSubCategory('الحضور والغياب'); setDesktopNavCategory(null); }} className="block px-4 py-2 hover:bg-stone-50 text-stone-700 hover:text-[#008489]">الحضور والغياب</a>
+              <a href="#" onClick={(e) => { e.preventDefault(); setIsCartPageOpen(false); handleSelectDrawerSubCategory('كشوفات إكسل'); setDesktopNavCategory(null); }} className="block px-4 py-2 hover:bg-stone-50 text-stone-700 hover:text-[#008489]">كشوفات إكسل</a>
+            </div>
+          )}
+        </div>
+
+        {/* 5. توثيق شواهد الأداء */}
+        <button 
+          onClick={() => {
+            setIsCartPageOpen(false);
+            handleSelectDrawerSubCategory('ملفات الإنجاز');
+          }}
+          className="hover:text-[#008489] transition-colors py-1 cursor-pointer"
+        >
+          توثيق شواهد الأداء
+        </button>
+      </nav>
+
       {/* ============================================================== */}
+      {/* FULL SHOPPING CART PAGE VIEW (Exact Images: image_5f7f0663.png & image_c6af6495.png) */}
       {/* ============================================================== */}
-      {/* 2. HERO CARD BANNER: "تحسين" (Exact Image image_e3cbc9f3.png & image_92db6b7f.png) */}
-      {/* ============================================================== */}
-      <section className="bg-[#eef7f8] lg:bg-[#ebf6f7] py-6 sm:py-8 lg:py-14 px-4 sm:px-6 lg:px-8 border-b border-[#e1f0f2]">
+      {isCartPageOpen ? (
+        <div className="bg-[#f8fafb] min-h-screen pb-24 lg:pb-16 pt-5 px-4 sm:px-6 lg:px-8">
+          <div className="max-w-6xl mx-auto space-y-6">
+            
+            {/* Breadcrumb Navigation: الرئيسية > سلة التسوق */}
+            <div className="flex items-center gap-2 text-xs font-bold text-stone-500">
+              <button 
+                onClick={() => setIsCartPageOpen(false)} 
+                className="hover:text-[#008489] transition-colors cursor-pointer"
+              >
+                الرئيسية
+              </button>
+              <ChevronLeft className="w-3.5 h-3.5 text-stone-400" />
+              <span className="text-stone-900 font-black">سلة التسوق</span>
+            </div>
+
+            {/* Grid Layout: 2 Columns on Desktop */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+              
+              {/* Right Column: Offer Banner & Cart Products */}
+              <div className="lg:col-span-8 space-y-4">
+                
+                {/* Offer Progress Banner (Exact Screenshots) */}
+                <div className="bg-[#eef7f8] border border-[#d2ecef] rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-3 text-right">
+                  <div className="flex items-center gap-2 text-xs font-bold text-[#093c42]">
+                    <span className="text-stone-400">ⓘ</span>
+                    <span className="text-[#008489]">عرض خصم مشتريات</span>
+                    <span className="text-stone-700">أضف <span className="font-mono text-[#008489]">77.82 ر.س</span> واحصل على خصم <span className="font-mono text-emerald-600 font-extrabold">30%</span></span>
+                  </div>
+                  
+                  {/* Step Icons Indicator */}
+                  <div className="flex items-center gap-1.5 text-[11px] font-mono text-stone-500 dir-ltr">
+                    <span className="w-6 h-6 rounded-full bg-[#008489] text-white flex items-center justify-center font-bold text-xs">✓</span>
+                    <span className="w-4 border-t border-dashed border-[#008489]"></span>
+                    <span className="w-6 h-6 rounded-full bg-stone-300 text-stone-700 flex items-center justify-center text-[10px]">🔒</span>
+                    <span className="w-4 border-t border-dashed border-stone-300"></span>
+                    <span className="w-6 h-6 rounded-full bg-stone-300 text-stone-700 flex items-center justify-center text-[10px]">🔒</span>
+                  </div>
+                </div>
+
+                {/* Cart Items Cards */}
+                {cartItems.length === 0 ? (
+                  <div className="bg-white rounded-3xl p-12 text-center space-y-4 border border-stone-200 shadow-2xs">
+                    <ShoppingBag className="w-16 h-16 mx-auto text-stone-300 stroke-[1.2]" />
+                    <h3 className="text-base font-bold text-stone-800">سلة التسوق فارغة حالياً</h3>
+                    <p className="text-xs text-stone-500">تصفح منتجات المتجر وأضف ما يحتاجه عملك التعليمي</p>
+                    <button 
+                      onClick={() => setIsCartPageOpen(false)} 
+                      className="px-6 py-2.5 bg-[#008489] text-white rounded-xl text-xs font-bold hover:bg-[#007478] transition-colors"
+                    >
+                      متابعة التسوق
+                    </button>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    {cartItems.map((item) => (
+                      <div 
+                        key={item.product.id}
+                        className="bg-white rounded-2xl border border-stone-200 p-4 sm:p-5 relative shadow-2xs hover:border-[#008489]/50 transition-colors flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between"
+                      >
+                        {/* Red Circular Remove Icon X on Top Left */}
+                        <button
+                          onClick={() => handleUpdateQuantity(item.product.id, -item.quantity)}
+                          className="absolute top-3.5 left-3.5 w-7 h-7 rounded-full bg-rose-500 hover:bg-rose-600 text-white flex items-center justify-center transition-colors shadow-xs cursor-pointer"
+                          title="حذف المنتج من السلة"
+                        >
+                          <X className="w-4 h-4 stroke-[2.5]" />
+                        </button>
+
+                        {/* Thumbnail & Title Details */}
+                        <div className="flex items-center gap-4 flex-1">
+                          {item.product.image ? (
+                            <img 
+                              src={item.product.image} 
+                              alt={item.product.name}
+                              className="w-20 h-20 sm:w-24 sm:h-24 object-cover rounded-xl border border-stone-200 shrink-0 bg-stone-50" 
+                            />
+                          ) : (
+                            <div className="w-20 h-20 sm:w-24 sm:h-24 rounded-xl border border-stone-200 bg-gradient-to-br from-stone-50 to-[#eef7f8] p-2 flex flex-col justify-between shrink-0 shadow-2xs">
+                              <div className="flex items-center justify-between text-[8px] font-bold text-[#008489]">
+                                <span>{item.product.format}</span>
+                                <Sparkles className="w-3 h-3 text-amber-500" />
+                              </div>
+                              <div className="w-8 h-8 rounded-lg bg-[#008489]/10 text-[#008489] flex items-center justify-center mx-auto my-auto">
+                                <FileText className="w-5 h-5 stroke-[1.8]" />
+                              </div>
+                              <div className="text-[7px] text-stone-400 text-center font-mono font-bold">
+                                احتياجك التعليمي
+                              </div>
+                            </div>
+                          )}
+                          <div className="space-y-1.5 text-right pl-6">
+                            <h4 className="text-xs sm:text-sm font-bold text-stone-900 leading-snug">
+                              {item.product.name}
+                            </h4>
+
+                            {/* Price details */}
+                            <div className="flex items-center gap-2 text-xs font-mono">
+                              <span className="text-stone-400 line-through">{(item.product.price * 1.25).toFixed(2)} ر.س</span>
+                              <span className="font-extrabold text-rose-600">{item.product.price.toFixed(2)} ر.س</span>
+                            </div>
+
+                            {/* Green offer tag badge */}
+                            <div className="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-700 text-[10px] font-bold px-2 py-0.5 rounded-md border border-emerald-200/80">
+                              <span>%</span>
+                              <span>حصلت على عرض: عرض خصم مشتريات</span>
+                            </div>
+
+                            <div className="text-[10px] text-stone-500 font-medium">
+                              خصم <span className="font-mono text-stone-700 font-bold">17.22 ر.س</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Quantity Counter & Subtotal */}
+                        <div className="flex sm:flex-col items-center sm:items-end justify-between w-full sm:w-auto border-t sm:border-t-0 pt-3 sm:pt-0 border-stone-100 gap-3">
+                          <div className="flex items-center gap-2.5 bg-stone-50 border border-stone-200 rounded-xl px-3 py-1 text-xs">
+                            <button onClick={() => handleUpdateQuantity(item.product.id, -1)} className="text-stone-600 hover:text-stone-900 font-bold px-1 text-sm">-</button>
+                            <span className="font-bold font-mono px-1">{item.quantity}</span>
+                            <button onClick={() => handleUpdateQuantity(item.product.id, 1)} className="text-stone-600 hover:text-stone-900 font-bold px-1 text-sm">+</button>
+                          </div>
+
+                          <div className="text-xs font-bold text-stone-900">
+                            المجموع: <span className="font-mono text-[#008489] font-black text-sm">{(item.product.price * item.quantity).toFixed(2)} ر.س</span>
+                          </div>
+                        </div>
+
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+              </div>
+
+              {/* Left Column: Coupon & Order Summary Sidebar */}
+              <div className="lg:col-span-4 space-y-4">
+                
+                {/* Coupon Code Input Card */}
+                <div className="bg-white rounded-2xl border border-stone-200 p-4 text-right space-y-3 shadow-2xs">
+                  <h5 className="text-xs font-bold text-stone-700">لديك كوبون خصم؟</h5>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="text"
+                      value={couponInput}
+                      onChange={(e) => setCouponInput(e.target.value)}
+                      placeholder="أدخل رمز الكوبون"
+                      className="flex-1 px-3 py-2.5 text-xs bg-stone-50 border border-stone-200 rounded-xl focus:outline-none focus:border-[#008489] text-right font-mono"
+                    />
+                    <button
+                      onClick={() => {
+                        if (couponInput.trim()) {
+                          setAppliedCoupon(couponInput.trim());
+                          setToastMessage(`تم تطبيق الكوبون "${couponInput.trim()}" بنجاح!`);
+                          setTimeout(() => setToastMessage(null), 3000);
+                        }
+                      }}
+                      className="px-4 py-2.5 bg-[#008489] hover:bg-[#007478] text-white text-xs font-bold rounded-xl transition-colors shrink-0 cursor-pointer"
+                    >
+                      تطبيق
+                    </button>
+                  </div>
+                  {appliedCoupon && (
+                    <div className="text-[11px] text-emerald-600 font-bold flex items-center justify-between bg-emerald-50 p-2 rounded-lg">
+                      <span>تم تفعيل كود: {appliedCoupon}</span>
+                      <button onClick={() => setAppliedCoupon('')} className="text-rose-500 text-xs">إلغاء</button>
+                    </div>
+                  )}
+                </div>
+
+                {/* Order Summary Card (ملخص الطلب) */}
+                <div className="bg-white rounded-2xl border border-stone-200 p-5 text-right space-y-4 shadow-2xs">
+                  <h4 className="text-sm font-black text-stone-900 border-b border-stone-100 pb-3">
+                    ملخص الطلب
+                  </h4>
+
+                  <div className="space-y-2.5 text-xs text-stone-600">
+                    <div className="flex justify-between items-center">
+                      <span>مجموع المنتجات (قبل الضريبة)</span>
+                      <span className="font-mono font-bold text-stone-800">172.18 ر.س</span>
+                    </div>
+                    <div className="flex justify-between items-center">
+                      <span>ضريبة القيمة المضافة</span>
+                      <span className="font-mono font-bold text-stone-800">20.66 ر.س</span>
+                    </div>
+                    <div className="flex justify-between items-center text-rose-600 font-bold">
+                      <span>الخصم</span>
+                      <span className="font-mono">- 34.44 ر.س</span>
+                    </div>
+                  </div>
+
+                  <div className="border-t border-stone-100 pt-3 space-y-2">
+                    <div className="flex justify-between items-baseline">
+                      <div>
+                        <span className="text-xs font-black text-stone-900">الإجمالي ({cartCount} منتجات)</span>
+                        <span className="block text-[9px] text-stone-400">الأسعار شاملة الضريبة</span>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-stone-400 line-through text-xs font-mono block">192.84</span>
+                        <span className="text-base sm:text-lg font-black text-stone-900 font-mono">158.40 ر.س</span>
+                      </div>
+                    </div>
+
+                    {/* Green Savings Badge */}
+                    <div className="bg-emerald-50 text-emerald-700 text-xs font-bold px-3 py-1.5 rounded-xl border border-emerald-200/80 flex items-center justify-center gap-1.5">
+                      <span>🎉 وفرت 34.44 ر.س</span>
+                    </div>
+                  </div>
+
+                  {/* Checkout Button */}
+                  <button
+                    onClick={() => alert('جاري الانتقال لصفحة إتمام الدفع الآمن...')}
+                    className="w-full py-3.5 bg-[#008489] hover:bg-[#007478] text-white font-bold rounded-xl text-sm transition-colors shadow-md flex items-center justify-center gap-2 cursor-pointer"
+                  >
+                    <span>إتمام الطلب</span>
+                  </button>
+                </div>
+
+              </div>
+
+            </div>
+
+            {/* Mobile Sticky Bottom Checkout Bar (Image 5f7f0663.png) */}
+            <div className="lg:hidden fixed bottom-0 left-0 right-0 z-40 bg-white border-t border-stone-200 p-3 flex items-center justify-between shadow-2xl">
+              <div className="text-right">
+                <div className="flex items-center gap-1.5">
+                  <span className="text-xs font-bold text-stone-900">الإجمالي ({cartCount} منتجات)</span>
+                  <span className="text-stone-400 line-through text-[10px] font-mono">192.84</span>
+                  <span className="text-sm font-black text-stone-900 font-mono">158.4 ر.س</span>
+                </div>
+                <div className="flex items-center gap-2 text-[10px]">
+                  <span className="text-stone-400">الأسعار شاملة الضريبة</span>
+                  <span className="bg-emerald-100 text-emerald-800 font-bold px-1.5 py-0.2 rounded">🎉 وفرت 34.44</span>
+                </div>
+              </div>
+
+              <button
+                onClick={() => alert('جاري الانتقال لصفحة إتمام الدفع الآمن...')}
+                className="px-6 py-2.5 bg-[#008489] hover:bg-[#007478] text-white text-xs font-bold rounded-xl transition-colors shadow-sm shrink-0 cursor-pointer"
+              >
+                إتمام الطلب
+              </button>
+            </div>
+
+          </div>
+        </div>
+      ) : (
+        <>
+          {/* ============================================================== */}
+          {/* ============================================================== */}
+          {/* 2. HERO CARD BANNER: "تحسين" (Exact VideoCapture_٢٠٢٦١١٠٦-٠١٥٧٣٧.jpg) */}
+          {/* ============================================================== */}
+          {/* ============================================================== */}
+          {/* 2. HERO CARD BANNER: "تحسين" (Exact Image image_e3cbc9f3.png & image_92db6b7f.png) */}
+          {/* ============================================================== */}
+          <section className="bg-[#eef7f8] lg:bg-[#ebf6f7] py-6 sm:py-8 lg:py-14 px-4 sm:px-6 lg:px-8 border-b border-[#e1f0f2]">
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
           
           {/* Right Column in RTL = Text Side (image_e3cbc9f3.png) */}
@@ -1621,6 +1987,8 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
           <span className="px-2 py-0.5 bg-stone-100 rounded text-[9px] font-bold border border-stone-200">Apple Pay</span>
         </div>
       </footer>
+      </>
+      )}
 
       {/* ============================================================== */}
       {/* 12. FLOATING CONTROLS (Exact from Screenshots & Video) */}
