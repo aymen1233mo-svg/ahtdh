@@ -57,13 +57,20 @@ app.post('/api/send-otp', async (req, res) => {
           to: cleanEmail,
           subject: `رمز التحقق الخاص بك: ${code} - متجر احتياجك التعليمي`,
           html: `
-            <div dir="rtl" style="font-family: Arial, sans-serif; padding: 24px; color: #0f172a; background-color: #f8fafc; border-radius: 16px; border: 1px solid #e2e8f0;">
-              <h2 style="color: #008489; font-size: 20px; margin-bottom: 8px;">متجر احتياجك التعليمي</h2>
-              <p style="font-size: 14px; color: #475569;">مرحباً بك! كود التحقق الخاص بك لتأكيد ملكية البريد والتسجيل في المتجر هو:</p>
-              <div style="font-size: 36px; font-weight: 900; letter-spacing: 8px; color: #008489; background: #e6f3f4; padding: 18px; border-radius: 12px; text-align: center; margin: 24px 0; border: 2px dashed #008489;">
+            <div dir="rtl" style="font-family: 'Cairo', Arial, sans-serif; padding: 30px; color: #0f172a; background-color: #ffffff; border-radius: 20px; border: 1px solid #e2e8f0; max-width: 500px; margin: auto; box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);">
+              <div style="text-align: center; margin-bottom: 20px;">
+                <h1 style="color: #008489; font-size: 24px; margin: 0;">متجر احتياجك التعليمي</h1>
+                <p style="font-size: 14px; color: #64748b; margin: 5px 0;">الحل الأمثل لسجلاتكم المدرسية</p>
+              </div>
+              <div style="border-top: 2px solid #008489; margin-bottom: 20px;"></div>
+              <p style="font-size: 16px; color: #334155; text-align: center; margin-bottom: 20px;">مرحباً بك! كود التحقق الخاص بك للتسجيل في متجرنا هو:</p>
+              <div style="font-size: 40px; font-weight: 900; letter-spacing: 12px; color: #008489; background: #f0f9fa; padding: 20px; border-radius: 12px; text-align: center; margin: 20px 0; border: 2px solid #008489;">
                 ${code}
               </div>
-              <p style="font-size: 12px; color: #64748b;">هذا الرمز صالِح لمدة 10 دقائق. إذا لم تطلب هذا الكود يرجى تجاهل هذه الرسالة.</p>
+              <p style="font-size: 14px; color: #64748b; text-align: center; margin-top: 20px;">هذا الرمز صالح لمدة 10 دقائق فقط. إذا لم تطلب هذا الكود، يرجى تجاهل هذه الرسالة.</p>
+              <div style="text-align: center; margin-top: 30px; font-size: 12px; color: #94a3b8;">
+                شكراً لثقتكم بمتجر احتياجك التعليمي
+              </div>
             </div>
           `,
         });
@@ -76,7 +83,7 @@ app.post('/api/send-otp', async (req, res) => {
 
     return res.json({
       success: true,
-      message: 'تم إرسال كود التحقق بنجاح إلى البريد الإلكتروني',
+      message: emailSentReal ? 'تم إرسال كود التحقق بنجاح إلى البريد الإلكتروني' : 'تم إنشاء كود التحقق (ملاحظة: إرسال البريد الإلكتروني معطل حالياً بسبب عدم ضبط إعدادات SMTP)',
       code,
       emailSentReal,
       emailErrorDetails

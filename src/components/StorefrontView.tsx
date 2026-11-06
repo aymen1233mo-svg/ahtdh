@@ -551,6 +551,14 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
         {/* Left side: Language, Account, Search, Cart */}
         <div className="flex items-center gap-2.5 sm:gap-3">
           <button 
+            onClick={() => { onOpenAdmin && onOpenAdmin(); }}
+            className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold text-stone-700 hover:text-[#008489] transition-colors"
+            title="لوحة التحكم"
+          >
+            <span>لوحة التحكم</span>
+            <Settings className="w-4 h-4 text-stone-600" />
+          </button>
+          <button 
             onClick={() => alert('المتجر يدعم اللغة العربية بالكامل')}
             className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 text-xs font-semibold text-stone-700 hover:text-[#008489] transition-colors"
             title="اللغة العربية"
@@ -2582,6 +2590,17 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
                     className="block py-1 hover:text-[#008489] transition-colors"
                   >
                     الأدوات الذكية
+                  </a>
+                  <a
+                    href="#"
+                    onClick={(e) => {
+                      e.preventDefault();
+                      setIsMenuOpen(false);
+                      onOpenAdmin && onOpenAdmin();
+                    }}
+                    className="block py-1 hover:text-[#008489] transition-colors text-[#008489] font-bold"
+                  >
+                    لوحة التحكم
                   </a>
                 </div>
 

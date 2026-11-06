@@ -188,118 +188,87 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToStorefro
   );
 
   return (
-    <div className="bg-stone-50 min-h-screen text-stone-900 font-sans pb-24" dir="rtl">
+    <div className="bg-stone-50 min-h-screen text-stone-900 font-sans flex" dir="rtl">
       
-      {/* Header Bar */}
-      <header className="bg-white border-b border-stone-200 sticky top-0 z-40 px-4 py-3 shadow-xs">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-3">
-          
+      {/* Sidebar Navigation */}
+      <aside className="w-64 bg-white border-l border-stone-200 hidden md:flex flex-col h-screen sticky top-0">
+        <div className="p-6 border-b border-stone-100">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#008489] to-[#093c42] text-white flex items-center justify-center font-bold shadow-xs">
               <Store className="w-5 h-5" />
             </div>
             <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-base sm:text-lg font-black text-stone-900">
-                  لوحة تحكم إدارة المتجر
-                </h1>
-                <span className="inline-flex items-center gap-1 bg-emerald-50 text-emerald-700 text-[10px] font-bold px-2 py-0.5 rounded-full border border-emerald-200">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                  <span>تحديث لحظي تلقائي</span>
-                </span>
-              </div>
-              <p className="text-xs text-stone-500">
-                التحكم الكامل بمنتجات وصفحات وإعدادات متجر احتياجك التعليمي
-              </p>
+              <h1 className="text-sm font-black text-stone-900">لوحة التحكم</h1>
+              <p className="text-[10px] text-stone-400">متجر احتياجك التعليمي</p>
             </div>
           </div>
-
-          <div className="flex items-center gap-2">
+        </div>
+        
+        <nav className="flex-1 p-4 space-y-2">
+          {[
+            { id: 'products', label: 'إدارة المنتجات', icon: Package },
+            { id: 'sections', label: 'إدارة الأقسام', icon: Layout },
+            { id: 'settings', label: 'بيانات المتجر', icon: Settings },
+            { id: 'banners', label: 'البنرات والنصوص', icon: Tag },
+          ].map((item) => (
             <button
-              onClick={() => {
-                if (confirm('هل أنت تأكد من إرجاع جميع البيانات لضبط المصنع الأصلي؟')) {
-                  resetToDefaults();
-                  setLocalSettings(settings);
-                  showToast('تمت إعادة الضبط للوضع الافتراضي بنجاح');
-                }
-              }}
-              className="px-3 py-1.5 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5 border border-stone-200"
+              key={item.id}
+              onClick={() => setActiveTab(item.id as any)}
+              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl text-xs font-bold transition-all ${
+                activeTab === item.id
+                  ? 'bg-emerald-50 text-[#008489]'
+                  : 'text-stone-600 hover:bg-stone-50'
+              }`}
             >
-              <RefreshCw className="w-3.5 h-3.5" />
-              <span>إعادة ضبط المصنع</span>
+              <item.icon className="w-4 h-4" />
+              <span>{item.label}</span>
             </button>
+          ))}
+        </nav>
 
-            <button
+        <div className="p-4 border-t border-stone-100">
+           <button
               onClick={onBackToStorefront}
-              className="px-4 py-2 bg-[#008489] hover:bg-[#007478] text-white rounded-xl text-xs font-bold transition-colors shadow-xs flex items-center gap-1.5"
+              className="w-full px-4 py-3 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-xl text-xs font-bold transition-colors flex items-center justify-center gap-2"
             >
-              <span>معاينة المتجر المباشر</span>
               <ArrowLeft className="w-4 h-4 rotate-180" />
+              <span>معاينة المتجر</span>
             </button>
+        </div>
+      </aside>
+
+      {/* Main Content Area */}
+      <main className="flex-1 p-8 overflow-y-auto">
+        <header className="flex items-center justify-between mb-8">
+          <div>
+            <h2 className="text-xl font-black text-stone-900">
+              {activeTab === 'products' ? 'إدارة المنتجات' : 
+               activeTab === 'sections' ? 'إدارة الأقسام' :
+               activeTab === 'settings' ? 'بيانات المتجر الأساسية' : 'البنرات والأزرار'}
+            </h2>
+            <p className="text-xs text-stone-500 mt-1">التحكم الكامل في محتوى المتجر وتحديثه لحظياً</p>
           </div>
-
-        </div>
-      </header>
-
-      {/* Main Container */}
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 space-y-6">
-
-        {/* Tab Selection Navigation */}
-        <div className="bg-white p-1.5 rounded-2xl border border-stone-200 flex items-center gap-1.5 overflow-x-auto no-scrollbar shadow-2xs">
+          
           <button
-            onClick={() => setActiveTab('products')}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer ${
-              activeTab === 'products'
-                ? 'bg-[#008489] text-white shadow-xs'
-                : 'text-stone-600 hover:bg-stone-50'
-            }`}
+            onClick={() => {
+              if (confirm('هل أنت تأكد من إرجاع جميع البيانات لضبط المصنع الأصلي؟')) {
+                resetToDefaults();
+                setLocalSettings(settings);
+                showToast('تمت إعادة الضبط للوضع الافتراضي بنجاح');
+              }
+            }}
+            className="px-4 py-2 bg-stone-100 hover:bg-rose-50 text-stone-700 hover:text-rose-600 rounded-xl text-xs font-bold transition-colors flex items-center gap-2 border border-stone-200"
           >
-            <Package className="w-4 h-4" />
-            <span>إدارة المنتجات ({products.length})</span>
+            <RefreshCw className="w-4 h-4" />
+            <span>إعادة ضبط المصنع</span>
           </button>
+        </header>
 
-          <button
-            onClick={() => setActiveTab('sections')}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer ${
-              activeTab === 'sections'
-                ? 'bg-[#008489] text-white shadow-xs'
-                : 'text-stone-600 hover:bg-stone-50'
-            }`}
-          >
-            <Layout className="w-4 h-4" />
-            <span>إدارة الأقسام والصفحات</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('settings')}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer ${
-              activeTab === 'settings'
-                ? 'bg-[#008489] text-white shadow-xs'
-                : 'text-stone-600 hover:bg-stone-50'
-            }`}
-          >
-            <Settings className="w-4 h-4" />
-            <span>بيانات المتجر الأساسية</span>
-          </button>
-
-          <button
-            onClick={() => setActiveTab('banners')}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all shrink-0 cursor-pointer ${
-              activeTab === 'banners'
-                ? 'bg-[#008489] text-white shadow-xs'
-                : 'text-stone-600 hover:bg-stone-50'
-            }`}
-          >
-            <Tag className="w-4 h-4" />
-            <span>البنرات والأزرار والنصوص</span>
-          </button>
-        </div>
-
-        {/* ------------------------------------------------------------------ */}
-        {/* TAB 1: PRODUCTS MANAGEMENT */}
-        {/* ------------------------------------------------------------------ */}
-        {activeTab === 'products' && (
-          <div className="space-y-4">
+        {/* Dynamic Content Based on Active Tab */}
+        <div className="space-y-6">
+          {activeTab === 'products' && (
+            <div className="space-y-4">
+              {/* ... Products Content (Keep existing code from here down) */}
             
             <div className="flex flex-col sm:flex-row items-center justify-between gap-3 bg-white p-4 rounded-2xl border border-stone-200 shadow-2xs">
               <div className="relative flex-1 w-full sm:w-auto">
