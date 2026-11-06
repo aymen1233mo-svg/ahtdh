@@ -609,9 +609,13 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
 
         {/* Horizontal scroll of Smart Tools cards inside teal banner (Image 8) */}
         <div className="max-w-md mx-auto mt-6 flex items-center gap-3 overflow-x-auto no-scrollbar py-2 text-right">
-          {smartToolsList.map((tool) => (
-            <div
+          {smartToolsList.map((tool, index) => (
+            <motion.div
               key={tool.id}
+              initial={{ opacity: 0, x: 80 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.5, delay: index * 0.12, ease: 'easeOut' }}
               onClick={() => onOpenTool(tool.id)}
               className="bg-white text-stone-900 rounded-2xl p-3.5 min-w-[210px] max-w-[220px] shrink-0 shadow-md border border-stone-200 cursor-pointer flex flex-col justify-between"
             >
@@ -654,7 +658,7 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
                   <span>أضف</span>
                 </button>
               </div>
-            </div>
+            </motion.div>
           ))}
         </div>
       </section>

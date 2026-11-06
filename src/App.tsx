@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'motion/react';
 import { StorefrontView } from './components/StorefrontView';
 import { OverviewAudit } from './components/OverviewAudit';
 import { CatalogExplorer } from './components/CatalogExplorer';
@@ -25,6 +26,14 @@ export default function App() {
   const [isExportOpen, setIsExportOpen] = useState<boolean>(false);
   const [selectedProduct, setSelectedProduct] = useState<ProductItem | null>(null);
   const [copiedLink, setCopiedLink] = useState<boolean>(false);
+  const [showSplash, setShowSplash] = useState<boolean>(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowSplash(false);
+    }, 1600);
+    return () => clearTimeout(timer);
+  }, []);
 
   const handleOpenTool = (toolId: string) => {
     setActiveTab('tools');
@@ -39,6 +48,33 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-white text-stone-900 flex flex-col font-sans" dir="rtl">
+      {/* Splash Screen (Exact Image: سبلاش سكرين.jpg) */}
+      <AnimatePresence>
+        {showSplash && (
+          <motion.div
+            initial={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.4 }}
+            className="fixed inset-0 z-50 bg-white flex flex-col items-center justify-center p-4 text-center select-none"
+          >
+            <div className="flex flex-col items-center space-y-4">
+              <svg className="h-14 w-auto" viewBox="0 0 135 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <circle cx="28" cy="8" r="4" fill="#f59e0b" />
+                <rect x="23" y="16" width="9" height="23" rx="4.5" fill="#008489" />
+                <rect x="36" y="21" width="9" height="18" rx="4.5" fill="#008489" />
+                <rect x="49" y="10" width="9" height="29" rx="4.5" fill="#008489" />
+                <rect x="62" y="19" width="9" height="20" rx="4.5" fill="#008489" />
+                <rect x="75" y="5" width="9" height="34" rx="4.5" fill="#008489" />
+                <rect x="88" y="23" width="9" height="16" rx="4.5" fill="#008489" />
+                <rect x="101" y="15" width="9" height="24" rx="4.5" fill="#008489" />
+              </svg>
+              <span className="text-sm sm:text-base font-black text-[#093c42] tracking-wide">متجر احتياجك التعليمي</span>
+            </div>
+            <div className="mt-8 w-8 h-8 border-3 border-[#008489] border-t-transparent rounded-full animate-spin"></div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       {/* Navigation header only shown when navigating inside sub-views like smart tools or audit report */}
       {activeTab !== 'storefront' && (
         <div className="bg-white border-b border-stone-200 px-4 py-3 sticky top-0 z-50 shadow-2xs">
