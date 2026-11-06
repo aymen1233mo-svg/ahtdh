@@ -38,7 +38,13 @@ import {
   MessageCircle,
   HelpCircle,
   Check,
-  Globe
+  Globe,
+  Bell,
+  Package,
+  Wallet,
+  Settings,
+  LogOut,
+  UserCheck
 } from 'lucide-react';
 import { STORE_INFO, STORE_CATEGORIES, STORE_PRODUCTS } from '../data/storeData';
 import { ProductItem } from '../types';
@@ -116,10 +122,117 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
   const [popupEmail, setPopupEmail] = useState<string>('');
   const [popupSubmitted, setPopupSubmitted] = useState<boolean>(false);
 
-  // Auth Modal State (Exact Image Login)
+  // User Profile & Multi-step Authentication Flow State (Exact Images 1, 2, 3, 4)
+  const [user, setUser] = useState<{
+    isLoggedIn: boolean;
+    firstName: string;
+    lastName: string;
+    email: string;
+    phone: string;
+  }>({
+    isLoggedIn: false,
+    firstName: 'أحمد',
+    lastName: 'محمد',
+    email: 'aimenmo123@gmail.com',
+    phone: '512345678'
+  });
+
   const [isAuthModalOpen, setIsAuthModalOpen] = useState<boolean>(false);
-  const [authEmail, setAuthEmail] = useState<string>('');
-  const [authSubmitted, setAuthSubmitted] = useState<boolean>(false);
+  const [authStep, setAuthStep] = useState<'login' | 'social_select' | 'otp' | 'profile'>('login');
+  const [authProvider, setAuthProvider] = useState<'email' | 'google' | 'facebook' | 'apple'>('email');
+  const [authEmail, setAuthEmail] = useState<string>('aimenmo123@gmail.com');
+  const [otpDigits, setOtpDigits] = useState<string[]>(['', '', '', '']);
+  const [generatedOtp, setGeneratedOtp] = useState<string>('4829');
+  const [otpTimer, setOtpTimer] = useState<number>(18);
+  const [otpError, setOtpError] = useState<string | null>(null);
+  const [showOtpSuccessToast, setShowOtpSuccessToast] = useState<boolean>(false);
+
+  // Profile Inputs (Image 3)
+  const [profileFirstName, setProfileFirstName] = useState<string>('أحمد');
+  const [profileLastName, setProfileLastName] = useState<string>('محمد');
+  const [profilePhone, setProfilePhone] = useState<string>('512345678');
+  const [profileNewsletter, setProfileNewsletter] = useState<boolean>(true);
+
+  // Account Dropdown State (Image 4)
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState<boolean>(false);
+
+  // OTP Countdown timer listener
+  useEffect(() => {
+    let interval: any;
+    if (isAuthModalOpen && authStep === 'otp' && otpTimer > 0) {
+      interval = setInterval(() => {
+        setOtpTimer((prev) => prev - 1);
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [isAuthModalOpen, authStep, otpTimer]);
+
+  const triggerSendOtp = (targetEmail: string) => {
+    const finalEmail = targetEmail.trim() || 'aimenmo123@gmail.com';
+    setAuthEmail(finalEmail);
+    const code = '4829'; // Matching exact screenshot image_8a30e36e.png
+    setGeneratedOtp(code);
+    setOtpDigits(['', '', '', '']);
+    setOtpError(null);
+    setOtpTimer(18);
+    setAuthStep('otp');
+    setShowOtpSuccessToast(true);
+    setTimeout(() => {
+      setShowOtpSuccessToast(false);
+    }, 6000);
+  };
+
+  const handleOtpChange = (index: number, val: string) => {
+    if (!/^\d*$/.test(val)) return;
+    const newDigits = [...otpDigits];
+    newDigits[index] = val.slice(-1);
+    setOtpDigits(newDigits);
+    setOtpError(null);
+
+    if (val && index < 3) {
+      const nextInput = document.getElementById(`otp-input-${index + 1}`);
+      if (nextInput) nextInput.focus();
+    }
+  };
+
+  const handleOtpKeyDown = (index: number, e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Backspace' && !otpDigits[index] && index > 0) {
+      const prevInput = document.getElementById(`otp-input-${index - 1}`);
+      if (prevInput) prevInput.focus();
+    }
+  };
+
+  const handleVerifyOtp = () => {
+    const code = otpDigits.join('');
+    if (code.length < 4) {
+      setOtpError('يرجى إدخال كود التحقق المكون من 4 أرقام');
+      return;
+    }
+    if (code === generatedOtp || code === '1234' || code === '4829') {
+      setOtpError(null);
+      // Move to profile completion step matching Image 3 (image_4a19c382.png)
+      setAuthStep('profile');
+    } else {
+      setOtpError('رمز التحقق غير صحيح، يرجى إعادة المحاولة');
+    }
+  };
+
+  const handleCompleteRegistration = () => {
+    if (!profileFirstName.trim()) {
+      alert('يرجى كتابة الاسم الأول');
+      return;
+    }
+    setUser({
+      isLoggedIn: true,
+      firstName: profileFirstName,
+      lastName: profileLastName || 'محمد',
+      email: authEmail || 'aimenmo123@gmail.com',
+      phone: profilePhone || '512345678'
+    });
+    setIsAuthModalOpen(false);
+    setToastMessage(`تم تسجيل الدخول بنجاح! مرحباً بك يا ${profileFirstName}`);
+    setTimeout(() => setToastMessage(null), 3000);
+  };
 
   // Scroll to top listener
   useEffect(() => {
@@ -349,15 +462,151 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
             <Globe className="w-4 h-4 text-stone-600" />
           </button>
 
-          <button 
-            onClick={() => setIsAuthModalOpen(true)}
-            className="p-1 text-stone-700 hover:text-[#008489] transition-colors"
-            title="تسجيل الدخول / حسابي"
-          >
-            <div className="w-6 h-6 rounded-full border-2 border-stone-800 flex items-center justify-center">
-              <User className="w-3.5 h-3.5 stroke-[2.2] text-stone-800" />
+          {/* Account Button & Dropdown Menu (Exact Image 4: aaf89c76.png) */}
+          {user.isLoggedIn ? (
+            <div className="relative">
+              <button 
+                onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                className="flex items-center gap-1.5 p-1 hover:bg-stone-100 rounded-xl transition-colors cursor-pointer select-none"
+                title="حسابي"
+              >
+                <ChevronDown className="w-4 h-4 text-stone-500" />
+                <div className="flex flex-col text-right hidden sm:flex">
+                  <span className="text-[10px] text-[#008489] font-bold leading-tight">حياك</span>
+                  <span className="text-xs font-bold text-stone-900 leading-tight">{user.firstName} {user.lastName}</span>
+                </div>
+                <div className="w-8 h-8 rounded-full bg-gradient-to-br from-teal-600 to-[#008489] text-white flex items-center justify-center font-bold text-xs shadow-xs border border-teal-700">
+                  {user.firstName ? user.firstName.charAt(0) : 'أ'}
+                </div>
+              </button>
+
+              {/* User Account Dropdown Menu (Exact Image 4: aaf89c76.png) */}
+              <AnimatePresence>
+                {isUserMenuOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                    animate={{ opacity: 1, y: 0, scale: 1 }}
+                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                    transition={{ duration: 0.15 }}
+                    className="absolute left-0 mt-2 w-56 bg-white rounded-2xl shadow-2xl border border-stone-200 z-50 py-2 text-right divide-y divide-stone-100"
+                  >
+                    {/* Header inside dropdown */}
+                    <div className="px-4 py-3 flex items-center justify-between bg-stone-50/80 rounded-t-2xl">
+                      <div className="w-9 h-9 rounded-full bg-gradient-to-br from-teal-600 to-[#008489] text-white flex items-center justify-center font-bold text-sm shadow-xs">
+                        {user.firstName.charAt(0)}
+                      </div>
+                      <div className="text-right flex-1 mr-3">
+                        <span className="text-[10px] text-[#008489] font-bold block">حياك</span>
+                        <span className="text-xs font-bold text-stone-900 block truncate">{user.firstName} {user.lastName}</span>
+                      </div>
+                    </div>
+
+                    {/* Menu Items (Exact Image 4) */}
+                    <div className="py-1.5 text-xs font-bold text-stone-800">
+                      <button 
+                        onClick={() => { setIsUserMenuOpen(false); alert('لا توجد إشعارات جديدة حالياً'); }}
+                        className="w-full px-4 py-2.5 flex items-center justify-between hover:bg-stone-50 transition-colors"
+                      >
+                        <span className="flex items-center gap-2.5">
+                          <Bell className="w-4 h-4 text-[#008489]" />
+                          <span>الإشعارات</span>
+                        </span>
+                        <span className="bg-rose-500 text-white text-[10px] font-mono px-1.5 py-0.2 rounded-full font-bold">3</span>
+                      </button>
+
+                      <button 
+                        onClick={() => { setIsUserMenuOpen(false); setIsCartOpen(true); }}
+                        className="w-full px-4 py-2.5 flex items-center justify-between hover:bg-stone-50 transition-colors"
+                      >
+                        <span className="flex items-center gap-2.5">
+                          <Package className="w-4 h-4 text-[#008489]" />
+                          <span>الطلبات</span>
+                        </span>
+                      </button>
+
+                      <button 
+                        onClick={() => { setIsUserMenuOpen(false); setIsCartOpen(true); }}
+                        className="w-full px-4 py-2.5 flex items-center justify-between hover:bg-stone-50 transition-colors"
+                      >
+                        <span className="flex items-center gap-2.5">
+                          <ShoppingCart className="w-4 h-4 text-[#008489]" />
+                          <span>طلبات بانتظار الدفع</span>
+                        </span>
+                      </button>
+
+                      <button 
+                        onClick={() => { setIsUserMenuOpen(false); alert(`لديك ${wishlist.length} منتج في قائمة الأمنيات`); }}
+                        className="w-full px-4 py-2.5 flex items-center justify-between hover:bg-stone-50 transition-colors"
+                      >
+                        <span className="flex items-center gap-2.5">
+                          <Heart className="w-4 h-4 text-[#008489]" />
+                          <span>قائمة الأمنيات</span>
+                        </span>
+                      </button>
+
+                      <button 
+                        onClick={() => { setIsUserMenuOpen(false); alert('رصيد محفظتك: 0.00 ر.س'); }}
+                        className="w-full px-4 py-2.5 flex items-center justify-between hover:bg-stone-50 transition-colors"
+                      >
+                        <span className="flex items-center gap-2.5">
+                          <Wallet className="w-4 h-4 text-[#008489]" />
+                          <span>محفظتي</span>
+                        </span>
+                      </button>
+
+                      <button 
+                        onClick={() => { setIsUserMenuOpen(false); setIsAuthModalOpen(true); setAuthStep('profile'); }}
+                        className="w-full px-4 py-2.5 flex items-center justify-between hover:bg-stone-50 transition-colors"
+                      >
+                        <span className="flex items-center gap-2.5">
+                          <User className="w-4 h-4 text-[#008489]" />
+                          <span>حسابي</span>
+                        </span>
+                      </button>
+
+                      <button 
+                        onClick={() => { setIsUserMenuOpen(false); alert('إعدادات الحساب والمتجر'); }}
+                        className="w-full px-4 py-2.5 flex items-center justify-between hover:bg-stone-50 transition-colors"
+                      >
+                        <span className="flex items-center gap-2.5">
+                          <Settings className="w-4 h-4 text-[#008489]" />
+                          <span>الإعدادات</span>
+                        </span>
+                      </button>
+                    </div>
+
+                    {/* Logout */}
+                    <div className="py-1">
+                      <button 
+                        onClick={() => { 
+                          setUser({ isLoggedIn: false, firstName: '', lastName: '', email: '', phone: '' }); 
+                          setIsUserMenuOpen(false); 
+                          setToastMessage('تم تسجيل الخروج بنجاح');
+                          setTimeout(() => setToastMessage(null), 2500);
+                        }}
+                        className="w-full px-4 py-2.5 flex items-center justify-between hover:bg-rose-50 text-rose-600 font-bold transition-colors text-xs"
+                      >
+                        <span className="flex items-center gap-2.5">
+                          <LogOut className="w-4 h-4 text-rose-600" />
+                          <span>تسجيل الخروج</span>
+                        </span>
+                      </button>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
-          </button>
+          ) : (
+            <button 
+              onClick={() => { setIsAuthModalOpen(true); setAuthStep('login'); }}
+              className="p-1 text-stone-700 hover:text-[#008489] transition-colors cursor-pointer"
+              title="تسجيل الدخول / حسابي"
+            >
+              <div className="w-6 h-6 rounded-full border-2 border-stone-800 flex items-center justify-center">
+                <User className="w-3.5 h-3.5 stroke-[2.2] text-stone-800" />
+              </div>
+            </button>
+          )}
 
           <button 
             onClick={() => setIsSearchOpen(true)}
@@ -1411,112 +1660,373 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
       )}
 
       {/* ============================================================== */}
-      {/* AUTH / LOGIN MODAL (Exact Image: تسجسل حساب.jpg) */}
+      {/* GREEN FLOATING OTP TOAST BANNER (Exact Image 2: c03ca5bf.png) */}
+      {/* ============================================================== */}
+      <AnimatePresence>
+        {showOtpSuccessToast && (
+          <motion.div
+            initial={{ opacity: 0, y: -20, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -20, scale: 0.95 }}
+            className="fixed top-5 left-1/2 -translate-x-1/2 z-50 w-[92vw] max-w-md bg-[#00c853] text-white p-4 rounded-2xl shadow-2xl flex items-center justify-between gap-3 border border-emerald-400"
+          >
+            <button
+              onClick={() => setShowOtpSuccessToast(false)}
+              className="w-7 h-7 rounded-full bg-white/20 hover:bg-white/30 flex items-center justify-center text-white shrink-0 transition-colors"
+            >
+              <X className="w-4 h-4" />
+            </button>
+
+            <div className="flex-1 text-right">
+              <p className="text-xs sm:text-sm font-black leading-snug">
+                تم ارسال كود التحقق, يرجى ادخاله للاستمرار
+              </p>
+              <p className="text-[10px] text-white/95 font-mono mt-0.5" dir="ltr">
+                كود التحقق للتجربة: <span className="font-bold underline text-yellow-200">{generatedOtp}</span>
+              </p>
+            </div>
+
+            <div className="w-9 h-9 rounded-full bg-white text-[#00c853] flex items-center justify-center shrink-0 shadow-xs">
+              <CheckCircle2 className="w-6 h-6 stroke-[2.5]" />
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ============================================================== */}
+      {/* AUTHENTICATION & LOGIN MULTI-STEP MODAL (Exact Images 1, 3) */}
       {/* ============================================================== */}
       {isAuthModalOpen && (
         <div className="fixed inset-0 z-50 bg-stone-950/60 backdrop-blur-xs flex items-center justify-center p-4">
           <div className="bg-white rounded-3xl max-w-sm w-full p-6 text-center space-y-5 shadow-2xl border border-stone-200 relative animate-in fade-in zoom-in-95 duration-200">
-            {/* Close button X on top left */}
+            
+            {/* Top Close Button X */}
             <button
               onClick={() => setIsAuthModalOpen(false)}
-              className="absolute top-4 left-4 w-7 h-7 rounded-full bg-stone-100 text-stone-700 flex items-center justify-center hover:bg-stone-200 transition-colors"
+              className="absolute top-4 left-4 w-8 h-8 rounded-full bg-stone-100 text-stone-700 flex items-center justify-center hover:bg-stone-200 transition-colors cursor-pointer"
               aria-label="إغلاق"
             >
               <X className="w-4 h-4" />
             </button>
 
-            {/* Title with User Icon */}
-            <div className="flex items-center justify-center gap-2 pt-2">
-              <span className="text-base font-black text-stone-900">تسجيل الدخول</span>
-              <div className="w-9 h-9 rounded-full bg-[#e6f3f4] text-[#008489] flex items-center justify-center">
-                <User className="w-5 h-5 stroke-[2.2]" />
-              </div>
-            </div>
-
-            {authSubmitted ? (
-              <div className="bg-emerald-50 text-emerald-800 p-4 rounded-2xl text-xs font-bold">
-                تم إرسال رابط الدخول إلى بريدك الإلكتروني بنجاح!
-              </div>
-            ) : (
-              <form 
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  if (authEmail) setAuthSubmitted(true);
-                }} 
-                className="space-y-3.5 text-right"
+            {/* Back Arrow button (Only on OTP step) */}
+            {authStep === 'otp' && (
+              <button
+                onClick={() => setAuthStep('login')}
+                className="absolute top-4 right-4 w-8 h-8 rounded-full bg-stone-100 text-stone-700 flex items-center justify-center hover:bg-stone-200 transition-colors cursor-pointer"
+                title="الرجوع"
               >
-                <div>
-                  <label className="block text-xs font-bold text-stone-700 mb-1.5">البريد الإلكتروني</label>
-                  <input
-                    type="email"
-                    required
-                    value={authEmail}
-                    onChange={(e) => setAuthEmail(e.target.value)}
-                    placeholder="your@email.com"
-                    className="w-full px-4 py-3 text-xs bg-stone-50 border border-stone-300 rounded-xl focus:outline-none focus:border-[#008489] text-left font-mono"
-                    dir="ltr"
-                  />
-                </div>
-                <button
-                  type="submit"
-                  className="w-full py-3 bg-[#008489] hover:bg-[#007478] text-white rounded-xl text-xs font-bold transition-colors shadow-sm cursor-pointer"
-                >
-                  دخول
-                </button>
-              </form>
+                <ArrowLeft className="w-4 h-4 rotate-180" />
+              </button>
             )}
 
-            {/* Divider */}
-            <div className="relative flex py-2 items-center">
-              <div className="flex-grow border-t border-stone-200"></div>
-              <span className="flex-shrink mx-3 text-[11px] text-stone-400 font-medium">أو سجل دخولك من خلال</span>
-              <div className="flex-grow border-t border-stone-200"></div>
-            </div>
+            {/* ------------------------------------------------------------ */}
+            {/* STEP 1: INITIAL LOGIN WITH EMAIL & SOCIAL PROVIDERS */}
+            {/* ------------------------------------------------------------ */}
+            {authStep === 'login' && (
+              <>
+                {/* Title with User Icon */}
+                <div className="flex items-center justify-center gap-2 pt-2">
+                  <span className="text-base sm:text-lg font-black text-stone-900">تسجيل الدخول</span>
+                  <div className="w-9 h-9 rounded-full bg-[#e6f3f4] text-[#008489] flex items-center justify-center">
+                    <User className="w-5 h-5 stroke-[2.2]" />
+                  </div>
+                </div>
 
-            {/* Social Logins */}
-            <div className="flex items-center justify-center gap-3 pt-1">
-              <button 
-                onClick={() => { alert('تم تسجيل الدخول بنجاح عبر Apple'); setIsAuthModalOpen(false); }}
-                className="w-11 h-11 rounded-full bg-stone-900 text-white flex items-center justify-center shadow-xs hover:bg-stone-800 transition-transform hover:scale-105 cursor-pointer"
-                title="تسجيل الدخول عبر Apple"
-              >
-                <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
-                  <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.8 6.55c.57-.69 0.96-1.65.85-2.61-.84.03-1.87.56-2.45 1.25-.52.61-.98 1.58-.85 2.52.95.07 1.88-.47 2.45-1.16z"/>
-                </svg>
-              </button>
-              <button 
-                onClick={() => { alert('تم تسجيل الدخول بنجاح عبر Google'); setIsAuthModalOpen(false); }}
-                className="w-11 h-11 rounded-full bg-white border border-stone-200 text-stone-800 flex items-center justify-center shadow-xs hover:bg-stone-50 transition-transform hover:scale-105 cursor-pointer"
-                title="تسجيل الدخول عبر Google"
-              >
-                <svg className="w-5 h-5" viewBox="0 0 24 24">
-                  <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/>
-                  <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.2v3.15C3.16 21.32 7.23 24 12 24z"/>
-                  <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.2C.44 8.1 0 9.98 0 12s.44 3.9 1.2 5.42l4.08-3.15z"/>
-                  <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.23 0 3.16 2.68 1.2 6.58l4.08 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
-                </svg>
-              </button>
-              <button 
-                onClick={() => { alert('تم تسجيل الدخول بنجاح عبر Facebook'); setIsAuthModalOpen(false); }}
-                className="w-11 h-11 rounded-full bg-[#1877F2] text-white flex items-center justify-center shadow-xs hover:opacity-95 transition-transform hover:scale-105 cursor-pointer"
-                title="تسجيل الدخول عبر Facebook"
-              >
-                <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
-                  <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
-                </svg>
-              </button>
-              <a 
-                href={`https://wa.me/${STORE_INFO.contact.whatsapp.replace('+', '')}?text=${encodeURIComponent('السلام عليكم، أود تسجيل الدخول أو الاستفسار')}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-11 h-11 rounded-full bg-[#25D366] text-white flex items-center justify-center shadow-xs hover:opacity-95 transition-transform hover:scale-105"
-                title="تسجيل عبر واتساب"
-              >
-                <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
-                  <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
-                </svg>
-              </a>
-            </div>
+                <form 
+                  onSubmit={(e) => {
+                    e.preventDefault();
+                    triggerSendOtp(authEmail);
+                  }} 
+                  className="space-y-3.5 text-right"
+                >
+                  <div>
+                    <label className="block text-xs font-bold text-stone-700 mb-1.5">البريد الإلكتروني</label>
+                    <input
+                      type="email"
+                      required
+                      value={authEmail}
+                      onChange={(e) => setAuthEmail(e.target.value)}
+                      placeholder="aimenmo123@gmail.com"
+                      className="w-full px-4 py-3 text-xs bg-stone-50 border border-stone-300 rounded-xl focus:outline-none focus:border-[#008489] text-left font-mono"
+                      dir="ltr"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    className="w-full py-3 bg-[#008489] hover:bg-[#007478] text-white rounded-xl text-xs font-bold transition-colors shadow-sm cursor-pointer"
+                  >
+                    دخول
+                  </button>
+                </form>
+
+                {/* Divider */}
+                <div className="relative flex py-2 items-center">
+                  <div className="flex-grow border-t border-stone-200"></div>
+                  <span className="flex-shrink mx-3 text-[11px] text-stone-400 font-medium">أو سجل دخولك من خلال</span>
+                  <div className="flex-grow border-t border-stone-200"></div>
+                </div>
+
+                {/* Social Login Buttons (Apple, Google, Facebook, WhatsApp) */}
+                <div className="flex items-center justify-center gap-3 pt-1">
+                  <button 
+                    onClick={() => { setAuthProvider('apple'); setAuthStep('social_select'); }}
+                    className="w-11 h-11 rounded-full bg-stone-900 text-white flex items-center justify-center shadow-xs hover:bg-stone-800 transition-transform hover:scale-105 cursor-pointer"
+                    title="تسجيل الدخول عبر Apple"
+                  >
+                    <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                      <path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.8 6.55c.57-.69 0.96-1.65.85-2.61-.84.03-1.87.56-2.45 1.25-.52.61-.98 1.58-.85 2.52.95.07 1.88-.47 2.45-1.16z"/>
+                    </svg>
+                  </button>
+
+                  <button 
+                    onClick={() => { setAuthProvider('google'); setAuthStep('social_select'); }}
+                    className="w-11 h-11 rounded-full bg-white border border-stone-200 text-stone-800 flex items-center justify-center shadow-xs hover:bg-stone-50 transition-transform hover:scale-105 cursor-pointer"
+                    title="تسجيل الدخول عبر Google"
+                  >
+                    <svg className="w-5 h-5" viewBox="0 0 24 24">
+                      <path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/>
+                      <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.12 0-5.77-2.1-6.72-4.93H1.2v3.15C3.16 21.32 7.23 24 12 24z"/>
+                      <path fill="#FBBC05" d="M5.28 14.27c-.25-.72-.38-1.49-.38-2.27s.13-1.55.38-2.27V6.58H1.2C.44 8.1 0 9.98 0 12s.44 3.9 1.2 5.42l4.08-3.15z"/>
+                      <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.23 0 3.16 2.68 1.2 6.58l4.08 3.15c.95-2.83 3.6-4.98 6.72-4.98z"/>
+                    </svg>
+                  </button>
+
+                  <button 
+                    onClick={() => { setAuthProvider('facebook'); setAuthStep('social_select'); }}
+                    className="w-11 h-11 rounded-full bg-[#1877F2] text-white flex items-center justify-center shadow-xs hover:opacity-95 transition-transform hover:scale-105 cursor-pointer"
+                    title="تسجيل الدخول عبر Facebook"
+                  >
+                    <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                      <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+                    </svg>
+                  </button>
+
+                  <button 
+                    onClick={() => triggerSendOtp('aimenmo123@gmail.com')}
+                    className="w-11 h-11 rounded-full bg-[#25D366] text-white flex items-center justify-center shadow-xs hover:opacity-95 transition-transform hover:scale-105 cursor-pointer"
+                    title="تسجيل عبر واتساب"
+                  >
+                    <svg className="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                      <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
+                    </svg>
+                  </button>
+                </div>
+              </>
+            )}
+
+            {/* ------------------------------------------------------------ */}
+            {/* SOCIAL PROVIDER ACCOUNT SELECTOR PICKER */}
+            {/* ------------------------------------------------------------ */}
+            {authStep === 'social_select' && (
+              <div className="space-y-4 text-right">
+                <div className="flex items-center justify-between border-b border-stone-100 pb-3">
+                  <button
+                    onClick={() => setAuthStep('login')}
+                    className="text-xs text-[#008489] font-bold"
+                  >
+                    إلغاء
+                  </button>
+                  <h4 className="text-sm font-bold text-stone-900 capitalize">
+                    تسجيل الدخول عبر {authProvider}
+                  </h4>
+                </div>
+
+                <p className="text-xs text-stone-500 text-center">
+                  اختر حسابك لإكمال تسجيل الدخول وتلقي رمز التحقق:
+                </p>
+
+                <div className="space-y-2 pt-1">
+                  <button
+                    onClick={() => triggerSendOtp('aimenmo123@gmail.com')}
+                    className="w-full p-3 bg-stone-50 hover:bg-stone-100 rounded-2xl border border-stone-200 flex items-center justify-between text-right transition-colors"
+                  >
+                    <div>
+                      <span className="text-xs font-bold text-stone-900 block">أحمد محمد (سلطان)</span>
+                      <span className="text-[11px] text-stone-500 font-mono" dir="ltr">aimenmo123@gmail.com</span>
+                    </div>
+                    <div className="w-8 h-8 rounded-full bg-teal-600 text-white flex items-center justify-center font-bold text-xs">
+                      أ
+                    </div>
+                  </button>
+
+                  <button
+                    onClick={() => triggerSendOtp('aymen1233mo@gmail.com')}
+                    className="w-full p-3 bg-stone-50 hover:bg-stone-100 rounded-2xl border border-stone-200 flex items-center justify-between text-right transition-colors"
+                  >
+                    <div>
+                      <span className="text-xs font-bold text-stone-900 block">أيمن العتيبي</span>
+                      <span className="text-[11px] text-stone-500 font-mono" dir="ltr">aymen1233mo@gmail.com</span>
+                    </div>
+                    <div className="w-8 h-8 rounded-full bg-emerald-600 text-white flex items-center justify-center font-bold text-xs">
+                      أ
+                    </div>
+                  </button>
+                </div>
+              </div>
+            )}
+
+            {/* ------------------------------------------------------------ */}
+            {/* STEP 2: OTP VERIFICATION CODE (Exact Image 1: 8a30e36e.png) */}
+            {/* ------------------------------------------------------------ */}
+            {authStep === 'otp' && (
+              <div className="space-y-4">
+                {/* Circular Avatar Header */}
+                <div className="w-16 h-16 rounded-full border-2 border-stone-200 bg-stone-50 flex items-center justify-center mx-auto text-stone-400">
+                  <User className="w-8 h-8 stroke-[1.8]" />
+                </div>
+
+                <div className="space-y-1 text-center">
+                  <h3 className="text-lg font-black text-stone-900">تسجيل الدخول</h3>
+                  <p className="text-xs text-stone-500 font-medium">أرسلنا رمز التحقق إلى</p>
+                  <p className="text-sm font-bold text-stone-900 font-mono" dir="ltr">{authEmail || 'aimenmo123@gmail.com'}</p>
+                </div>
+
+                {/* 4 OTP Digits Input Boxes */}
+                <div className="flex items-center justify-center gap-2.5 dir-ltr py-1">
+                  {[0, 1, 2, 3].map((idx) => (
+                    <input
+                      key={idx}
+                      id={`otp-input-${idx}`}
+                      type="text"
+                      maxLength={1}
+                      value={otpDigits[idx]}
+                      onChange={(e) => handleOtpChange(idx, e.target.value)}
+                      onKeyDown={(e) => handleOtpKeyDown(idx, e)}
+                      className={`w-12 h-12 text-center text-xl font-bold font-mono rounded-xl border-2 transition-all focus:outline-none ${
+                        otpDigits[idx] 
+                          ? 'border-[#008489] bg-teal-50/50 text-[#008489]' 
+                          : 'border-stone-300 bg-white text-stone-900 focus:border-[#008489]'
+                      }`}
+                    />
+                  ))}
+                </div>
+
+                {otpError && (
+                  <p className="text-xs text-rose-600 font-bold bg-rose-50 p-2 rounded-lg text-center">
+                    {otpError}
+                  </p>
+                )}
+
+                {/* Teal Verification Button */}
+                <button
+                  onClick={handleVerifyOtp}
+                  className="w-full py-3 bg-[#008489] hover:bg-[#007478] text-white rounded-xl text-sm font-bold transition-colors shadow-sm cursor-pointer"
+                >
+                  تحقق
+                </button>
+
+                {/* Countdown Timer */}
+                <div className="pt-2 text-xs text-stone-500 font-semibold text-center">
+                  {otpTimer > 0 ? (
+                    <span>
+                      أعد الإرسال خلال{' '}
+                      <span className="font-mono font-bold text-stone-800" dir="ltr">
+                        00 : {otpTimer < 10 ? `0${otpTimer}` : otpTimer}
+                      </span>
+                    </span>
+                  ) : (
+                    <button
+                      onClick={() => triggerSendOtp(authEmail)}
+                      className="text-[#008489] font-bold hover:underline"
+                    >
+                      إعادة إرسال رمز التحقق الآن
+                    </button>
+                  )}
+                </div>
+              </div>
+            )}
+
+            {/* ------------------------------------------------------------ */}
+            {/* STEP 3: PROFILE COMPLETION DETAILS (Exact Image 3: 4a19c382.png) */}
+            {/* ------------------------------------------------------------ */}
+            {authStep === 'profile' && (
+              <div className="space-y-4 text-right">
+                {/* Avatar Icon */}
+                <div className="w-16 h-16 rounded-full border-2 border-stone-200 bg-stone-50 flex items-center justify-center mx-auto text-stone-400">
+                  <User className="w-8 h-8 stroke-[1.8]" />
+                </div>
+
+                <h3 className="text-lg font-black text-stone-900 text-center">تسجيل الدخول</h3>
+
+                <div className="space-y-3.5 pt-1">
+                  {/* First Name */}
+                  <div>
+                    <label className="block text-xs font-bold text-stone-700 mb-1.5">اسمك</label>
+                    <input
+                      type="text"
+                      required
+                      value={profileFirstName}
+                      onChange={(e) => setProfileFirstName(e.target.value)}
+                      placeholder="الاسم الأول"
+                      className="w-full px-4 py-2.5 text-xs bg-white border border-stone-300 rounded-xl focus:outline-none focus:border-[#008489] text-right font-medium"
+                    />
+                  </div>
+
+                  {/* Last Name */}
+                  <div>
+                    <label className="block text-xs font-bold text-stone-700 mb-1.5">الاسم الأخير</label>
+                    <input
+                      type="text"
+                      required
+                      value={profileLastName}
+                      onChange={(e) => setProfileLastName(e.target.value)}
+                      placeholder="الاسم الأخير"
+                      className="w-full px-4 py-2.5 text-xs bg-white border border-stone-300 rounded-xl focus:outline-none focus:border-[#008489] text-right font-medium"
+                    />
+                  </div>
+
+                  {/* Phone Number with Country Code */}
+                  <div>
+                    <label className="block text-xs font-bold text-stone-700 mb-1.5">رقم الجوال</label>
+                    <div className="flex items-center gap-2" dir="ltr">
+                      <div className="px-3 py-2.5 bg-stone-50 border border-stone-300 rounded-xl text-xs font-bold text-stone-700 flex items-center gap-1 shrink-0">
+                        <ChevronDown className="w-3.5 h-3.5 text-stone-500" />
+                        <span>+966</span>
+                      </div>
+                      <input
+                        type="tel"
+                        required
+                        value={profilePhone}
+                        onChange={(e) => setProfilePhone(e.target.value)}
+                        placeholder="51 234 5678"
+                        className="w-full px-4 py-2.5 text-xs bg-white border border-stone-300 rounded-xl focus:outline-none focus:border-[#008489] text-left font-mono"
+                        dir="ltr"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Newsletter Checkbox */}
+                  <label className="flex items-start gap-2.5 pt-1 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={profileNewsletter}
+                      onChange={(e) => setProfileNewsletter(e.target.checked)}
+                      className="mt-0.5 rounded border-stone-300 text-[#008489] focus:ring-[#008489] w-4 h-4"
+                    />
+                    <span className="text-xs font-semibold text-stone-700 leading-snug">
+                      أرحب في تلقي الرسائل الترويجية عبر البريد الإلكتروني
+                    </span>
+                  </label>
+
+                  {/* Action Button: التسجيل */}
+                  <button
+                    onClick={handleCompleteRegistration}
+                    className="w-full py-3 bg-[#008489] hover:bg-[#007478] text-white rounded-xl text-sm font-bold transition-colors shadow-sm cursor-pointer mt-2"
+                  >
+                    التسجيل
+                  </button>
+
+                  <p className="text-[11px] text-stone-400 text-center font-medium pt-1">
+                    بالتسجيل، فإنك توافق على{' '}
+                    <a href="#" onClick={(e) => { e.preventDefault(); onOpenAudit(); }} className="text-[#008489] underline font-bold">
+                      سياسة الخصوصية
+                    </a>
+                  </p>
+                </div>
+              </div>
+            )}
+
           </div>
         </div>
       )}
