@@ -2183,7 +2183,7 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
                 <CheckCircle2 className="w-6 h-6 stroke-[2.5]" />
               </div>
               <p className="text-xs sm:text-sm font-black leading-snug">
-                تم ارسال كود التحقق, يرجى ادخاله للاستمرار
+                تم ارسال رقم التحقق الي البريد
               </p>
             </div>
 
