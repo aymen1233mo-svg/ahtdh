@@ -1,0 +1,6 @@
+{
+  "name": "فاحص ومحلل متجر سلطان للمنتجات المدرسية والرقمية",
+  "description": "منصة فحص شاملة وتحليل تقني ووظيفي لكافة مكونات وأقسام وخدمات متجر سلطان مغفوري التعليمي والرقمي",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
