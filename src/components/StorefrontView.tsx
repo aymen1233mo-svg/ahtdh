@@ -1695,26 +1695,39 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
       {/* ============================================================== */}
       {sectionVisibility.showProductsSection && (
         <section id="products-section" className="pt-8 px-4 max-w-7xl mx-auto sm:px-6 lg:px-8 scroll-mt-20">
-        <div className="text-center mb-4">
-          <h3 className="text-base sm:text-lg font-black text-stone-900">
-            {selectedSubCategory ? `قسم: ${selectedSubCategory}` : (settings.productsTitle || 'المنتجات والسجلات الأكثر طلباً للعام 1447هـ')}
-          </h3>
-          <p className="text-xs text-stone-500 mt-0.5">
-            {selectedSubCategory ? `عرض المنتجات المتاحة في قسم ${selectedSubCategory}` : (settings.productsSubtitle || 'تسليم آلي فوري وروابط تحميل سحابية مباشرة متوافقة مع متطلبات وزارة التعليم')}
-          </p>
+        {/* Breadcrumb & Header matching Screenshots (VideoCapture 6fd8c07a & d55bd980) */}
+        <div className="mb-6 space-y-3">
+          <div className="flex items-center gap-2 text-xs text-stone-500 font-medium">
+            <button onClick={() => { setSelectedSubCategory(null); setActiveTab('جميع المنتجات'); }} className="hover:text-[#008489] transition-colors">الرئيسية</button>
+            <span>›</span>
+            <span className="text-stone-700">السجلات المدرسية</span>
+            {selectedSubCategory && (
+              <>
+                <span>›</span>
+                <span className="text-[#008489] font-bold">{selectedSubCategory}</span>
+              </>
+            )}
+          </div>
 
-          {selectedSubCategory && (
-            <div className="mt-2 inline-flex items-center gap-2 bg-[#008489]/10 text-[#008489] px-3 py-1 rounded-full text-xs font-bold">
-              <span>تصفية بحسب: {selectedSubCategory}</span>
-              <button 
-                onClick={() => { setSelectedSubCategory(null); setActiveTab('جميع المنتجات'); }}
-                className="p-0.5 hover:bg-[#008489]/20 rounded-full cursor-pointer"
-                title="إلغاء التصفية"
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-stone-200 pb-4">
+            <h2 className="text-xl sm:text-2xl font-black text-stone-900">
+              {selectedSubCategory || 'كافة السجلات والمنتجات الرقمية'}
+            </h2>
+
+            <div className="flex items-center gap-2">
+              <span className="text-xs text-stone-500 font-semibold">ترتيب حسب:</span>
+              <select
+                value="bestseller"
+                onChange={() => {}}
+                className="px-3 py-1.5 bg-stone-50 border border-stone-300 rounded-xl text-xs font-bold text-stone-800 focus:outline-none focus:ring-2 focus:ring-[#008489]/20"
               >
-                <X className="w-3.5 h-3.5" />
-              </button>
+                <option value="bestseller">الأكثر مبيعاً</option>
+                <option value="price_low">السعر: من الأقل للأعلى</option>
+                <option value="price_high">السعر: من الأعلى للأقل</option>
+                <option value="newest">الأحدث</option>
+              </select>
             </div>
-          )}
+          </div>
         </div>
 
         {/* Filter Pills from Image 4 & Image 7 */}
