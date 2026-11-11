@@ -147,6 +147,14 @@ function AppContent() {
 
             <div className="flex items-center gap-2">
               <button
+                onClick={() => setActiveTab('admin')}
+                className="px-3 py-1.5 text-xs font-bold text-stone-700 bg-stone-100 hover:bg-stone-200 rounded-lg border border-stone-200 transition-colors flex items-center gap-1.5"
+              >
+                <Settings className="w-3.5 h-3.5" />
+                <span>لوحة التحكم</span>
+              </button>
+
+              <button
                 onClick={() => setIsExportOpen(true)}
                 className="px-3 py-1.5 text-xs font-semibold text-stone-700 bg-stone-100 hover:bg-stone-200 rounded-lg border border-stone-200 transition-colors"
               >

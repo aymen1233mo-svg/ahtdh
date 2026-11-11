@@ -46,7 +46,8 @@ import {
   LogOut,
   UserCheck,
   Baby,
-  Edit3
+  Edit3,
+  Cpu
 } from 'lucide-react';
 import { STORE_INFO, STORE_CATEGORIES, STORE_PRODUCTS } from '../data/storeData';
 import { ProductItem } from '../types';
@@ -640,9 +641,19 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
           </button>
 
           <button 
+            onClick={() => onOpenTool('tahseen')}
+            className="flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-[#093c42] bg-teal-50 hover:bg-teal-100 border border-teal-200 rounded-xl transition-all shadow-2xs cursor-pointer"
+            title="بوابة الأدوات الذكية ومولد المستندات"
+          >
+            <Cpu className="w-3.5 h-3.5 text-[#008489]" />
+            <span className="hidden sm:inline">الأدوات الذكية والمولدات</span>
+            <span className="sm:hidden">الأدوات</span>
+          </button>
+
+          <button 
             onClick={() => { onOpenAdmin && onOpenAdmin(); }}
-            className="flex items-center gap-1 px-2 py-1 text-xs font-bold text-stone-700 hover:text-[#008489] bg-stone-100 hover:bg-stone-200 rounded-lg transition-colors cursor-pointer"
-            title="لوحة التحكم"
+            className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-bold text-stone-700 hover:text-[#008489] bg-stone-100 hover:bg-stone-200 rounded-xl transition-colors cursor-pointer border border-stone-200"
+            title="لوحة التحكم الإدارية"
           >
             <Settings className="w-3.5 h-3.5 text-stone-600" />
             <span className="hidden xs:inline sm:inline">لوحة التحكم</span>

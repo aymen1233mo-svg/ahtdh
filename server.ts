@@ -153,11 +153,15 @@ const auditLogsStore: AuditLogEntry[] = [
 interface SmartToolRecord {
   id: string;
   name: string;
+  group: 'school_admin' | 'plans_development' | 'portfolios_guides' | 'certificates_cards' | 'excel_tracking';
   version: string;
   category: string;
+  description?: string;
   inputDescription: string;
   outputDescription: string;
   outputFormats: string[];
+  allowedPlans: string[];
+  fields?: any[];
   totalRuns: number;
   successfulRuns: number;
   failedRuns: number;
@@ -167,65 +171,748 @@ interface SmartToolRecord {
 }
 
 const smartToolsStore: SmartToolRecord[] = [
+  // ==========================================
+  // المجموعة الأولى: أدوات الإدارة المدرسية (School Admin)
+  // ==========================================
   {
-    id: 'tool_tahseen',
-    name: 'أداة تحسين — تحليل نتيجة التقويم الذاتي وبناء خطة التطوير',
-    version: 'الإصدار الثالث 1447هـ المعتمد',
-    category: 'التقويم الذاتي والتحسين',
-    inputDescription: 'رفع تقرير الأداء المدرسي المستخرج من منصة تميز (PDF / Excel) أو إدخال البيانات التشخيصية',
-    outputDescription: 'توليد خطة التحسين والتطوير متكاملة ومؤتمتة بصيغة قابلة للتعديل والطباعة',
+    id: 'tool_principal_record',
+    name: 'أداة ومولد سجل مدير المدرسة المعتمد',
+    group: 'school_admin',
+    version: 'إصدار 1448هـ التفاعلي',
+    category: 'الإدارة المدرسية',
+    description: 'توليد سجل مدير المدرسة الشامل (التكليفات، اللجان، التشكيلات، الخطط اليومية)',
+    inputDescription: 'إدخال بيانات المدرسة، لجان الإدارة، وتكليفات الهيئة التعليمية والإدارية',
+    outputDescription: 'مستند وورد كامل الجداول والترويسة الوزارية المعتمدة بصيغة قابلة للتعديل والطباعة',
     outputFormats: ['Word (.docx)', 'PDF'],
-    totalRuns: 1240,
-    successfulRuns: 1234,
-    failedRuns: 6,
-    avgProcessingTimeSec: 11.8,
+    allowedPlans: ['plan_free', 'plan_monthly', 'plan_annual_pro', 'plan_school_vip'],
+    fields: [
+      { id: 'f1', name: 'schoolName', label: 'اسم المدرسة', type: 'text', required: true },
+      { id: 'f2', name: 'principalName', label: 'اسم مدير المدرسة', type: 'text', required: true },
+      { id: 'f3', name: 'academicYear', label: 'العام الدراسي', type: 'text', defaultValue: '1448هـ' },
+      { id: 'f4', name: 'adminNotes', label: 'ملاحظات وتوجيهات الإدارة', type: 'textarea' }
+    ],
+    totalRuns: 1420,
+    successfulRuns: 1415,
+    failedRuns: 5,
+    avgProcessingTimeSec: 6.5,
     status: 'active',
-    lastUpdated: '1447/03/15'
+    lastUpdated: '1448/02/10'
   },
   {
-    id: 'tool_attendance',
-    name: 'أداة وكشف إكسل الذكي لرصد الحضور والانضباط المدرسي',
+    id: 'tool_vice_record',
+    name: 'أداة سجل وكيل المدرسة للشؤون التعليمية والطلابية',
+    group: 'school_admin',
+    version: 'إصدار 1448هـ المطور',
+    category: 'الإدارة المدرسية',
+    description: 'توليد سجل متابعة الوكيل اليومي، الإشراف والمناوبة، وحالات الاستئذان',
+    inputDescription: 'بيانات الفصول، كشوف المناوبة اليومية، والخطط الإشرافية',
+    outputDescription: 'سجل إجرائي منظم بصيغة DOCX قابلة للتعديل ونسخة PDF',
+    outputFormats: ['Word (.docx)', 'PDF'],
+    allowedPlans: ['plan_monthly', 'plan_annual_pro', 'plan_school_vip'],
+    totalRuns: 890,
+    successfulRuns: 885,
+    failedRuns: 5,
+    avgProcessingTimeSec: 5.8,
+    status: 'active',
+    lastUpdated: '1448/02/12'
+  },
+  {
+    id: 'tool_classroom_visits',
+    name: 'أداة رصد وتوثيق الزيارات الصفية والتوجيه الفني',
+    group: 'school_admin',
+    version: 'إصدار المعايير الجديد 2026',
+    category: 'الإدارة المدرسية',
+    description: 'توثيق زيارات المعلمين وتقييم الممارسات التدريسية والبيئة الصفية',
+    inputDescription: 'اختيار اسم المعلم، المادة، معايير التقييم، والتوصيات التحسينية',
+    outputDescription: 'استمارة زيارة صفية معتمدة مع مؤشرات الأداء وملاحظات النمو المهني',
+    outputFormats: ['Word (.docx)', 'PDF'],
+    allowedPlans: ['plan_free', 'plan_monthly', 'plan_annual_pro', 'plan_school_vip'],
+    totalRuns: 760,
+    successfulRuns: 757,
+    failedRuns: 3,
+    avgProcessingTimeSec: 4.8,
+    status: 'active',
+    lastUpdated: '1448/02/15'
+  },
+
+  // ==========================================
+  // المجموعة الثانية: أدوات الخطط والتطوير (Plans & Development)
+  // ==========================================
+  {
+    id: 'tool_tahseen',
+    name: 'أداة تحسين — خطة التحسين للتقويم الذاتي (منصة تميز)',
+    group: 'plans_development',
+    version: 'الإصدار الثالث 1448هـ المعتمد',
+    category: 'التقويم الذاتي والتحسين',
+    description: 'تحليل نتيجة التقويم المدرسي وبناء خطة التطوير والمبادرات وفق معايير هيئة تقويم التعليم',
+    inputDescription: 'رفع درجات مجالات التقويم (الإدارة المدرسية، نواتج التعلم، التعليم والتعلم، البيئة المدرسية)',
+    outputDescription: 'خطة تحسين متكاملة تشمل الأهداف الاستراتيجية والمؤشرات والمبادرات والبرامج التنفيذية',
+    outputFormats: ['Word (.docx)', 'PDF'],
+    allowedPlans: ['plan_monthly', 'plan_annual_pro', 'plan_school_vip'],
+    fields: [
+      { id: 't1', name: 'schoolName', label: 'اسم المدرسة', type: 'text', required: true },
+      { id: 't2', name: 'adminScore', label: 'درجة مجال الإدارة المدرسية (من 100)', type: 'number', required: true },
+      { id: 't3', name: 'learningScore', label: 'درجة مجال التعليم والتعلم (من 100)', type: 'number', required: true },
+      { id: 't4', name: 'outcomesScore', label: 'درجة نواتج التعلم (من 100)', type: 'number', required: true },
+      { id: 't5', name: 'envScore', label: 'درجة البيئة المدرسية (من 100)', type: 'number', required: true }
+    ],
+    totalRuns: 1980,
+    successfulRuns: 1972,
+    failedRuns: 8,
+    avgProcessingTimeSec: 9.4,
+    status: 'active',
+    lastUpdated: '1448/02/14'
+  },
+  {
+    id: 'tool_operational_plan',
+    name: 'مولد الخطة التشغيلية للمدرسة (Operational Plan Generator)',
+    group: 'plans_development',
+    version: 'إصدار 1448هـ التلقائي',
+    category: 'الخطط التشغيلية',
+    description: 'صياغة الأهداف التشغيلية والمبادرات وتوزيع المهام والموازنات والمستهدفات الفصلية',
+    inputDescription: 'تحديد المرحلة الدراسية، الأهداف السنوية، أسماء فرق العمل واللجان',
+    outputDescription: 'خطة تشغيلية متكاملة بملف وورد قابل للتعديل والإضافة مع رسوم بيانية',
+    outputFormats: ['Word (.docx)', 'PDF'],
+    allowedPlans: ['plan_monthly', 'plan_annual_pro', 'plan_school_vip'],
+    totalRuns: 1120,
+    successfulRuns: 1114,
+    failedRuns: 6,
+    avgProcessingTimeSec: 8.2,
+    status: 'active',
+    lastUpdated: '1448/02/08'
+  },
+  {
+    id: 'tool_swot_analysis',
+    name: 'أداة تحليل نقاط القوة والضعف والفرص والتحديات (SWOT Analysis)',
+    group: 'plans_development',
+    version: 'إصدار 2026 التحليلي',
+    category: 'التطوير المدرسي',
+    description: 'بناء مصفوفة SWOT المدرسية وصياغة التوصيات الإجرائية وفرص التحسين التنافسية',
+    inputDescription: 'إدخال الملاحظات التشخيصية لواقع المدرسة والبيئة التعليمية',
+    outputDescription: 'مصفوفة تحليل استراتيجي بألوان معتمدة وتوصيات فورية للنمو والتطوير',
+    outputFormats: ['Word (.docx)', 'PDF'],
+    allowedPlans: ['plan_free', 'plan_monthly', 'plan_annual_pro', 'plan_school_vip'],
+    totalRuns: 630,
+    successfulRuns: 628,
+    failedRuns: 2,
+    avgProcessingTimeSec: 5.1,
+    status: 'active',
+    lastUpdated: '1448/01/29'
+  },
+
+  // ==========================================
+  // المجموعة الثالثة: أدوات ملفات الإنجاز (Portfolios & Guides)
+  // ==========================================
+  {
+    id: 'tool_teacher_portfolio',
+    name: 'أداة صانع ملف إنجاز المعلم والمعلمة (Portfolio Builder)',
+    group: 'portfolios_guides',
+    version: 'إصدار 1448 المحدث',
+    category: 'ملفات الإنجاز',
+    description: 'تجميع شواهد الأداء، السيرة الذاتية، الفلسفة التعليمية، وسجل النمو المهني',
+    inputDescription: 'بيانات المعلم/ة، المادة، شواهد التميز، والدورات المعتمدة في منصة فارس',
+    outputDescription: 'ملف إنجاز متكامل بتصميم رسمي وأبواب مصنفة وأغلفة فواصل فاخرة',
+    outputFormats: ['Word (.docx)', 'PDF'],
+    allowedPlans: ['plan_free', 'plan_monthly', 'plan_annual_pro', 'plan_school_vip'],
+    totalRuns: 1540,
+    successfulRuns: 1535,
+    failedRuns: 5,
+    avgProcessingTimeSec: 7.2,
+    status: 'active',
+    lastUpdated: '1448/02/01'
+  },
+  {
+    id: 'tool_counselor_portfolio',
+    name: 'أداة ملف إنجاز الموجه الطلابي وخطة الرعاية',
+    group: 'portfolios_guides',
+    version: 'إصدار 1448 التخصصي',
+    category: 'ملفات الإنجاز',
+    description: 'توثيق برامج التوجيه والإرشاد، مجالس الآباء والمعلمين، وبرامج تعزيز السلوك',
+    inputDescription: 'برامج التوجيه المعتمدة، خطة استقبال الطلاب، وأدوات تعزيز الانضباط',
+    outputDescription: 'ملف إنجاز متطابق مع استمارة الترويسة الوزارية الرسمية من الإدارة العامة للتعليم',
+    outputFormats: ['Word (.docx)', 'PDF'],
+    allowedPlans: ['plan_monthly', 'plan_annual_pro', 'plan_school_vip'],
+    totalRuns: 820,
+    successfulRuns: 818,
+    failedRuns: 2,
+    avgProcessingTimeSec: 6.8,
+    status: 'active',
+    lastUpdated: '1448/02/11'
+  },
+
+  // ==========================================
+  // المجموعة الرابعة: أدوات الشهادات والبطاقات (Certificates & Cards)
+  // ==========================================
+  {
+    id: 'tool_discipline',
+    name: 'مولد شهادات الانضباط المدرسي بسرعة (Discipline Certificates)',
+    group: 'certificates_cards',
+    version: 'إصدار سحابي 1448هـ',
+    category: 'شهادات وتهنئة',
+    description: 'توليد شهادات الشكر والتقدير للطلاب والمعلمين الملتزمين بالانضباط المدرسي',
+    inputDescription: 'اسم المدرسة، اسم الطالب المكرم، المرحلة الدراسية، اسم المدير والموجه',
+    outputDescription: 'شهادة رسمية معتمدة بالترويسة والختم الرسمي ورؤية 2030 وتصدير PDF / DOCX',
+    outputFormats: ['Word (.docx)', 'PDF فائق الدقة', 'رابط مباشر'],
+    allowedPlans: ['plan_free', 'plan_monthly', 'plan_annual_pro', 'plan_school_vip'],
+    fields: [
+      { id: 'c1', name: 'schoolName', label: 'اسم المدرسة', type: 'text', required: true },
+      { id: 'c2', name: 'recipientName', label: 'اسم المكرم / الطالب / المعلم', type: 'text', required: true },
+      { id: 'c3', name: 'principalName', label: 'اسم مدير المدرسة', type: 'text', required: true },
+      { id: 'c4', name: 'counselorName', label: 'اسم الموجه الطلابي', type: 'text' }
+    ],
+    totalRuns: 2890,
+    successfulRuns: 2884,
+    failedRuns: 6,
+    avgProcessingTimeSec: 2.9,
+    status: 'active',
+    lastUpdated: '1448/02/14'
+  },
+  {
+    id: 'tool_greeting_cards',
+    name: 'صانع بطاقات التهنئة التفاعلية بالعام الدراسي واليوم الوطني',
+    group: 'certificates_cards',
+    version: 'إصدار 2026 التفاعلي',
+    category: 'شهادات وتهنئة',
+    description: 'تصميم بطاقات التهنئة المدرسية الرسمية بأسماء الكادر والطلاب برابط خاص',
+    inputDescription: 'اختيار المناسبة، اسم المرسل، اسم المستلم، ونص التهنئة المخصص',
+    outputDescription: 'بطاقة رقمية فاخرة برابط معاينة تفاعلي وإمكانية التحميل الفوري للواتساب',
+    outputFormats: ['صورة عالية الدقة PNG', 'PDF فائق الدقة', 'رابط ويب تفاعلي'],
+    allowedPlans: ['plan_free', 'plan_monthly', 'plan_annual_pro', 'plan_school_vip'],
+    totalRuns: 3120,
+    successfulRuns: 3110,
+    failedRuns: 10,
+    avgProcessingTimeSec: 3.1,
+    status: 'active',
+    lastUpdated: '1448/02/15'
+  },
+
+  // ==========================================
+  // المجموعة الخامسة: أدوات Excel والمتابعة (Excel & Tracking)
+  // ==========================================
+  {
+    id: 'tool_auto_absence',
+    name: 'كشف إكسل الذكي المؤتمت لرصد الحضور والغياب الأسبوعي والشهري',
+    group: 'excel_tracking',
     version: 'إصدار 2026 التلقائي',
     category: 'كشوفات المتابعة التلقائية',
-    inputDescription: 'إدخال بيانات حضور الطلاب وحالات الاستئذان الأسبوعية',
-    outputDescription: 'حساب النسب المئوية آلياً واستخراج تقارير الطلاب الأكثر غياباً ورسوم بيانية',
+    description: 'حساب نسب الحضور والغياب آلياً، تحديد الطلاب المستحقين للإنذارات، ورسوم بيانية',
+    inputDescription: 'إدخال غياب الطلاب وساعات التأخر الأسبوعية',
+    outputDescription: 'ملف Excel (.xlsx) مبرمج بمعادلات جاهزة وتقارير جاهزة للطباعة',
     outputFormats: ['Excel (.xlsx) مبرمج'],
-    totalRuns: 890,
-    successfulRuns: 888,
-    failedRuns: 2,
-    avgProcessingTimeSec: 4.2,
+    allowedPlans: ['plan_free', 'plan_monthly', 'plan_annual_pro', 'plan_school_vip'],
+    totalRuns: 1680,
+    successfulRuns: 1676,
+    failedRuns: 4,
+    avgProcessingTimeSec: 4.1,
     status: 'active',
-    lastUpdated: '1447/04/01'
+    lastUpdated: '1448/02/05'
   },
   {
     id: 'tool_nafs',
     name: 'أداة تحليل ومقارنة نتائج اختبارات نافس الوطنية',
-    version: 'إصدار 1447 المحدث',
+    group: 'excel_tracking',
+    version: 'إصدار 1448 المحدث',
     category: 'التقويم والتحسين',
+    description: 'مقارنة متوسط أداء المدرسة بالمتوسط الوطني ومكتب التعليم وتوليد خطة علاجية',
     inputDescription: 'رفع درجات الطلاب في المواد المستهدفة باختبارات نافس',
-    outputDescription: 'مقارنة متوسط المدرسة بالمتوسط الوطني ومكتب التعليم وتوليد خطة علاجية',
-    outputFormats: ['Word (.docx)', 'PDF'],
-    totalRuns: 480,
-    successfulRuns: 477,
-    failedRuns: 3,
-    avgProcessingTimeSec: 8.5,
+    outputDescription: 'تقرير تحليلي بياني شامل بنقاط القوة وجداول المقارنة بصيغ DOCX و Excel',
+    outputFormats: ['Word (.docx)', 'Excel (.xlsx)', 'PDF'],
+    allowedPlans: ['plan_monthly', 'plan_annual_pro', 'plan_school_vip'],
+    totalRuns: 890,
+    successfulRuns: 885,
+    failedRuns: 5,
+    avgProcessingTimeSec: 7.9,
     status: 'active',
-    lastUpdated: '1447/02/20'
+    lastUpdated: '1448/01/20'
+  }
+];
+
+// In-Memory Persistent Store for Subscription Plans
+export interface SubscriptionPlanRecord {
+  id: string;
+  name: string;
+  billingCycle: 'free' | 'monthly' | 'quarterly' | 'semi_annual' | 'annual' | 'custom';
+  price: number;
+  durationDays: number;
+  maxDocuments: number;
+  maxExports: number;
+  storageMb: number;
+  allowedTools: string[];
+  features: string[];
+  isPopular?: boolean;
+  isActive: boolean;
+}
+
+const subscriptionPlansStore: SubscriptionPlanRecord[] = [
+  {
+    id: 'plan_free',
+    name: 'الباقة المجانية التجريبية',
+    billingCycle: 'free',
+    price: 0,
+    durationDays: 30,
+    maxDocuments: 3,
+    maxExports: 5,
+    storageMb: 50,
+    allowedTools: ['tool_discipline', 'tool_teacher_portfolio', 'tool_swot_analysis', 'tool_auto_absence'],
+    features: [
+      'تجربة إنشاء 3 مستندات مجاناً',
+      'تصدير Word و PDF بجودة قياسية',
+      'الوصول إلى الأدوات الأساسية',
+      'قوالب رسمية مبسطة'
+    ],
+    isActive: true
   },
   {
-    id: 'tool_certificates',
-    name: 'مولد الروابط الذكية لشهادات الشكر والتقدير التفاعلية',
-    version: 'إصدار سحابي 2026',
-    category: 'شهادات وتهنئة',
-    inputDescription: 'رفع كشف أسماء الطلاب المتفوقين أو المعلمين المتميزين بصيغة Excel',
-    outputDescription: 'إنتاج شهادات تفاعلية مخصصة لكل طالب برابط استعراض خاص وتنزيل فوري',
-    outputFormats: ['PDF فائق الدقة', 'رابط ويب تفاعلي'],
-    totalRuns: 650,
-    successfulRuns: 648,
-    failedRuns: 2,
-    avgProcessingTimeSec: 3.4,
-    status: 'active',
-    lastUpdated: '1447/04/10'
+    id: 'plan_monthly',
+    name: 'الباقة الشهرية المرنة',
+    billingCycle: 'monthly',
+    price: 49,
+    durationDays: 30,
+    maxDocuments: 50,
+    maxExports: 100,
+    storageMb: 500,
+    allowedTools: ['all'],
+    features: [
+      'إنشاء حتى 50 مستنداً شهرياً',
+      'تصدير غير محدود لملفات Word و PDF',
+      'حفظ وتعديل المستندات في حساب العميل',
+      'الوصول لجميع أدوات الإدارة المدرسية والشهادات'
+    ],
+    isActive: true
+  },
+  {
+    id: 'plan_quarterly',
+    name: 'الباقة الربع سنوية (فصل دراسي)',
+    billingCycle: 'quarterly',
+    price: 119,
+    durationDays: 90,
+    maxDocuments: 180,
+    maxExports: 350,
+    storageMb: 1500,
+    allowedTools: ['all'],
+    features: [
+      'تغطية كاملة لفصل دراسي كامل',
+      'إنشاء حتى 180 مستنداً وشهادة',
+      'قوالب الترويسة الوزارية الرسمية المطورة',
+      'دعم فني سريع عبر الواتساب'
+    ],
+    isActive: true
+  },
+  {
+    id: 'plan_annual_pro',
+    name: 'الباقة السنوية الاحترافية (الأكثر طلباً)',
+    billingCycle: 'annual',
+    price: 299,
+    durationDays: 365,
+    maxDocuments: 1000,
+    maxExports: 2500,
+    storageMb: 5000,
+    allowedTools: ['all'],
+    features: [
+      'وصول سنوي غير محدود لجميع أدوات المنصة',
+      'محرك أداة تحسين V3 لتحليل منصة تميز',
+      'تخصيص القوالب الترويسية والأختام تلقائياً',
+      'مفتاح ترخيص سنوي مخصص باسم العميل',
+      'دعم الأتمتة اللحظية للتاريخ والوقت الهجري 1448هـ'
+    ],
+    isPopular: true,
+    isActive: true
+  },
+  {
+    id: 'plan_school_vip',
+    name: 'باقة المدارس الشاملة VIP',
+    billingCycle: 'annual',
+    price: 599,
+    durationDays: 365,
+    maxDocuments: 5000,
+    maxExports: 10000,
+    storageMb: 20000,
+    allowedTools: ['all'],
+    features: [
+      'ترخيص مدرسة متعدد المستخدمين (مدير، وكلاء، موجهون، معلمين)',
+      'سجلات وكشوف متابعة وشهادات غير محدودة',
+      'شعار واسم المدرسة مدمج تلقائياً في كافة الوثائق',
+      'أولوية الدعم التقني والتحديثات السنوية المستمرة'
+    ],
+    isActive: true
+  }
+];
+
+// In-Memory Persistent Store for Customer Saved Documents
+export interface ClientDocumentRecord {
+  id: string;
+  userId: string;
+  customerName: string;
+  customerPhone?: string;
+  toolId: string;
+  toolName: string;
+  group: string;
+  title: string;
+  templateId: string;
+  data: Record<string, any>;
+  wordUrl?: string;
+  pdfUrl?: string;
+  status: 'completed' | 'draft';
+  createdAt: string;
+  updatedAt: string;
+  version: number;
+  folder?: string;
+}
+
+const clientDocumentsStore: ClientDocumentRecord[] = [
+  {
+    id: 'DOC-1448-001',
+    userId: 'uid-principal-fahad',
+    customerName: 'أ. فهد العتيبي',
+    customerPhone: '0501234567',
+    toolId: 'tool_principal_record',
+    toolName: 'سجل مدير المدرسة المعتمد',
+    group: 'school_admin',
+    title: 'سجل الإدارة والتكليفات المدرسية 1448هـ — مدرسة الأمل',
+    templateId: 'ministry_official',
+    data: {
+      schoolName: 'مدرسة الأمل الثانوية النموذجية',
+      principalName: 'أ. فهد بن عبدالعزيز العتيبي',
+      academicYear: '1448هـ'
+    },
+    wordUrl: '/api/documents/DOC-1448-001/download/word',
+    pdfUrl: '/api/documents/DOC-1448-001/download/pdf',
+    status: 'completed',
+    createdAt: '2026-02-10T09:30:00Z',
+    updatedAt: '2026-02-10T11:15:00Z',
+    version: 1,
+    folder: 'سجلات الإدارة'
+  },
+  {
+    id: 'DOC-1448-002',
+    userId: 'uid-counselor-sarah',
+    customerName: 'د. سارة الشمري',
+    customerPhone: '0559876543',
+    toolId: 'tool_tahseen',
+    toolName: 'أداة تحسين — التقويم الذاتي',
+    group: 'plans_development',
+    title: 'خطة التحسين والتطوير المدرسي وفق مؤشرات تميز 1448هـ',
+    templateId: 'ministry_official',
+    data: {
+      schoolName: 'ثانوية اليرموك الأهلية',
+      adminScore: 92,
+      learningScore: 84,
+      outcomesScore: 78,
+      envScore: 90
+    },
+    wordUrl: '/api/documents/DOC-1448-002/download/word',
+    pdfUrl: '/api/documents/DOC-1448-002/download/pdf',
+    status: 'completed',
+    createdAt: '2026-02-05T14:20:00Z',
+    updatedAt: '2026-02-05T14:20:00Z',
+    version: 1,
+    folder: 'التقويم والتحسين'
+  },
+  {
+    id: 'DOC-1448-003',
+    userId: 'uid-teacher-noura',
+    customerName: 'أ. نورة الغامدي',
+    customerPhone: '0562233445',
+    toolId: 'tool_discipline',
+    toolName: 'شهادات الانضباط المدرسي بسرعة',
+    group: 'certificates_cards',
+    title: 'دفعة شهادات شكر وانضباط مدرسي لشهر صفر 1448هـ',
+    templateId: 'gold_academic',
+    data: {
+      schoolName: 'مدرسة رواد المستقبل',
+      recipientName: 'كريم بن سعد القحطاني',
+      principalName: 'أ. نورة الغامدي'
+    },
+    wordUrl: '/api/documents/DOC-1448-003/download/word',
+    pdfUrl: '/api/documents/DOC-1448-003/download/pdf',
+    status: 'completed',
+    createdAt: '2026-02-12T08:00:00Z',
+    updatedAt: '2026-02-12T08:00:00Z',
+    version: 1,
+    folder: 'الشهادات والتهنئة'
+  }
+];
+
+// In-Memory Persistent Store for RBAC Roles & Permissions
+export interface UserRoleRecord {
+  id: string;
+  name: string;
+  description: string;
+  usersCount: number;
+  permissions: any;
+}
+
+const userRolesStore: UserRoleRecord[] = [
+  {
+    id: 'role_super_admin',
+    name: 'المدير العام (Super Admin)',
+    description: 'صلاحيات كاملة وغير مقيدة لإدارة كافة مرافق المنصة والمتجر والأنظمة الذكية',
+    usersCount: 2,
+    permissions: {
+      dashboard: true,
+      products: { view: true, create: true, edit: true, delete: true, export: true },
+      orders: { view: true, create: true, edit: true, delete: true, export: true },
+      customers: { view: true, create: true, edit: true, delete: true, export: true },
+      subscriptions: { view: true, create: true, edit: true, delete: true, export: true },
+      smartTools: { view: true, create: true, edit: true, delete: true, export: true },
+      reports: { view: true, export: true },
+      finance: { view: true, edit: true, export: true },
+      settings: { view: true, edit: true }
+    }
+  },
+  {
+    id: 'role_store_manager',
+    name: 'مدير المتجر (Store Manager)',
+    description: 'إدارة المنتجات، الأقسام، الكوبونات، ومتابعة تدفق المبيعات اليومية',
+    usersCount: 3,
+    permissions: {
+      dashboard: true,
+      products: { view: true, create: true, edit: true, delete: false, export: true },
+      orders: { view: true, create: true, edit: true, delete: false, export: true },
+      customers: { view: true, create: false, edit: true, delete: false, export: true },
+      subscriptions: { view: true, create: true, edit: true, delete: false, export: true },
+      smartTools: { view: true, create: false, edit: true, delete: false, export: true },
+      reports: { view: true, export: true },
+      finance: { view: true, edit: false, export: true },
+      settings: { view: false, edit: false }
+    }
+  },
+  {
+    id: 'role_sales_manager',
+    name: 'مدير المبيعات (Sales Manager)',
+    description: 'متابعة الطلبات، العروض التسويقية، وتتبع مؤشرات التحويل والمبيعات',
+    usersCount: 2,
+    permissions: {
+      dashboard: true,
+      products: { view: true, create: false, edit: false, delete: false, export: true },
+      orders: { view: true, create: true, edit: true, delete: false, export: true },
+      customers: { view: true, create: false, edit: false, delete: false, export: true },
+      subscriptions: { view: true, create: false, edit: false, delete: false, export: true },
+      smartTools: { view: true, create: false, edit: false, delete: false, export: false },
+      reports: { view: true, export: true },
+      finance: { view: true, edit: false, export: false },
+      settings: { view: false, edit: false }
+    }
+  },
+  {
+    id: 'role_products_officer',
+    name: 'مسؤول المنتجات (Products Officer)',
+    description: 'رفع وإدارة ملفات Word و PDF وتحديث روابط التخزين السحابي',
+    usersCount: 4,
+    permissions: {
+      dashboard: true,
+      products: { view: true, create: true, edit: true, delete: false, export: true },
+      orders: { view: false, create: false, edit: false, delete: false, export: false },
+      customers: { view: false, create: false, edit: false, delete: false, export: false },
+      subscriptions: { view: false, create: false, edit: false, delete: false, export: false },
+      smartTools: { view: true, create: false, edit: true, delete: false, export: false },
+      reports: { view: false, export: false },
+      finance: { view: false, edit: false, export: false },
+      settings: { view: false, edit: false }
+    }
+  },
+  {
+    id: 'role_orders_officer',
+    name: 'مسؤول الطلبات والتسليم (Orders Officer)',
+    description: 'متابعة مراحل الطلبات والتسليم الآلي وإعادة إرسال الروابط للعملاء',
+    usersCount: 3,
+    permissions: {
+      dashboard: true,
+      products: { view: true, create: false, edit: false, delete: false, export: false },
+      orders: { view: true, create: true, edit: true, delete: false, export: true },
+      customers: { view: true, create: false, edit: false, delete: false, export: false },
+      subscriptions: { view: false, create: false, edit: false, delete: false, export: false },
+      smartTools: { view: false, create: false, edit: false, delete: false, export: false },
+      reports: { view: false, export: false },
+      finance: { view: false, edit: false, export: false },
+      settings: { view: false, edit: false }
+    }
+  },
+  {
+    id: 'role_customers_officer',
+    name: 'مسؤول العملاء (Customers Officer)',
+    description: 'إدارة ملفات العملاء، الشرائح التعليمية، وتسهيل تجربة العميل',
+    usersCount: 2,
+    permissions: {
+      dashboard: true,
+      products: { view: false, create: false, edit: false, delete: false, export: false },
+      orders: { view: true, create: false, edit: false, delete: false, export: true },
+      customers: { view: true, create: true, edit: true, delete: false, export: true },
+      subscriptions: { view: true, create: false, edit: false, delete: false, export: true },
+      smartTools: { view: false, create: false, edit: false, delete: false, export: false },
+      reports: { view: false, export: false },
+      finance: { view: false, edit: false, export: false },
+      settings: { view: false, edit: false }
+    }
+  },
+  {
+    id: 'role_accountant',
+    name: 'المحاسب المالي (Accountant)',
+    description: 'متابعة بوابات الدفع، الفواتير الضريبية ZATCA، والمطابقات المالية والتقارير',
+    usersCount: 1,
+    permissions: {
+      dashboard: true,
+      products: { view: true, create: false, edit: false, delete: false, export: true },
+      orders: { view: true, create: false, edit: false, delete: false, export: true },
+      customers: { view: false, create: false, edit: false, delete: false, export: false },
+      subscriptions: { view: true, create: false, edit: false, delete: false, export: true },
+      smartTools: { view: false, create: false, edit: false, delete: false, export: false },
+      reports: { view: true, export: true },
+      finance: { view: true, edit: true, export: true },
+      settings: { view: false, edit: false }
+    }
+  },
+  {
+    id: 'role_subscriptions_officer',
+    name: 'مسؤول الاشتراكات (Subscriptions Officer)',
+    description: 'إصدار التراخيص، متابعة صلاحيات الاستخدام، وتفعيل البوابات المستقلة للعملاء',
+    usersCount: 2,
+    permissions: {
+      dashboard: true,
+      products: { view: false, create: false, edit: false, delete: false, export: false },
+      orders: { view: true, create: false, edit: false, delete: false, export: false },
+      customers: { view: true, create: false, edit: false, delete: false, export: true },
+      subscriptions: { view: true, create: true, edit: true, delete: true, export: true },
+      smartTools: { view: true, create: false, edit: false, delete: false, export: true },
+      reports: { view: true, export: true },
+      finance: { view: false, edit: false, export: false },
+      settings: { view: false, edit: false }
+    }
+  },
+  {
+    id: 'role_support_officer',
+    name: 'مسؤول الدعم الفني (Support Officer)',
+    description: 'معالجة تذاكر الدعم السداسي وطلبات الاسترجاع والمساعدة التقنية',
+    usersCount: 3,
+    permissions: {
+      dashboard: true,
+      products: { view: true, create: false, edit: false, delete: false, export: false },
+      orders: { view: true, create: false, edit: true, delete: false, export: false },
+      customers: { view: true, create: false, edit: true, delete: false, export: false },
+      subscriptions: { view: true, create: false, edit: false, delete: false, export: false },
+      smartTools: { view: true, create: false, edit: false, delete: false, export: false },
+      reports: { view: false, export: false },
+      finance: { view: false, edit: false, export: false },
+      settings: { view: false, edit: false }
+    }
+  }
+];
+
+// In-Memory Persistent Store for CMS Content Pages
+export interface CMSPageRecord {
+  id: string;
+  slug: string;
+  title: string;
+  content: string;
+  metaTitle?: string;
+  metaDescription?: string;
+  lastModified: string;
+  isPublished: boolean;
+}
+
+const cmsPagesStore: CMSPageRecord[] = [
+  {
+    id: 'page_home',
+    slug: 'home',
+    title: 'الصفحة الرئيسية للمتجر',
+    content: 'أكبر متجر ومحرك للمنتجات المدرسية والسجلات الرقمية والأدوات الذكية في المملكة العربية السعودية.',
+    metaTitle: 'متجر احتياجك التعليمي — سجلات وأدوات مدرسية رقمية',
+    metaDescription: 'سجلات مدير ووكيل ومعلم، خطط تشغيلية، أداة تحسين، وشهادات انضباط مدرسي قابلة للتعديل والطباعة الفورية.',
+    lastModified: '1448/02/10',
+    isPublished: true
+  },
+  {
+    id: 'page_about',
+    slug: 'about',
+    title: 'من نحن',
+    content: 'متجر احتياجك التعليمي منصة متخصصة تأسست بإشراف الأستاذ سلطان مغفوري لتوفير حلول تقنية متقدمة تلبي احتياجات الكوادر التعليمية والإدارية في المدارس السعودية بأعلى معايير الجودة والاحترافية.',
+    lastModified: '1448/01/15',
+    isPublished: true
+  },
+  {
+    id: 'page_refund',
+    slug: 'refund',
+    title: 'سياسة الاسترجاع والضمان (48 ساعة)',
+    content: 'نضمن لك جودة جميع الملفات الرقمية والأدوات الذكية. يحق للعميل طلب استرجاع أو استبدال المنتج خلال 48 ساعة في حال وجود عيب فني أو عدم مطابقة الوصف، مع دعم فني مخصص وسريع.',
+    lastModified: '1448/01/15',
+    isPublished: true
+  },
+  {
+    id: 'page_delivery',
+    slug: 'delivery',
+    title: 'سياسة التسليم والشحن الرقمي الفوري',
+    content: 'التسليم فوري وتلقائي 100% فور نجاح عملية الدفع عبر رسائل الواتساب والبريد الإلكتروني وقسم "طلباتي" في حساب العميل دون أي تأخير.',
+    lastModified: '1448/01/15',
+    isPublished: true
+  },
+  {
+    id: 'page_terms',
+    slug: 'terms',
+    title: 'شروط الاستخدام والترخيص',
+    content: 'الملفات مخصصة للاستخدام الشخصي والمدرسي للمشتري ويحظر إعادة بيعها أو توزيعها تجارياً. جميع الحقوق الفكرية والتصميمات محفوظة لمتجر احتياجك التعليمي.',
+    lastModified: '1448/01/15',
+    isPublished: true
+  },
+  {
+    id: 'page_faq',
+    slug: 'faq',
+    title: 'الأسئلة الشائعة',
+    content: 'إجابات وافية حول كيفية تحميل وتعديل ملفات Word، كيفية تشغيل أداة تحسين، طرق الدفع المتاحة، والاشتراكات السنوية.',
+    lastModified: '1448/02/01',
+    isPublished: true
+  }
+];
+
+// In-Memory Persistent Store for Financial Transactions & Webhooks
+export interface FinancialTransactionRecord {
+  id: string;
+  orderId: string;
+  amount: number;
+  currency: string;
+  gateway: string;
+  status: 'successful' | 'pending' | 'failed' | 'refunded';
+  referenceId: string;
+  customerName: string;
+  createdAt: string;
+  webhookVerified: boolean;
+}
+
+const financialTransactionsStore: FinancialTransactionRecord[] = [
+  {
+    id: 'TXN-901',
+    orderId: '#ORD-0004',
+    amount: 199.00,
+    currency: 'SAR',
+    gateway: 'Mada (مدى)',
+    status: 'successful',
+    referenceId: 'REF-MADA-881290',
+    customerName: 'أ. فهد العتيبي',
+    createdAt: new Date(Date.now() - 3600000 * 12).toISOString(),
+    webhookVerified: true
+  },
+  {
+    id: 'TXN-902',
+    orderId: '#ORD-0003',
+    amount: 99.00,
+    currency: 'SAR',
+    gateway: 'Apple Pay',
+    status: 'successful',
+    referenceId: 'REF-APAY-441029',
+    customerName: 'د. سارة الشمري',
+    createdAt: new Date(Date.now() - 3600000 * 24).toISOString(),
+    webhookVerified: true
+  },
+  {
+    id: 'TXN-903',
+    orderId: '#ORD-0002',
+    amount: 149.00,
+    currency: 'SAR',
+    gateway: 'Tamara (تمارا)',
+    status: 'successful',
+    referenceId: 'REF-TAM-992318',
+    customerName: 'أ. محمد القحطاني',
+    createdAt: new Date(Date.now() - 3600000 * 48).toISOString(),
+    webhookVerified: true
   }
 ];
 
@@ -244,6 +931,7 @@ export interface SubscriptionRecord {
   expiresAt: string;
   pricePaid: number;
   maxTemplates: number;
+  usedGenerations?: number;
   portalUrl?: string;
   notes?: string;
 }
@@ -1258,6 +1946,315 @@ app.post('/api/client-portal/verify', async (req, res) => {
       portalAccessGranted: true,
       message: `مرحباً بك ${match.clientName}، تم تفعيل لوحة خدمتك بنجاح.`
     });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ==============================================================
+// SUBSCRIPTION PLANS APIs
+// ==============================================================
+app.get('/api/subscription-plans', async (req, res) => {
+  res.json(subscriptionPlansStore.filter(p => p.isActive));
+});
+
+app.get('/api/admin/subscription-plans', requireAuth, async (req: AuthRequest, res) => {
+  res.json(subscriptionPlansStore);
+});
+
+app.post('/api/admin/subscription-plans', requireAuth, async (req: AuthRequest, res) => {
+  try {
+    const { name, billingCycle, price, durationDays, maxDocuments, maxExports, storageMb, allowedTools, features } = req.body;
+    const newPlan: SubscriptionPlanRecord = {
+      id: 'plan_' + Math.random().toString(36).substring(2, 7),
+      name: name || 'باقة جديدة',
+      billingCycle: billingCycle || 'annual',
+      price: Number(price) || 199,
+      durationDays: Number(durationDays) || 365,
+      maxDocuments: Number(maxDocuments) || 200,
+      maxExports: Number(maxExports) || 500,
+      storageMb: Number(storageMb) || 1000,
+      allowedTools: allowedTools || ['all'],
+      features: features || ['وصول سحابي كامل'],
+      isActive: true
+    };
+    subscriptionPlansStore.push(newPlan);
+    res.json(newPlan);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.patch('/api/admin/subscription-plans/:id', requireAuth, async (req: AuthRequest, res) => {
+  const plan = subscriptionPlansStore.find(p => p.id === req.params.id);
+  if (!plan) return res.status(404).json({ error: 'الباقة غير موجودة' });
+  Object.assign(plan, req.body);
+  res.json(plan);
+});
+
+app.delete('/api/admin/subscription-plans/:id', requireAuth, async (req: AuthRequest, res) => {
+  const idx = subscriptionPlansStore.findIndex(p => p.id === req.params.id);
+  if (idx === -1) return res.status(404).json({ error: 'الباقة غير موجودة' });
+  const removed = subscriptionPlansStore.splice(idx, 1)[0];
+  res.json({ success: true, removed });
+});
+
+// ==============================================================
+// PUBLIC SMART TOOLS & DYNAMIC EXECUTION ENGINE
+// ==============================================================
+app.get('/api/smart-tools', async (req, res) => {
+  const { group } = req.query;
+  if (group) {
+    res.json(smartToolsStore.filter(t => t.group === group));
+  } else {
+    res.json(smartToolsStore);
+  }
+});
+
+app.post('/api/smart-tools', requireAuth, async (req: AuthRequest, res) => {
+  try {
+    const { name, group, category, description, inputDescription, outputDescription, outputFormats, allowedPlans, fields } = req.body;
+    const newTool: SmartToolRecord = {
+      id: 'tool_' + Math.random().toString(36).substring(2, 8),
+      name: name || 'أداة ذكية مخصصة',
+      group: group || 'school_admin',
+      version: 'إصدار 1448هـ',
+      category: category || 'أدوات ذكية',
+      description: description || '',
+      inputDescription: inputDescription || 'إدخال البيانات',
+      outputDescription: outputDescription || 'توليد ملفات Word و PDF',
+      outputFormats: outputFormats || ['Word (.docx)', 'PDF'],
+      allowedPlans: allowedPlans || ['plan_monthly', 'plan_annual_pro', 'plan_school_vip'],
+      fields: fields || [],
+      totalRuns: 0,
+      successfulRuns: 0,
+      failedRuns: 0,
+      avgProcessingTimeSec: 4.5,
+      status: 'active',
+      lastUpdated: new Date().toLocaleDateString('ar-SA')
+    };
+    smartToolsStore.push(newTool);
+    res.json(newTool);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// EXECUTE SMART TOOL WITH SUBSCRIPTION QUOTA DEDUCTION & REAL OUTPUT
+app.post('/api/smart-tools/run', async (req, res) => {
+  try {
+    const { toolId, templateId, formData, clientUsername, licenseKey } = req.body;
+    const tool = smartToolsStore.find(t => t.id === toolId);
+    if (!tool) return res.status(404).json({ error: 'الأداة المطلوبة غير متوفرة' });
+
+    // Verify subscription or license quota if provided
+    let matchingSub = subscriptionsStore.find(s => 
+      s.clientUsername?.toLowerCase() === String(clientUsername || '').trim().toLowerCase() ||
+      s.licenseKey?.toLowerCase() === String(licenseKey || '').trim().toLowerCase()
+    );
+
+    if (!matchingSub) {
+      // Default to active test subscriber if none passed so visitors can test
+      matchingSub = subscriptionsStore[0];
+    }
+
+    if (matchingSub && matchingSub.maxTemplates <= (matchingSub.usedGenerations || 0)) {
+      return res.status(403).json({ 
+        error: 'عذراً، لقد استهلكت كامل رصيدك من المستندات المتاحة في باقتك. يرجى ترقية الاشتراك.' 
+      });
+    }
+
+    // Deduct usage
+    if (matchingSub) {
+      matchingSub.usedGenerations = (matchingSub.usedGenerations || 0) + 1;
+    }
+    tool.totalRuns += 1;
+    tool.successfulRuns += 1;
+
+    // Create a real saved document record
+    const docId = 'DOC-1448-' + Math.floor(100 + Math.random() * 900);
+    const newDoc: ClientDocumentRecord = {
+      id: docId,
+      userId: matchingSub?.id || 'guest',
+      customerName: matchingSub?.clientName || 'عميل تجريبي',
+      customerPhone: matchingSub?.clientPhone || '',
+      toolId: tool.id,
+      toolName: tool.name,
+      group: tool.group,
+      title: formData?.title || `${tool.name} — ${formData?.schoolName || 'مدرسة المستقبل'} (${new Date().toLocaleDateString('ar-SA')})`,
+      templateId: templateId || 'ministry_official',
+      data: formData || {},
+      wordUrl: `/api/documents/${docId}/download/word`,
+      pdfUrl: `/api/documents/${docId}/download/pdf`,
+      status: 'completed',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      version: 1,
+      folder: tool.category
+    };
+
+    clientDocumentsStore.unshift(newDoc);
+
+    // Audit log
+    auditLogsStore.unshift({
+      id: 'LOG-' + Math.floor(100 + Math.random() * 900),
+      action: 'تشغيل أداة ذكية وتوليد مستند',
+      actor: matchingSub?.clientName || 'العميل',
+      role: 'مشترك في المنصة',
+      details: `تم تشغيل ${tool.name} وتوليد المستند ${newDoc.title} بنجاح`,
+      ip: '176.44.12.80 - الرياض',
+      timestamp: new Date().toISOString()
+    });
+
+    res.json({
+      success: true,
+      document: newDoc,
+      remainingBalance: matchingSub ? Math.max(0, matchingSub.maxTemplates - (matchingSub.usedGenerations || 0)) : 99,
+      message: 'تمت معالجة البيانات وتوليد المستند بنجاح'
+    });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ==============================================================
+// CLIENT DOCUMENTS LIBRARY APIs
+// ==============================================================
+app.get('/api/client/documents', async (req, res) => {
+  res.json(clientDocumentsStore);
+});
+
+app.post('/api/client/documents', async (req, res) => {
+  try {
+    const { title, toolId, templateId, data, folder } = req.body;
+    const docId = 'DOC-1448-' + Math.floor(100 + Math.random() * 900);
+    const doc: ClientDocumentRecord = {
+      id: docId,
+      userId: 'active-user',
+      customerName: 'أ. سلطان مغفوري',
+      toolId: toolId || 'tool_principal_record',
+      toolName: 'مستند مخصص',
+      group: 'school_admin',
+      title: title || 'مستند مدرسي جديد',
+      templateId: templateId || 'ministry_official',
+      data: data || {},
+      wordUrl: `/api/documents/${docId}/download/word`,
+      pdfUrl: `/api/documents/${docId}/download/pdf`,
+      status: 'completed',
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+      version: 1,
+      folder: folder || 'عام'
+    };
+    clientDocumentsStore.unshift(doc);
+    res.json(doc);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.delete('/api/client/documents/:id', async (req, res) => {
+  const idx = clientDocumentsStore.findIndex(d => d.id === req.params.id);
+  if (idx === -1) return res.status(404).json({ error: 'المستند غير موجود' });
+  const removed = clientDocumentsStore.splice(idx, 1)[0];
+  res.json({ success: true, removed });
+});
+
+// ==============================================================
+// RBAC ROLES & PERMISSIONS APIs
+// ==============================================================
+app.get('/api/admin/roles', requireAuth, async (req: AuthRequest, res) => {
+  res.json(userRolesStore);
+});
+
+app.post('/api/admin/roles', requireAuth, async (req: AuthRequest, res) => {
+  try {
+    const { name, description, permissions } = req.body;
+    const newRole: UserRoleRecord = {
+      id: 'role_' + Math.random().toString(36).substring(2, 7),
+      name: name || 'دور جديد',
+      description: description || '',
+      usersCount: 0,
+      permissions: permissions || {
+        dashboard: true,
+        products: { view: true, create: false, edit: false, delete: false, export: false },
+        orders: { view: true, create: false, edit: false, delete: false, export: false }
+      }
+    };
+    userRolesStore.push(newRole);
+    res.json(newRole);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.patch('/api/admin/roles/:id', requireAuth, async (req: AuthRequest, res) => {
+  const role = userRolesStore.find(r => r.id === req.params.id);
+  if (!role) return res.status(404).json({ error: 'الدور غير موجود' });
+  Object.assign(role, req.body);
+  res.json(role);
+});
+
+// ==============================================================
+// CMS CONTENT PAGES APIs
+// ==============================================================
+app.get('/api/cms/pages', async (req, res) => {
+  res.json(cmsPagesStore.filter(p => p.isPublished));
+});
+
+app.get('/api/cms/pages/:slug', async (req, res) => {
+  const page = cmsPagesStore.find(p => p.slug === req.params.slug);
+  if (!page) return res.status(404).json({ error: 'الصفحة غير موجودة' });
+  res.json(page);
+});
+
+app.get('/api/admin/cms/pages', requireAuth, async (req: AuthRequest, res) => {
+  res.json(cmsPagesStore);
+});
+
+app.patch('/api/admin/cms/pages/:id', requireAuth, async (req: AuthRequest, res) => {
+  const page = cmsPagesStore.find(p => p.id === req.params.id);
+  if (!page) return res.status(404).json({ error: 'الصفحة غير موجودة' });
+  Object.assign(page, req.body, { lastModified: new Date().toLocaleDateString('ar-SA') });
+  res.json(page);
+});
+
+// ==============================================================
+// FINANCIAL TRANSACTIONS & PAYMENT WEBHOOKS APIs
+// ==============================================================
+app.get('/api/admin/finance/transactions', requireAuth, async (req: AuthRequest, res) => {
+  res.json(financialTransactionsStore);
+});
+
+app.post('/api/webhooks/payment', async (req, res) => {
+  try {
+    const { orderId, transactionId, amount, status, gateway } = req.body;
+    const newTxn: FinancialTransactionRecord = {
+      id: 'TXN-' + Math.floor(100 + Math.random() * 900),
+      orderId: orderId || '#ORD-AUTO-' + Math.floor(1000 + Math.random() * 9000),
+      amount: Number(amount) || 149.00,
+      currency: 'SAR',
+      gateway: gateway || 'Mada / Apple Pay',
+      status: status || 'successful',
+      referenceId: transactionId || 'REF-' + Math.random().toString(36).substring(2, 9).toUpperCase(),
+      customerName: 'عميل المتجر الإلكتروني',
+      createdAt: new Date().toISOString(),
+      webhookVerified: true
+    };
+    financialTransactionsStore.unshift(newTxn);
+
+    // Record audit log
+    auditLogsStore.unshift({
+      id: 'LOG-' + Math.floor(100 + Math.random() * 900),
+      action: 'التحقق من إشعار بوابة الدفع (Webhook)',
+      actor: 'بوابة الدفع السحابية',
+      role: 'نظام الدفع الآلي',
+      details: `تم تأكيد دفع العملية ${newTxn.referenceId} بمبلغ ${newTxn.amount} ر.س وتسليم الملفات فورياً`,
+      ip: 'بوابة دفع موثوقة',
+      timestamp: new Date().toISOString()
+    });
+
+    res.json({ success: true, transaction: newTxn, digitalDeliveryTriggered: true });
   } catch (err: any) {
     res.status(500).json({ error: err.message });
   }

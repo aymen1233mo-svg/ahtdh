@@ -12,7 +12,17 @@ export type StoreCategory =
   | 'student_activity'
   | 'kindergarten';
 
-export type ProductType = 'ready_file' | 'web_link' | 'smart_tool' | 'live_editable';
+export type ProductType = 
+  | 'ready_file'             // 1. ملفات Word قابلة للتعديل
+  | 'pdf_document'           // 2. ملفات PDF جاهزة
+  | 'excel_sheet'            // 3. ملفات Excel مبرمجة ومؤتمتة
+  | 'file_bundle'            // 4. حزم ملفات متعددة (حقائب كاملة)
+  | 'digital_download'       // 5. منتجات رقمية قابلة للتحميل
+  | 'subscription_service'   // 6. اشتراكات شهرية وسنوية
+  | 'smart_tool'             // 7. أدوات ذكية تعمل عبر الإنترنت
+  | 'data_entry_service'     // 8. خدمات إلكترونية تعتمد على إدخال البيانات
+  | 'web_link' 
+  | 'live_editable';
 
 export interface ProductItem {
   id: string;
@@ -260,4 +270,132 @@ export interface SmartToolTemplateConfig {
   isActive: boolean;
   requiresSubscription: boolean;
 }
+
+// 5 Main Groups of Smart Tools
+export type SmartToolGroup = 
+  | 'school_admin'        // 1. أدوات الإدارة المدرسية
+  | 'plans_development'   // 2. أدوات الخطط والتطوير
+  | 'portfolios_guides'   // 3. أدوات ملفات الإنجاز
+  | 'certificates_cards'  // 4. أدوات الشهادات والبطاقات
+  | 'excel_tracking';     // 5. أدوات Excel والمتابعة
+
+// Form Builder Dynamic Field Schema
+export interface SmartToolField {
+  id: string;
+  name: string;
+  label: string;
+  type: 'text' | 'textarea' | 'number' | 'date' | 'select' | 'multiselect' | 'checkbox' | 'image_upload' | 'file_upload' | 'dynamic_table' | 'calculated';
+  required?: boolean;
+  placeholder?: string;
+  defaultValue?: any;
+  options?: Array<{ label: string; value: string }>;
+  tableColumns?: Array<{ key: string; label: string; type: string }>;
+  helpText?: string;
+  condition?: { field: string; equals: any };
+}
+
+// Smart Tool Definition
+export interface SmartToolDefinition {
+  id: string;
+  name: string;
+  group: SmartToolGroup;
+  category: string;
+  version: string;
+  icon: string;
+  description: string;
+  inputDescription: string;
+  outputDescription: string;
+  outputFormats: string[];
+  allowedPlans: string[];
+  fields?: SmartToolField[];
+  totalRuns: number;
+  successfulRuns: number;
+  failedRuns: number;
+  avgProcessingTimeSec: number;
+  status: 'active' | 'maintenance';
+  lastUpdated: string;
+}
+
+// Client Generated Document in Customer Library
+export interface ClientDocumentItem {
+  id: string;
+  userId: string;
+  customerName: string;
+  customerPhone?: string;
+  toolId: string;
+  toolName: string;
+  group: SmartToolGroup;
+  title: string;
+  templateId: string;
+  data: Record<string, any>;
+  wordUrl?: string;
+  pdfUrl?: string;
+  status: 'completed' | 'draft';
+  createdAt: string;
+  updatedAt: string;
+  version: number;
+  folder?: string;
+}
+
+// Subscription Plans
+export interface SubscriptionPlanItem {
+  id: string;
+  name: string;
+  billingCycle: 'free' | 'monthly' | 'quarterly' | 'semi_annual' | 'annual' | 'custom';
+  price: number;
+  durationDays: number;
+  maxDocuments: number;
+  maxExports: number;
+  storageMb: number;
+  allowedTools: string[];
+  features: string[];
+  isPopular?: boolean;
+  isActive: boolean;
+}
+
+// RBAC Roles & Permissions
+export interface UserRoleItem {
+  id: string;
+  name: string;
+  description: string;
+  usersCount: number;
+  permissions: {
+    dashboard: boolean;
+    products: { view: boolean; create: boolean; edit: boolean; delete: boolean; export: boolean };
+    orders: { view: boolean; create: boolean; edit: boolean; delete: boolean; export: boolean };
+    customers: { view: boolean; create: boolean; edit: boolean; delete: boolean; export: boolean };
+    subscriptions: { view: boolean; create: boolean; edit: boolean; delete: boolean; export: boolean };
+    smartTools: { view: boolean; create: boolean; edit: boolean; delete: boolean; export: boolean };
+    reports: { view: boolean; export: boolean };
+    finance: { view: boolean; edit: boolean; export: boolean };
+    settings: { view: boolean; edit: boolean };
+  };
+}
+
+// CMS Pages Management
+export interface CMSPageItem {
+  id: string;
+  slug: string;
+  title: string;
+  content: string;
+  metaTitle?: string;
+  metaDescription?: string;
+  lastModified: string;
+  isPublished: boolean;
+}
+
+// Financial Transactions & Webhooks
+export interface FinancialTransactionItem {
+  id: string;
+  orderId: string;
+  amount: number;
+  currency: string;
+  gateway: string;
+  status: 'successful' | 'pending' | 'failed' | 'refunded';
+  referenceId: string;
+  customerName: string;
+  createdAt: string;
+  webhookVerified: boolean;
+}
+
 
