@@ -230,3 +230,34 @@ export interface TargetPersona {
   storeSolutions: string[];
   recommendedProducts: string[];
 }
+
+export interface SubscriptionItem {
+  id: string;
+  clientName: string;
+  clientUsername: string;
+  clientEmail: string;
+  clientPhone: string;
+  serviceName: string;
+  serviceType: 'greetings_cards' | 'tahseen_pro' | 'records_suite';
+  licenseKey: string;
+  status: 'active' | 'expired' | 'pending';
+  startDate: string;
+  expiresAt: string;
+  pricePaid: number;
+  maxTemplates: number;
+  portalUrl?: string;
+  notes?: string;
+}
+
+export interface SmartToolTemplateConfig {
+  id: string;
+  toolKey: 'tahseen' | 'school_info' | 'discipline_cert' | 'record_cover' | 'absence';
+  name: string;
+  description: string;
+  wordTemplateFile: string;
+  pdfExportEnabled: boolean;
+  variables: Array<{ key: string; label: string; defaultValue: string; isRequired: boolean }>;
+  isActive: boolean;
+  requiresSubscription: boolean;
+}
+

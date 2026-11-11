@@ -229,6 +229,96 @@ const smartToolsStore: SmartToolRecord[] = [
   }
 ];
 
+// In-Memory Persistent Store for Annual Subscriptions & Client Portals
+export interface SubscriptionRecord {
+  id: string;
+  clientName: string;
+  clientUsername: string;
+  clientEmail: string;
+  clientPhone: string;
+  serviceName: string;
+  serviceType: 'greetings_cards' | 'tahseen_pro' | 'records_suite';
+  licenseKey: string;
+  status: 'active' | 'expired' | 'pending';
+  startDate: string;
+  expiresAt: string;
+  pricePaid: number;
+  maxTemplates: number;
+  portalUrl?: string;
+  notes?: string;
+}
+
+const subscriptionsStore: SubscriptionRecord[] = [
+  {
+    id: 'SUB-801',
+    clientName: 'د. سارة بن حمود الشمري',
+    clientUsername: 'sarah_cards',
+    clientEmail: 'sarah.shammari@moe.gov.sa',
+    clientPhone: '0559876543',
+    serviceName: 'اشتراك خدمة بطاقات التهنئة والشهادات المخصصة',
+    serviceType: 'greetings_cards',
+    licenseKey: 'LIC-TAHN-2026-88',
+    status: 'active',
+    startDate: '2026-01-15',
+    expiresAt: '2027-01-14',
+    pricePaid: 199.00,
+    maxTemplates: 150,
+    portalUrl: '/portal/greetings',
+    notes: 'تم تفعيل اسم المستخدم sarah_cards وصلاحية الوصول المباشر للوحة البطاقات'
+  },
+  {
+    id: 'SUB-802',
+    clientName: 'أ. فهد بن عبدالعزيز العتيبي',
+    clientUsername: 'fahad_tahseen',
+    clientEmail: 'fahad.otaibi@edu.sa',
+    clientPhone: '0501234567',
+    serviceName: 'اشتراك أداة تحسين السنوية (منصة تميز)',
+    serviceType: 'tahseen_pro',
+    licenseKey: 'LIC-THSN-2026-42',
+    status: 'active',
+    startDate: '2026-02-01',
+    expiresAt: '2027-01-31',
+    pricePaid: 299.00,
+    maxTemplates: 300,
+    portalUrl: '/portal/tahseen',
+    notes: 'تحليل غير محدود لتقارير منصة تميز وتوليد الخطط'
+  },
+  {
+    id: 'SUB-803',
+    clientName: 'مدرسة رواد المستقبل النموذجية',
+    clientUsername: 'future_school_1448',
+    clientEmail: 'info@future-school.edu.sa',
+    clientPhone: '0543322110',
+    serviceName: 'ترخيص باقة السجلات المدرسية الشاملة 1448هـ',
+    serviceType: 'records_suite',
+    licenseKey: 'LIC-SUITE-1448-99',
+    status: 'active',
+    startDate: '2026-03-01',
+    expiresAt: '2027-02-28',
+    pricePaid: 450.00,
+    maxTemplates: 500,
+    portalUrl: '/portal/suite',
+    notes: 'يشمل كامل سجلات المدير والوكيل والموجه'
+  },
+  {
+    id: 'SUB-804',
+    clientName: 'أ. نورة بن سعيد الغامدي',
+    clientUsername: 'noura_cards',
+    clientEmail: 'noura.g@edu.sa',
+    clientPhone: '0562233445',
+    serviceName: 'اشتراك خدمة بطاقات التهنئة والشهادات',
+    serviceType: 'greetings_cards',
+    licenseKey: 'LIC-TAHN-2025-10',
+    status: 'expired',
+    startDate: '2025-01-01',
+    expiresAt: '2026-01-01',
+    pricePaid: 199.00,
+    maxTemplates: 100,
+    portalUrl: '/portal/greetings',
+    notes: 'انتهى الاشتراك وجاري التواصل للتجديد للعام الجديد'
+  }
+];
+
 interface ProductMeta {
   productType?: 'ready_file' | 'web_link' | 'smart_tool';
   keywords?: string;
@@ -1060,6 +1150,114 @@ app.patch('/api/admin/smart-tools/:id', requireAuth, async (req: AuthRequest, re
     if (status) tool.status = status;
     if (version) tool.version = version;
     res.json(tool);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// ==============================================================
+// ANNUAL SUBSCRIPTIONS & CLIENT PORTALS APIs
+// ==============================================================
+app.get('/api/admin/subscriptions', requireAuth, async (req: AuthRequest, res) => {
+  try {
+    res.json(subscriptionsStore);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.post('/api/admin/subscriptions', requireAuth, async (req: AuthRequest, res) => {
+  try {
+    const { clientName, clientUsername, clientEmail, clientPhone, serviceName, serviceType, pricePaid, maxTemplates, notes } = req.body;
+    if (!clientName || !clientUsername) {
+      return res.status(400).json({ error: 'اسم العميل واسم المستخدم مطلوبان' });
+    }
+    const newSub: SubscriptionRecord = {
+      id: 'SUB-' + Math.floor(100 + Math.random() * 900),
+      clientName,
+      clientUsername,
+      clientEmail: clientEmail || '',
+      clientPhone: clientPhone || '',
+      serviceName: serviceName || 'اشتراك خدمة بطاقات التهنئة والشهادات',
+      serviceType: serviceType || 'greetings_cards',
+      licenseKey: 'LIC-' + Math.random().toString(36).substring(2, 7).toUpperCase() + '-1448',
+      status: 'active',
+      startDate: new Date().toISOString().split('T')[0],
+      expiresAt: new Date(Date.now() + 365 * 24 * 3600 * 1000).toISOString().split('T')[0],
+      pricePaid: Number(pricePaid) || 199.00,
+      maxTemplates: Number(maxTemplates) || 150,
+      portalUrl: serviceType === 'tahseen_pro' ? '/portal/tahseen' : '/portal/greetings',
+      notes: notes || 'اشتراك سنوي نشط'
+    };
+    subscriptionsStore.unshift(newSub);
+
+    // Audit log
+    auditLogsStore.unshift({
+      id: 'LOG-' + Math.floor(100 + Math.random() * 900),
+      action: 'إصدار وتفعيل اشتراك سنوي جديد',
+      actor: 'إدارة المتجر',
+      role: 'إدارة الاشتراكات والتراخيص',
+      details: `تفعيل اشتراك العميل: ${clientName} (${clientUsername}) برمز ترخيص: ${newSub.licenseKey}`,
+      ip: '176.44.12.80 - الرياض',
+      timestamp: new Date().toISOString()
+    });
+
+    res.json(newSub);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.patch('/api/admin/subscriptions/:id', requireAuth, async (req: AuthRequest, res) => {
+  try {
+    const { id } = req.params;
+    const { status, expiresAt, maxTemplates, notes } = req.body;
+    const sub = subscriptionsStore.find(s => s.id === id);
+    if (!sub) return res.status(404).json({ error: 'الاشتراك غير موجود' });
+    if (status) sub.status = status;
+    if (expiresAt) sub.expiresAt = expiresAt;
+    if (maxTemplates !== undefined) sub.maxTemplates = Number(maxTemplates);
+    if (notes) sub.notes = notes;
+    res.json(sub);
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+app.delete('/api/admin/subscriptions/:id', requireAuth, async (req: AuthRequest, res) => {
+  try {
+    const { id } = req.params;
+    const index = subscriptionsStore.findIndex(s => s.id === id);
+    if (index === -1) return res.status(404).json({ error: 'الاشتراك غير موجود' });
+    const removed = subscriptionsStore.splice(index, 1)[0];
+    res.json({ success: true, removed });
+  } catch (err: any) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// Client Portal Verification Endpoint (Allows customers to login to their sold portals)
+app.post('/api/client-portal/verify', async (req, res) => {
+  try {
+    const { username, licenseKey } = req.body;
+    if (!username) return res.status(400).json({ error: 'اسم المستخدم مطلوب' });
+    const match = subscriptionsStore.find(s => 
+      s.clientUsername.toLowerCase() === String(username).trim().toLowerCase() &&
+      (!licenseKey || s.licenseKey.toLowerCase() === String(licenseKey).trim().toLowerCase())
+    );
+    if (!match) {
+      return res.status(401).json({ error: 'بيانات الدخول أو رمز الترخيص غير صالحة. يرجى التأكد من الاشتراك في المتجر.' });
+    }
+    const isExpired = new Date(match.expiresAt).getTime() < Date.now();
+    if (isExpired) {
+      return res.status(403).json({ error: 'عذراً، انتهت صلاحية اشتراكك السنوي. يرجى تجديد الاشتراك من المتجر.' });
+    }
+    res.json({
+      success: true,
+      subscription: match,
+      portalAccessGranted: true,
+      message: `مرحباً بك ${match.clientName}، تم تفعيل لوحة خدمتك بنجاح.`
+    });
   } catch (err: any) {
     res.status(500).json({ error: err.message });
   }
