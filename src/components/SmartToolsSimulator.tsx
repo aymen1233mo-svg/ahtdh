@@ -34,7 +34,10 @@ import {
   ChevronRight,
   TrendingUp,
   AlertCircle,
-  FolderOpen
+  FolderOpen,
+  X,
+  Upload,
+  Image as ImageIcon
 } from 'lucide-react';
 import { STORE_INFO } from '../data/storeData';
 import { useStore } from '../context/StoreContext';
@@ -68,6 +71,9 @@ export const SmartToolsSimulator: React.FC = () => {
   const [selectedToolId, setSelectedToolId] = useState<string>('tahseen');
   const [currentStage, setCurrentStage] = useState<'form' | 'processing' | 'preview'>('form');
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
+  const [isCustomizeModalOpen, setIsCustomizeModalOpen] = useState<boolean>(false);
+  const [schoolLogoUrl, setSchoolLogoUrl] = useState<string>('');
+  const [schoolCoverUrl, setSchoolCoverUrl] = useState<string>('');
 
   // Client Subscription State (Simulating Authenticated Account Quotas)
   const [clientPlan, setClientPlan] = useState({
@@ -439,8 +445,34 @@ export const SmartToolsSimulator: React.FC = () => {
     setDynamicTableRows(prev => prev.map(r => r.id === id ? { ...r, [field]: val } : r));
   };
 
+  // Image File Reader Upload Handlers
+  const handleLogoUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setSchoolLogoUrl(reader.result as string);
+        showToast('تم رفع شعار المدرسة بنجاح!');
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleCoverUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setSchoolCoverUrl(reader.result as string);
+        showToast('تم رفع صورة الغلاف/خلفية المستند بنجاح!');
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
   // Run Smart Processing (Stage 3 -> 4)
   const handleProcessTool = async () => {
+    setIsCustomizeModalOpen(false);
     setIsProcessing(true);
     setCurrentStage('processing');
 
@@ -782,6 +814,7 @@ export const SmartToolsSimulator: React.FC = () => {
                   onClick={() => {
                     setSelectedToolId(t.id);
                     setCurrentStage('form');
+                    setIsCustomizeModalOpen(true);
                   }}
                   className={`cursor-pointer p-4 rounded-2xl border transition-all duration-200 text-right ${
                     isSelected
@@ -806,7 +839,7 @@ export const SmartToolsSimulator: React.FC = () => {
                   <div className="flex items-center justify-between text-[11px] pt-2 border-t border-stone-100">
                     <span className="text-stone-400 font-mono">{t.format}</span>
                     <span className={`font-bold flex items-center gap-1 ${isSelected ? 'text-[#008489]' : 'text-stone-600'}`}>
-                      {isSelected ? 'قيد التعديل' : 'اختيار الأداة'}
+                      {isSelected ? 'تعديل الأداة' : 'اختيار وتعديل'}
                       <ChevronRight className="w-3.5 h-3.5" />
                     </span>
                   </div>
@@ -833,24 +866,31 @@ export const SmartToolsSimulator: React.FC = () => {
                 </div>
               </div>
 
-              {/* Steps Progress Pills */}
-              <div className="flex items-center gap-2 text-xs">
+              {/* Steps Progress Pills & Customize Modal Trigger */}
+              <div className="flex flex-wrap items-center gap-2 text-xs">
+                <button
+                  onClick={() => setIsCustomizeModalOpen(true)}
+                  className="px-3.5 py-1.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:brightness-105 text-white rounded-xl font-bold flex items-center gap-1.5 shadow-xs cursor-pointer"
+                >
+                  <Sparkles className="w-3.5 h-3.5 text-amber-200" />
+                  <span>تعديل الأداة والشعار في نافذة منبثقة</span>
+                </button>
                 <button
                   onClick={() => setCurrentStage('form')}
-                  className={`px-3 py-1 rounded-lg font-bold flex items-center gap-1.5 ${
+                  className={`px-3 py-1.5 rounded-xl font-bold flex items-center gap-1.5 ${
                     currentStage === 'form' ? 'bg-[#008489] text-white' : 'bg-stone-200/70 text-stone-700'
                   }`}
                 >
-                  <span>1. إدخال وتعديل البيانات</span>
+                  <span>1. البيانات</span>
                 </button>
                 <ChevronRight className="w-3 h-3 text-stone-400 rotate-180" />
                 <button
                   onClick={() => setCurrentStage('preview')}
-                  className={`px-3 py-1 rounded-lg font-bold flex items-center gap-1.5 ${
+                  className={`px-3 py-1.5 rounded-xl font-bold flex items-center gap-1.5 ${
                     currentStage === 'preview' ? 'bg-[#008489] text-white' : 'bg-stone-200/70 text-stone-700'
                   }`}
                 >
-                  <span>2. المعاينة الرسمية والتصدير</span>
+                  <span>2. المعاينة والتصدير</span>
                 </button>
               </div>
             </div>
@@ -1204,8 +1244,15 @@ export const SmartToolsSimulator: React.FC = () => {
                 {/* THE OFFICIAL DOCUMENT PAPER CANVAS (Pixel-perfect match to Images 1, 2, 3, 4, WA0007) */}
                 <div 
                   ref={previewPrintRef}
-                  className="bg-white border-2 border-stone-300 rounded-2xl shadow-xl p-6 sm:p-10 max-w-4xl mx-auto space-y-6 text-stone-900"
+                  className="bg-white border-2 border-stone-300 rounded-2xl shadow-xl p-6 sm:p-10 max-w-4xl mx-auto space-y-6 text-stone-900 overflow-hidden"
                 >
+                  {/* Optional Custom Cover Banner Image */}
+                  {schoolCoverUrl && (
+                    <div className="w-full h-44 rounded-2xl overflow-hidden mb-4 border border-teal-500/30 shadow-md">
+                      <img src={schoolCoverUrl} alt="غلاف المستند" className="w-full h-full object-cover" />
+                    </div>
+                  )}
+
                   {/* Ministry Official Header (Dark Teal Band matching Image 1, 3, 4) */}
                   <div className="bg-[#0c2b33] text-white rounded-2xl p-6 relative overflow-hidden shadow-inner">
                     <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-right">
@@ -1216,13 +1263,17 @@ export const SmartToolsSimulator: React.FC = () => {
                         <div className="text-[11px] text-teal-300">{officeBelonging}</div>
                       </div>
 
-                      {/* Center: Ministry of Education Emblem */}
+                      {/* Center: Ministry Logo OR Uploaded School Logo */}
                       <div className="flex flex-col items-center">
-                        <div className="flex gap-1 mb-1">
-                          <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
-                          <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
-                          <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
-                        </div>
+                        {schoolLogoUrl ? (
+                          <img src={schoolLogoUrl} alt="شعار المدرسة" className="h-14 w-auto object-contain mb-1 bg-white/10 p-1.5 rounded-xl border border-white/20 shadow-xs" />
+                        ) : (
+                          <div className="flex gap-1 mb-1">
+                            <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+                            <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+                            <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+                          </div>
+                        )}
                         <div className="text-lg font-black tracking-widest text-white">وزارة الـتـعـلـيـم</div>
                         <div className="text-[9px] tracking-wider text-teal-200 font-sans">Ministry of Education</div>
                       </div>
@@ -1588,6 +1639,394 @@ export const SmartToolsSimulator: React.FC = () => {
                 className="w-full py-2 bg-stone-900 hover:bg-stone-800 text-white rounded-xl text-xs font-bold cursor-pointer"
               >
                 طلب الاشتراك VIP
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODERN POP-UP MODAL: CUSTOMIZE TOOL & OFFICIAL SCHOOL LOGO / COVER */}
+      {isCustomizeModalOpen && (
+        <div className="fixed inset-0 z-50 bg-stone-900/70 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6 overflow-y-auto" dir="rtl">
+          <div className="bg-white rounded-3xl shadow-2xl border border-stone-200 w-full max-w-4xl max-h-[92vh] flex flex-col overflow-hidden text-right animate-in fade-in zoom-in-95 duration-200">
+            
+            {/* Modal Header */}
+            <div className="bg-gradient-to-r from-[#093c42] to-[#008489] text-white p-5 flex items-center justify-between shrink-0">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center text-amber-300">
+                  <Sparkles className="w-5 h-5" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-amber-400 text-stone-950">
+                      نافذة تعديل الأداة والشعار
+                    </span>
+                    <span className="text-[10px] font-mono text-teal-200">{activeToolDef.badge}</span>
+                  </div>
+                  <h3 className="text-base sm:text-lg font-black">{activeToolDef.name}</h3>
+                </div>
+              </div>
+
+              <button
+                onClick={() => setIsCustomizeModalOpen(false)}
+                className="w-8 h-8 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-all cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Modal Body (Scrollable) */}
+            <div className="p-6 overflow-y-auto space-y-6 text-xs text-stone-800">
+              
+              {/* SECTION 1: School Logo & Cover Image Uploader (الترويسة والشعارات) */}
+              <div className="p-4 bg-stone-50 rounded-2xl border border-stone-200 space-y-4">
+                <div className="flex items-center justify-between">
+                  <h4 className="font-bold text-sm text-[#093c42] flex items-center gap-2">
+                    <ImageIcon className="w-4 h-4 text-[#008489]" />
+                    <span>بيانات الشعار وغلاف المستند الرسمي (الترويسة الرسمية)</span>
+                  </h4>
+                  <span className="text-[10px] text-stone-400">تظهر بالهيدر العلوي والغلاف</span>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {/* School Logo Uploader */}
+                  <div className="bg-white p-3.5 rounded-xl border border-stone-200 space-y-3">
+                    <label className="block font-bold text-stone-700 text-xs">شعار المدرسة / الإدارة</label>
+                    <div className="flex items-center gap-3">
+                      {schoolLogoUrl ? (
+                        <div className="relative group w-16 h-16 rounded-xl border border-stone-300 p-1 bg-stone-50 flex items-center justify-center shrink-0">
+                          <img src={schoolLogoUrl} alt="الشعار" className="w-full h-full object-contain" />
+                          <button
+                            onClick={() => setSchoolLogoUrl('')}
+                            className="absolute -top-2 -right-2 bg-rose-600 text-white p-1 rounded-full shadow-xs hover:bg-rose-700"
+                            title="إزالة الشعار"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="w-16 h-16 rounded-xl border-2 border-dashed border-stone-300 flex items-center justify-center bg-stone-50 shrink-0 text-stone-400">
+                          <School className="w-6 h-6" />
+                        </div>
+                      )}
+
+                      <div className="space-y-1.5 flex-1">
+                        <label className="cursor-pointer px-3 py-1.5 bg-[#008489] hover:bg-[#007478] text-white rounded-lg font-bold text-[11px] inline-flex items-center gap-1.5 shadow-xs">
+                          <Upload className="w-3.5 h-3.5" />
+                          <span>رفع شعار من الجهاز</span>
+                          <input type="file" accept="image/*" onChange={handleLogoUpload} className="hidden" />
+                        </label>
+                        <p className="text-[10px] text-stone-400 leading-normal">
+                          صيغ PNG, JPG بحجم شفاف تظهر بمنتصف ترويسة المستند
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* School Cover Image Uploader */}
+                  <div className="bg-white p-3.5 rounded-xl border border-stone-200 space-y-3">
+                    <label className="block font-bold text-stone-700 text-xs">صورة غلاف أو خلفية المستند</label>
+                    <div className="flex items-center gap-3">
+                      {schoolCoverUrl ? (
+                        <div className="relative group w-20 h-14 rounded-xl border border-stone-300 overflow-hidden bg-stone-50 shrink-0">
+                          <img src={schoolCoverUrl} alt="الغلاف" className="w-full h-full object-cover" />
+                          <button
+                            onClick={() => setSchoolCoverUrl('')}
+                            className="absolute -top-1 -right-1 bg-rose-600 text-white p-1 rounded-full shadow-xs hover:bg-rose-700"
+                            title="إزالة الغلاف"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </div>
+                      ) : (
+                        <div className="w-20 h-14 rounded-xl border-2 border-dashed border-stone-300 flex items-center justify-center bg-stone-50 shrink-0 text-stone-400">
+                          <ImageIcon className="w-6 h-6" />
+                        </div>
+                      )}
+
+                      <div className="space-y-1.5 flex-1">
+                        <label className="cursor-pointer px-3 py-1.5 bg-stone-800 hover:bg-stone-900 text-white rounded-lg font-bold text-[11px] inline-flex items-center gap-1.5 shadow-xs">
+                          <Upload className="w-3.5 h-3.5" />
+                          <span>رفع صورة الغلاف</span>
+                          <input type="file" accept="image/*" onChange={handleCoverUpload} className="hidden" />
+                        </label>
+                        <p className="text-[10px] text-stone-400 leading-normal">
+                          تظهر أعلى الصفحات والغلاف التوثيقي للسجل
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* SECTION 2: Official Metadata Inputs */}
+              <div className="space-y-3">
+                <h4 className="font-bold text-sm text-stone-900 flex items-center gap-2">
+                  <School className="w-4 h-4 text-[#008489]" />
+                  <span>بيانات المدرسة والجهات المعتمدة (الترويسة والاعتمادات)</span>
+                </h4>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                  <div>
+                    <label className="block text-[11px] font-bold text-stone-700 mb-1">اسم المدرسة</label>
+                    <input
+                      type="text"
+                      value={schoolName}
+                      onChange={(e) => setSchoolName(e.target.value)}
+                      className="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-bold text-stone-700 mb-1">الإدارة العامة للتعليم بمنطقة</label>
+                    <input
+                      type="text"
+                      value={educationRegion}
+                      onChange={(e) => setEducationRegion(e.target.value)}
+                      className="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-bold text-stone-700 mb-1">مكتب التعليم</label>
+                    <input
+                      type="text"
+                      value={officeBelonging}
+                      onChange={(e) => setOfficeBelonging(e.target.value)}
+                      className="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-bold text-stone-700 mb-1">العام الدراسي</label>
+                    <input
+                      type="text"
+                      value={academicYear}
+                      onChange={(e) => setAcademicYear(e.target.value)}
+                      className="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-1">
+                  <div>
+                    <label className="block text-[11px] font-bold text-stone-700 mb-1">اسم مدير/ة المدرسة</label>
+                    <input
+                      type="text"
+                      value={principalName}
+                      onChange={(e) => setPrincipalName(e.target.value)}
+                      className="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-bold text-stone-700 mb-1">الموجه/ة الطلابي</label>
+                    <input
+                      type="text"
+                      value={counselorName}
+                      onChange={(e) => setCounselorName(e.target.value)}
+                      className="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-bold text-stone-700 mb-1">مسؤولة السجل / المشرفة</label>
+                    <input
+                      type="text"
+                      value={supervisorName}
+                      onChange={(e) => setSupervisorName(e.target.value)}
+                      className="w-full px-3 py-2 bg-stone-50 border border-stone-200 rounded-xl"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* SECTION 3: Tool-Specific Form Fields */}
+              {selectedToolId === 'tahseen' && (
+                <div className="p-4 bg-teal-50/50 rounded-2xl border border-teal-200 space-y-3">
+                  <div className="flex items-center justify-between font-bold text-xs text-[#093c42]">
+                    <span>معايير درجات منصة تميز لهيئة تقويم التعليم</span>
+                    <span className="text-[#008489]">المتوسط: {averageScore}% — {getLevelInfo(averageScore).name}</span>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs">
+                    <div className="bg-white p-3 rounded-xl border border-stone-200 space-y-1">
+                      <label className="font-bold block text-stone-700">الإدارة المدرسية ({leadershipScore}%)</label>
+                      <input
+                        type="range"
+                        min="0"
+                        max="100"
+                        value={leadershipScore}
+                        onChange={(e) => setLeadershipScore(Number(e.target.value))}
+                        className="w-full accent-[#008489]"
+                      />
+                    </div>
+                    <div className="bg-white p-3 rounded-xl border border-stone-200 space-y-1">
+                      <label className="font-bold block text-stone-700">التعليم والتعلم ({learningScore}%)</label>
+                      <input
+                        type="range"
+                        min="0"
+                        max="100"
+                        value={learningScore}
+                        onChange={(e) => setLearningScore(Number(e.target.value))}
+                        className="w-full accent-[#008489]"
+                      />
+                    </div>
+                    <div className="bg-white p-3 rounded-xl border border-stone-200 space-y-1">
+                      <label className="font-bold block text-stone-700">نواتج التعلم ({outcomesScore}%)</label>
+                      <input
+                        type="range"
+                        min="0"
+                        max="100"
+                        value={outcomesScore}
+                        onChange={(e) => setOutcomesScore(Number(e.target.value))}
+                        className="w-full accent-[#008489]"
+                      />
+                    </div>
+                    <div className="bg-white p-3 rounded-xl border border-stone-200 space-y-1">
+                      <label className="font-bold block text-stone-700">البيئة المدرسية ({environmentScore}%)</label>
+                      <input
+                        type="range"
+                        min="0"
+                        max="100"
+                        value={environmentScore}
+                        onChange={(e) => setEnvironmentScore(Number(e.target.value))}
+                        className="w-full accent-[#008489]"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {selectedToolId === 'tool_discipline_cert' && (
+                <div className="p-4 bg-teal-50/50 rounded-2xl border border-teal-200 space-y-3">
+                  <div className="font-bold text-xs text-[#093c42]">بيانات الطالب المكرم في شهادة الانضباط</div>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div>
+                      <label className="block text-[11px] font-bold text-stone-700 mb-1">اسم الطالب/ة</label>
+                      <input
+                        type="text"
+                        value={certStudent}
+                        onChange={(e) => setCertStudent(e.target.value)}
+                        className="w-full px-3 py-2 bg-white border border-stone-200 rounded-xl"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-bold text-stone-700 mb-1">الصف الدراسي</label>
+                      <input
+                        type="text"
+                        value={certClass}
+                        onChange={(e) => setCertClass(e.target.value)}
+                        className="w-full px-3 py-2 bg-white border border-stone-200 rounded-xl"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-[11px] font-bold text-stone-700 mb-1">الفصل الدراسي</label>
+                      <input
+                        type="text"
+                        value={certTerm}
+                        onChange={(e) => setCertTerm(e.target.value)}
+                        className="w-full px-3 py-2 bg-white border border-stone-200 rounded-xl"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* SECTION 4: Dynamic Table Rows */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <h4 className="font-bold text-sm text-stone-900 flex items-center gap-2">
+                    <Table2 className="w-4 h-4 text-[#008489]" />
+                    <span>جدول بنود المستند والمهمات التنفيذية</span>
+                  </h4>
+                  <button
+                    type="button"
+                    onClick={handleAddTableRow}
+                    className="px-3 py-1.5 bg-[#008489] hover:bg-[#007478] text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1 shadow-2xs"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>إضافة صف جديد</span>
+                  </button>
+                </div>
+
+                <div className="overflow-x-auto border border-stone-200 rounded-xl">
+                  <table className="w-full text-xs text-right border-collapse">
+                    <thead>
+                      <tr className="bg-stone-100 text-stone-700 font-bold border-b border-stone-200">
+                        <th className="p-2 text-center w-10">م</th>
+                        <th className="p-2 min-w-[180px]">المهمة / الإجراء</th>
+                        <th className="p-2 min-w-[120px]">المسؤول</th>
+                        <th className="p-2 min-w-[100px]">الفترة</th>
+                        <th className="p-2 min-w-[100px]">الإنجاز</th>
+                        <th className="p-2 text-center w-10">حذف</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-stone-200">
+                      {dynamicTableRows.map((r, idx) => (
+                        <tr key={r.id}>
+                          <td className="p-2 text-center font-bold text-stone-500">{idx + 1}</td>
+                          <td className="p-2">
+                            <input
+                              type="text"
+                              value={r.col2}
+                              onChange={(e) => handleUpdateTableRow(r.id, 'col2', e.target.value)}
+                              className="w-full px-2 py-1 bg-white border border-stone-200 rounded-lg text-xs"
+                            />
+                          </td>
+                          <td className="p-2">
+                            <input
+                              type="text"
+                              value={r.col3}
+                              onChange={(e) => handleUpdateTableRow(r.id, 'col3', e.target.value)}
+                              className="w-full px-2 py-1 bg-white border border-stone-200 rounded-lg text-xs"
+                            />
+                          </td>
+                          <td className="p-2">
+                            <input
+                              type="text"
+                              value={r.col4}
+                              onChange={(e) => handleUpdateTableRow(r.id, 'col4', e.target.value)}
+                              className="w-full px-2 py-1 bg-white border border-stone-200 rounded-lg text-xs"
+                            />
+                          </td>
+                          <td className="p-2">
+                            <input
+                              type="text"
+                              value={r.col5}
+                              onChange={(e) => handleUpdateTableRow(r.id, 'col5', e.target.value)}
+                              className="w-full px-2 py-1 bg-white border border-stone-200 rounded-lg text-xs font-bold text-emerald-700"
+                            />
+                          </td>
+                          <td className="p-2 text-center">
+                            <button
+                              type="button"
+                              onClick={() => handleDeleteTableRow(r.id)}
+                              className="text-rose-500 hover:text-rose-700 p-1"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+
+            {/* Modal Footer */}
+            <div className="p-4 bg-stone-50 border-t border-stone-200 flex flex-wrap items-center justify-between gap-3 shrink-0">
+              <button
+                type="button"
+                onClick={() => setIsCustomizeModalOpen(false)}
+                className="px-4 py-2 bg-stone-200 hover:bg-stone-300 text-stone-700 rounded-xl font-bold text-xs transition-all"
+              >
+                إغلاق النافذة
+              </button>
+
+              <button
+                type="button"
+                onClick={handleProcessTool}
+                className="px-6 py-2.5 bg-gradient-to-r from-[#008489] to-[#093c42] hover:brightness-110 text-white rounded-xl text-xs sm:text-sm font-black transition-all flex items-center gap-2 shadow-md cursor-pointer"
+              >
+                <Sparkles className="w-4 h-4 text-amber-300" />
+                <span>حفظ المعالجة ومعاينة المستند الرسمي</span>
+                <ArrowRight className="w-4 h-4 rotate-180" />
               </button>
             </div>
           </div>

@@ -38,6 +38,8 @@ export interface DocxGenerateOptions {
   summaryItems?: { label: string; value: string | number }[];
   notes?: string;
   hijriDate?: string;
+  schoolLogoUrl?: string;
+  schoolCoverUrl?: string;
 }
 
 export async function generateAndDownloadDocx(options: DocxGenerateOptions) {

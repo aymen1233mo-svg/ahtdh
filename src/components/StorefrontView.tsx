@@ -1315,7 +1315,11 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
                   </p>
                   <div className="pt-2 flex justify-center lg:justify-start">
                     <button
-                      onClick={() => onOpenTool('prod-tahseen-v3')}
+                      onClick={() => {
+                        const prod = products.find(p => p.id === 'prod-tahseen-v3' || p.name.includes('تحسين')) || products[0];
+                        if (prod) onOpenProductModal(prod);
+                        else onOpenTool('tahseen');
+                      }}
                       className="px-8 py-3.5 bg-white text-[#008489] hover:bg-stone-50 border-2 border-[#008489] font-bold rounded-2xl text-xs sm:text-sm lg:text-base transition-all shadow-xs flex items-center justify-center gap-2 cursor-pointer hover:shadow-md hover:-translate-y-0.5"
                     >
                       <span>{settings.heroButtonText}</span>
@@ -1615,7 +1619,11 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
               </p>
               <div className="pt-2 flex justify-center lg:justify-start">
                 <button
-                  onClick={() => onOpenTool('prod-tahseen-v3')}
+                  onClick={() => {
+                    handleSelectDrawerSubCategory('الأدوات الذكية');
+                    const section = document.getElementById('products-section');
+                    if (section) section.scrollIntoView({ behavior: 'smooth' });
+                  }}
                   className="px-8 py-3.5 bg-white text-[#008b9b] hover:bg-stone-50 font-bold rounded-2xl text-xs sm:text-sm lg:text-base transition-all shadow-md inline-flex items-center gap-2 cursor-pointer hover:shadow-lg hover:-translate-y-0.5"
                 >
                   <span>تصفح كل الأدوات</span>
