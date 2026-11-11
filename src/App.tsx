@@ -262,7 +262,7 @@ function AppContent() {
               <div>
                 <h4 className="font-bold text-stone-900 text-sm mb-2">المهام الميدانية والإدارية المنجزة:</h4>
                 <div className="space-y-2">
-                  {selectedProduct.tasksAccomplished.map((task, idx) => (
+                  {(selectedProduct.tasksAccomplished || []).map((task, idx) => (
                     <div key={idx} className="flex items-start gap-2 bg-emerald-50/50 p-3 rounded-lg border border-emerald-100/60">
                       <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
                       <span className="text-stone-800 font-medium">{task}</span>
@@ -385,7 +385,7 @@ function AppContent() {
               <div>
                 <h4 className="font-bold text-stone-900 text-sm mb-2">المواصفات ومكونات الحزمة الرقمية:</h4>
                 <ul className="space-y-1.5 text-stone-700 list-disc list-inside bg-stone-50 p-4 rounded-xl border border-stone-100">
-                  {selectedProduct.features.map((feat, idx) => (
+                  {(selectedProduct.features || []).map((feat, idx) => (
                     <li key={idx} className="leading-relaxed">{feat}</li>
                   ))}
                 </ul>
