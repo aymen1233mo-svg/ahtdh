@@ -1285,7 +1285,7 @@ app.post('/api/products', requireAuth, async (req: AuthRequest, res) => {
       }).returning();
       newProduct = inserted;
     } catch (dbErr) {
-      console.warn("DB insert failed, using memory fallback for product creation:", dbErr);
+      console.error("DB insert failed, details:", dbErr);
       newProduct = {
         id: Date.now(),
         name, 
