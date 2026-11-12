@@ -37,7 +37,12 @@ import {
   FolderOpen,
   X,
   Upload,
-  Image as ImageIcon
+  Image as ImageIcon,
+  Maximize2,
+  Minimize2,
+  ZoomIn,
+  ZoomOut,
+  Lock
 } from 'lucide-react';
 import { STORE_INFO } from '../data/storeData';
 import { useStore } from '../context/StoreContext';
@@ -72,6 +77,8 @@ export const SmartToolsSimulator: React.FC = () => {
   const [currentStage, setCurrentStage] = useState<'form' | 'processing' | 'preview'>('form');
   const [isProcessing, setIsProcessing] = useState<boolean>(false);
   const [isCustomizeModalOpen, setIsCustomizeModalOpen] = useState<boolean>(false);
+  const [isFullScreenCanvasOpen, setIsFullScreenCanvasOpen] = useState<boolean>(false);
+  const [canvasZoom, setCanvasZoom] = useState<number>(100);
   const [schoolLogoUrl, setSchoolLogoUrl] = useState<string>('');
   const [schoolCoverUrl, setSchoolCoverUrl] = useState<string>('');
 
@@ -1221,6 +1228,16 @@ export const SmartToolsSimulator: React.FC = () => {
                   </div>
 
                   <div className="flex flex-wrap items-center gap-2">
+                    {/* Full Screen Preview Button */}
+                    <button
+                      onClick={() => setIsFullScreenCanvasOpen(true)}
+                      className="px-4 py-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:brightness-105 text-white rounded-xl text-xs font-black transition-all flex items-center gap-2 shadow-sm cursor-pointer"
+                      title="فتح الشاشة الكاملة لتفقد الصفحة بالتفصيل قبل التصدير والطباعة"
+                    >
+                      <Maximize2 className="w-4 h-4" />
+                      <span>معاينة بشاشة كاملة</span>
+                    </button>
+
                     {/* Real DOCX Download */}
                     <button
                       onClick={handleDownloadRealDocx}
@@ -2028,6 +2045,192 @@ export const SmartToolsSimulator: React.FC = () => {
                 <span>حفظ المعالجة ومعاينة المستند الرسمي</span>
                 <ArrowRight className="w-4 h-4 rotate-180" />
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* FULL SCREEN CANVAS PREVIEW FOR ADMIN / PRINCIPAL REVIEW */}
+      {isFullScreenCanvasOpen && (
+        <div className="fixed inset-0 z-50 bg-stone-950/95 backdrop-blur-md flex flex-col text-right overflow-hidden" dir="rtl">
+          {/* Full Screen Top Toolbar */}
+          <div className="bg-[#093c42] text-white p-4 px-6 border-b border-teal-800/80 flex flex-wrap items-center justify-between gap-4 shrink-0 shadow-md">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-amber-400 text-stone-950 flex items-center justify-center font-black">
+                <Maximize2 className="w-5 h-5" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-black px-2 py-0.5 rounded bg-emerald-500 text-stone-950">
+                    معاينة شاشة كاملة فائقة الدقة
+                  </span>
+                  <span className="text-xs font-mono text-teal-200">{schoolName}</span>
+                </div>
+                <h3 className="text-sm sm:text-base font-black text-white">{activeToolDef.name}</h3>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-3 text-xs">
+              {/* Zoom Controls */}
+              <div className="flex items-center gap-1 bg-black/30 p-1 rounded-xl border border-white/10">
+                <button
+                  onClick={() => setCanvasZoom(z => Math.max(60, z - 10))}
+                  className="p-1.5 hover:bg-white/10 rounded-lg text-teal-100"
+                  title="تصغير الحجم"
+                >
+                  <ZoomOut className="w-4 h-4" />
+                </button>
+                <span className="px-2 font-mono font-bold text-amber-300">{canvasZoom}%</span>
+                <button
+                  onClick={() => setCanvasZoom(z => Math.min(160, z + 10))}
+                  className="p-1.5 hover:bg-white/10 rounded-lg text-teal-100"
+                  title="تكبير الحجم"
+                >
+                  <ZoomIn className="w-4 h-4" />
+                </button>
+              </div>
+
+              {/* Quick Download DOCX */}
+              <button
+                onClick={handleDownloadRealDocx}
+                className="px-4 py-2 bg-[#008489] hover:bg-[#007478] text-white rounded-xl font-bold flex items-center gap-1.5 shadow-xs cursor-pointer"
+              >
+                <Download className="w-4 h-4" />
+                <span>تحميل Word</span>
+              </button>
+
+              {/* Quick Print PDF */}
+              <button
+                onClick={handlePrintPdf}
+                className="px-4 py-2 bg-stone-800 hover:bg-stone-900 text-white rounded-xl font-bold flex items-center gap-1.5 shadow-xs cursor-pointer"
+              >
+                <Printer className="w-4 h-4" />
+                <span>طباعة PDF</span>
+              </button>
+
+              {/* Close Full Screen */}
+              <button
+                onClick={() => setIsFullScreenCanvasOpen(false)}
+                className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl font-bold flex items-center gap-1.5 shadow-xs cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+                <span>خروج من الشاشة الكاملة</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Scrollable Center Canvas */}
+          <div className="flex-1 overflow-auto p-6 sm:p-10 flex justify-center items-start bg-stone-900/60">
+            <div 
+              className="w-full max-w-4xl transition-transform duration-200"
+              style={{ transform: `scale(${canvasZoom / 100})`, transformOrigin: 'top center' }}
+            >
+              {/* Render Canvas Preview HTML */}
+              <div className="bg-white border-2 border-stone-300 rounded-2xl shadow-2xl p-6 sm:p-10 space-y-6 text-stone-900 overflow-hidden">
+                {schoolCoverUrl && (
+                  <div className="w-full h-44 rounded-2xl overflow-hidden mb-4 border border-teal-500/30 shadow-md">
+                    <img src={schoolCoverUrl} alt="غلاف المستند" className="w-full h-full object-cover" />
+                  </div>
+                )}
+
+                <div className="bg-[#0c2b33] text-white rounded-2xl p-6 relative overflow-hidden shadow-inner">
+                  <div className="flex flex-col sm:flex-row items-center justify-between gap-4 text-center sm:text-right">
+                    <div className="space-y-1 text-xs">
+                      <div className="font-bold text-sm tracking-wide">الإدارة العامة للتعليم</div>
+                      <div className="text-teal-200">بمنطقة {educationRegion}</div>
+                      <div className="text-[11px] text-teal-300">{officeBelonging}</div>
+                    </div>
+
+                    <div className="flex flex-col items-center">
+                      {schoolLogoUrl ? (
+                        <img src={schoolLogoUrl} alt="شعار المدرسة" className="h-14 w-auto object-contain mb-1 bg-white/10 p-1.5 rounded-xl border border-white/20 shadow-xs" />
+                      ) : (
+                        <div className="flex gap-1 mb-1">
+                          <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+                          <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+                          <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+                        </div>
+                      )}
+                      <div className="text-lg font-black tracking-widest text-white">وزارة الـتـعـلـيـم</div>
+                      <div className="text-[9px] tracking-wider text-teal-200 font-sans">Ministry of Education</div>
+                    </div>
+
+                    <div className="bg-[#123e4a] border border-teal-500/40 px-5 py-2.5 rounded-xl text-center shadow-md">
+                      <div className="text-[10px] text-teal-300 font-bold mb-0.5">المدرسة الرسمية</div>
+                      <div className="text-sm font-black text-white">{schoolName}</div>
+                    </div>
+                  </div>
+
+                  <div className="mt-5 pt-3 border-t border-teal-700/60 text-center">
+                    <div className="text-base sm:text-xl font-black text-amber-300 tracking-wide">
+                      {schoolName}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="text-center space-y-1 pt-2">
+                  <span className="inline-block bg-[#008489]/10 text-[#008489] text-xs font-black px-4 py-1 rounded-full">
+                    العام الدراسي {academicYear}
+                  </span>
+                  <h2 className="text-lg sm:text-2xl font-black text-[#093c42]">
+                    {activeToolDef.name}
+                  </h2>
+                  <p className="text-xs text-stone-500 max-w-xl mx-auto">
+                    {activeToolDef.description}
+                  </p>
+                </div>
+
+                {/* Dynamic Rows Table */}
+                <div className="space-y-4">
+                  <div className="border border-stone-200 rounded-xl overflow-hidden shadow-2xs">
+                    <table className="w-full text-xs text-right border-collapse">
+                      <thead>
+                        <tr className="bg-[#008489] text-white font-bold">
+                          <th className="p-2 text-center w-12">م</th>
+                          <th className="p-2">المهمة / الإجراء التنفيذي</th>
+                          <th className="p-2 text-center">المسؤول</th>
+                          <th className="p-2 text-center">الفترة الزمنية</th>
+                          <th className="p-2 text-center">نسبة الإنجاز</th>
+                        </tr>
+                      </thead>
+                      <tbody className="divide-y divide-stone-200">
+                        {dynamicTableRows.map((r, i) => (
+                          <tr key={r.id} className={i % 2 === 0 ? 'bg-white' : 'bg-stone-50/60'}>
+                            <td className="p-2 text-center font-bold text-stone-500">{i + 1}</td>
+                            <td className="p-2 font-medium text-stone-800">{r.col2}</td>
+                            <td className="p-2 text-center text-stone-600">{r.col3}</td>
+                            <td className="p-2 text-center text-stone-600">{r.col4}</td>
+                            <td className="p-2 text-center font-bold text-emerald-700">{r.col5}</td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                {/* Signatures */}
+                <div className="pt-6 border-t-2 border-[#008489]/40 mt-8">
+                  <div className="grid grid-cols-3 gap-4 text-center text-xs">
+                    <div className="space-y-1">
+                      <div className="font-bold text-stone-800">مسؤولة السجل / معدة التقرير:</div>
+                      <div className="text-[#008489] font-semibold">{supervisorName}</div>
+                      <div className="text-[10px] text-stone-400 pt-1">التوقيع: .....................</div>
+                    </div>
+
+                    <div className="space-y-1">
+                      <div className="font-bold text-stone-800">منسق/ة العمل التعاوني:</div>
+                      <div className="text-[#008489] font-semibold">{coordinatorName}</div>
+                      <div className="text-[10px] text-stone-400 pt-1">التوقيع: .....................</div>
+                    </div>
+
+                    <div className="space-y-1">
+                      <div className="font-bold text-stone-800">مدير/ة المدرسة (الاعتماد):</div>
+                      <div className="text-[#008489] font-semibold">{principalName}</div>
+                      <div className="text-[10px] text-stone-400 pt-1">الختم الرسمي: .....................</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         </div>

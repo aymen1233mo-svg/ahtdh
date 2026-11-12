@@ -30,7 +30,13 @@ import {
   Layers,
   Cpu,
   Edit3,
-  Download
+  Download,
+  Maximize2,
+  ZoomIn,
+  ZoomOut,
+  Lock,
+  Eye,
+  ShieldAlert
 } from 'lucide-react';
 
 function AppContent() {
@@ -38,6 +44,8 @@ function AppContent() {
   const [isExportOpen, setIsExportOpen] = useState<boolean>(false);
   const [selectedProduct, setSelectedProduct] = useState<ProductItem | null>(null);
   const [editingProduct, setEditingProduct] = useState<ProductItem | null>(null);
+  const [fullScreenProductPreview, setFullScreenProductPreview] = useState<ProductItem | null>(null);
+  const [previewZoom, setPreviewZoom] = useState<number>(100);
   const [copiedLink, setCopiedLink] = useState<boolean>(false);
   const [showSplash, setShowSplash] = useState<boolean>(true);
 
@@ -487,6 +495,16 @@ function AppContent() {
               </button>
 
               <div className="flex flex-wrap items-center gap-2">
+                {/* Protected Full-Screen Preview Button */}
+                <button
+                  onClick={() => setFullScreenProductPreview(selectedProduct)}
+                  className="px-4 py-2.5 text-xs font-bold text-amber-900 bg-amber-100 hover:bg-amber-200 rounded-lg transition-colors flex items-center gap-1.5 border border-amber-300 shadow-2xs cursor-pointer"
+                  title="فتح الشاشة الكاملة المحمية للعرض بدون إمكانية التحميل أو التصدير"
+                >
+                  <Maximize2 className="w-3.5 h-3.5 text-amber-700" />
+                  <span>معاينة بشاشة كاملة (محمية)</span>
+                </button>
+
                 {/* Method 2: Live In-Browser Editor */}
                 <button
                   onClick={() => {
@@ -524,6 +542,107 @@ function AppContent() {
                   <span>شراء المنتج من المتجر الأصلي</span>
                   <ExternalLink className="w-3.5 h-3.5" />
                 </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* PROTECTED FULL SCREEN PREVIEW MODAL FOR CUSTOMERS */}
+      {fullScreenProductPreview && (
+        <div 
+          className="fixed inset-0 z-50 bg-stone-950/95 backdrop-blur-md flex flex-col text-right overflow-hidden select-none" 
+          dir="rtl"
+          onContextMenu={(e) => e.preventDefault()}
+        >
+          {/* Top Header Bar */}
+          <div className="bg-stone-900 border-b border-stone-800 px-6 py-4 flex flex-wrap items-center justify-between gap-4 text-white shrink-0 shadow-md">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-xl bg-rose-500/20 text-rose-400 border border-rose-500/30 flex items-center justify-center font-bold">
+                <Lock className="w-5 h-5" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="text-[10px] font-black px-2 py-0.5 rounded bg-rose-600 text-white">
+                    وضع المعاينة الفائقة المحمية — التحميل والتصدير محظور
+                  </span>
+                  <span className="text-xs text-stone-400 font-mono">{(fullScreenProductPreview as any).badge || 'معاينة عادية'}</span>
+                </div>
+                <h3 className="text-sm sm:text-base font-black text-white">{fullScreenProductPreview.name}</h3>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3 text-xs">
+              {/* Zoom Controls */}
+              <div className="flex items-center gap-1 bg-stone-800 p-1 rounded-xl border border-stone-700">
+                <button 
+                  onClick={() => setPreviewZoom(z => Math.max(60, z - 15))}
+                  className="p-1.5 hover:bg-stone-700 rounded-lg text-stone-300"
+                  title="تصغير الحجم"
+                >
+                  <ZoomOut className="w-4 h-4" />
+                </button>
+                <span className="px-2 font-mono font-bold text-amber-400">{previewZoom}%</span>
+                <button 
+                  onClick={() => setPreviewZoom(z => Math.min(180, z + 15))}
+                  className="p-1.5 hover:bg-stone-700 rounded-lg text-stone-300"
+                  title="تكبير الحجم"
+                >
+                  <ZoomIn className="w-4 h-4" />
+                </button>
+              </div>
+
+              {/* Close Full Screen Button */}
+              <button
+                onClick={() => setFullScreenProductPreview(null)}
+                className="px-4 py-2 bg-rose-600 hover:bg-rose-700 text-white rounded-xl text-xs font-bold transition-all flex items-center gap-1.5 shadow-md cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+                <span>إغلاق المعاينة</span>
+              </button>
+            </div>
+          </div>
+
+          {/* Protected Document Canvas with Repeating Diagonal Watermark */}
+          <div className="flex-1 overflow-auto p-6 flex justify-center items-center relative bg-stone-900/60">
+            {/* Diagonal Repeating Watermark Pattern */}
+            <div className="absolute inset-0 pointer-events-none z-20 flex flex-wrap items-center justify-center gap-16 opacity-20 rotate-[-18deg] select-none overflow-hidden">
+              {Array.from({ length: 24 }).map((_, i) => (
+                <div key={i} className="text-white text-xs sm:text-sm font-black tracking-widest whitespace-nowrap bg-black/50 px-3 py-1 rounded-md border border-white/10">
+                  🔒 معاينة للعرض فقط — متجر سلطان للمنتجات المدرسية (يمنع التحميل والتصدير)
+                </div>
+              ))}
+            </div>
+
+            {/* Document Card */}
+            <div 
+              className="bg-white rounded-2xl shadow-2xl border border-stone-700 max-w-3xl w-full p-8 text-stone-900 relative transition-transform duration-200"
+              style={{ transform: `scale(${previewZoom / 100})`, transformOrigin: 'top center' }}
+            >
+              <div className="border-2 border-stone-200 rounded-xl p-6 space-y-4">
+                <div className="bg-[#093c42] text-white p-4 rounded-xl text-center space-y-1">
+                  <div className="text-xs text-amber-300 font-bold">وزارة التعليم — المملكة العربية السعودية</div>
+                  <h2 className="text-lg font-black">{fullScreenProductPreview.name}</h2>
+                  <div className="text-[10px] text-teal-200">معاينة التقييم والتصميم الرقمي لمنتج سلطان 1448هـ</div>
+                </div>
+
+                <div className="aspect-[4/3] rounded-xl overflow-hidden bg-stone-100 border border-stone-200 relative">
+                  <img 
+                    src={fullScreenProductPreview.image} 
+                    alt={fullScreenProductPreview.name} 
+                    className="w-full h-full object-cover pointer-events-none select-none"
+                    draggable={false}
+                  />
+                </div>
+
+                <div className="bg-stone-50 p-4 rounded-xl border border-stone-200 space-y-2 text-xs">
+                  <h4 className="font-bold text-stone-800">تفاصيل ومكونات هذا المستند:</h4>
+                  <ul className="list-disc list-inside space-y-1 text-stone-600">
+                    {(fullScreenProductPreview.features || []).map((f, idx) => (
+                      <li key={idx}>{f}</li>
+                    ))}
+                  </ul>
+                </div>
               </div>
             </div>
           </div>
