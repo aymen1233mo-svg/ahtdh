@@ -1266,6 +1266,7 @@ app.post('/api/products', requireAuth, async (req: AuthRequest, res) => {
       isBestseller,
       image
     } = req.body;
+    console.log("Creating product with payload:", req.body);
 
     let newProduct: any;
     try {
@@ -1273,7 +1274,7 @@ app.post('/api/products', requireAuth, async (req: AuthRequest, res) => {
         name, 
         category, 
         subCategory: subCategory || 'منتج تعليمي', 
-        price: price.toString(), 
+        price: (price || 0).toString(), 
         originalPrice: originalPrice ? originalPrice.toString() : null, 
         format: format || 'Word (.docx)', 
         targetRole: targetRole || 'الجميع', 
