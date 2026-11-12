@@ -628,19 +628,150 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
           </div>
         </div>
 
-        {/* Center: Desktop Search Bar (Exact Image 83be15fe.png) */}
-        <div className="hidden md:flex items-center flex-1 max-w-lg mx-8 relative">
-          <input 
-            type="text" 
-            placeholder="ابحث" 
-            value={searchQuery}
-            onChange={(e) => {
-              setSearchQuery(e.target.value);
-              setIsSearchOpen(true);
-            }}
-            className="w-full bg-white border border-stone-300 rounded-full py-2 pr-10 pl-4 text-xs focus:outline-none focus:border-[#008489] text-right shadow-2xs"
-          />
-          <Search className="w-4 h-4 text-stone-400 absolute right-3.5 top-1/2 -translate-y-1/2" />
+        {/* Center: Quick Live Search Bar (Matching user request: شريط بحث سريع للبحث الحي والمباشر في المنتجات والأدوات الذكية) */}
+        <div className="relative flex-1 max-w-md mx-2 sm:mx-6">
+          <div className="relative flex items-center">
+            <input 
+              type="text" 
+              placeholder="ابحث عن سجل، أداة ذكية، خطة تشغيلية، أو كلمة مفتاحية..." 
+              value={searchQuery}
+              onChange={(e) => {
+                setSearchQuery(e.target.value);
+                setIsSearchOpen(true);
+              }}
+              onFocus={() => setIsSearchOpen(true)}
+              className="w-full bg-stone-50 hover:bg-white border-2 border-stone-200 focus:border-[#008489] rounded-full py-2 pr-10 pl-9 text-xs focus:outline-none text-right transition-all shadow-2xs font-medium text-stone-900 placeholder:text-stone-400"
+            />
+            <Search className="w-4 h-4 text-[#008489] absolute right-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            {searchQuery && (
+              <button 
+                onClick={() => { setSearchQuery(''); setIsSearchOpen(false); }}
+                className="absolute left-3 top-1/2 -translate-y-1/2 p-1 text-stone-400 hover:text-stone-700 transition-colors"
+                title="مسح البحث"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
+
+          {/* INSTANT LIVE RESULTS POPUP DROPDOWN */}
+          <AnimatePresence>
+            {isSearchOpen && searchQuery.trim().length > 0 && (
+              <>
+                {/* Backdrop overlay to dismiss dropdown on outside click */}
+                <div 
+                  className="fixed inset-0 z-40 bg-stone-900/10 backdrop-blur-[1px]" 
+                  onClick={() => setIsSearchOpen(false)} 
+                />
+
+                <motion.div
+                  initial={{ opacity: 0, y: 8, scale: 0.98 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  exit={{ opacity: 0, y: 8, scale: 0.98 }}
+                  transition={{ duration: 0.15 }}
+                  className="absolute right-0 left-0 top-full mt-2 bg-white rounded-2xl shadow-2xl border border-stone-200 z-50 overflow-hidden max-h-[75vh] flex flex-col text-right divide-y divide-stone-100"
+                >
+                  {/* Header of Live Results */}
+                  <div className="p-3 bg-gradient-to-r from-stone-50 to-teal-50/50 flex items-center justify-between text-xs font-bold text-stone-800">
+                    <div className="flex items-center gap-1.5">
+                      <Sparkles className="w-4 h-4 text-[#008489]" />
+                      <span>نتائج البحث الحية والمباشرة</span>
+                      <span className="bg-[#008489] text-white px-2 py-0.5 rounded-full text-[10px] font-mono font-black">
+                        {filteredProducts.length} نتيجة
+                      </span>
+                    </div>
+                    <button 
+                      onClick={() => setIsSearchOpen(false)}
+                      className="text-stone-400 hover:text-stone-800 text-[11px] font-bold"
+                    >
+                      إغلاق ✕
+                    </button>
+                  </div>
+
+                  {/* Live Matching Products List */}
+                  <div className="overflow-y-auto p-2 space-y-1.5 max-h-[55vh]">
+                    {filteredProducts.length === 0 ? (
+                      <div className="p-8 text-center space-y-2">
+                        <Search className="w-8 h-8 text-stone-300 mx-auto" />
+                        <p className="text-xs text-stone-600 font-bold">لا توجد نتائج مطابقة لـ "{searchQuery}"</p>
+                        <p className="text-[11px] text-stone-400">جرب البحث بكلمات مفتاحية أخرى مثل: تحسين، نافس، مدير، وكيل، خطة، شهادات</p>
+                      </div>
+                    ) : (
+                      filteredProducts.map((prod) => (
+                        <div 
+                          key={prod.id}
+                          onClick={() => {
+                            setIsSearchOpen(false);
+                            onOpenProductModal(prod);
+                          }}
+                          className="p-2.5 hover:bg-teal-50/70 rounded-xl transition-all cursor-pointer border border-transparent hover:border-teal-200 flex items-center justify-between gap-3 group"
+                        >
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-lg bg-stone-100 border border-stone-200 overflow-hidden shrink-0 flex items-center justify-center text-xs font-bold text-stone-500 shadow-2xs">
+                              {prod.image ? (
+                                <img src={prod.image} alt={prod.name} className="w-full h-full object-cover" />
+                              ) : (
+                                '📄'
+                              )}
+                            </div>
+
+                            <div className="space-y-0.5 text-right">
+                              <div className="flex items-center gap-1.5">
+                                <span className="text-[10px] font-bold px-1.5 py-0.2 rounded bg-teal-100 text-[#008489]">
+                                  {prod.category === 'smart_tools' ? 'أداة ذكية ⚡' : prod.subCategory}
+                                </span>
+                                <span className="text-[10px] text-stone-400 font-semibold">{prod.format}</span>
+                              </div>
+                              <h4 className="text-xs font-black text-stone-900 group-hover:text-[#008489] transition-colors line-clamp-1">
+                                {prod.name}
+                              </h4>
+                            </div>
+                          </div>
+
+                          <div className="flex items-center gap-2 shrink-0">
+                            <div className="text-left">
+                              <span className="text-xs font-black text-stone-900 block">{prod.price} ر.س</span>
+                              {prod.originalPrice && (
+                                <span className="text-[10px] text-stone-400 line-through block">{prod.originalPrice} ر.س</span>
+                              )}
+                            </div>
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                handleAddToCart(prod, e);
+                              }}
+                              className="p-1.5 rounded-lg bg-[#008489] text-white hover:bg-[#007478] transition-colors shadow-2xs"
+                              title="أضف للسلة"
+                            >
+                              <ShoppingBag className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        </div>
+                      ))
+                    )}
+                  </div>
+
+                  {/* Quick Filter Tag Pills at bottom of search box */}
+                  <div className="p-2.5 bg-stone-50 flex items-center gap-1.5 overflow-x-auto text-[10px]">
+                    <span className="text-stone-500 font-bold shrink-0">مقترحات سريعة:</span>
+                    {['تحسين', 'نافس', 'مدير مدرسة', 'وكيل', 'إنجاز', 'شهادات', 'متابعة'].map((tag) => (
+                      <button
+                        key={tag}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSearchQuery(tag);
+                          setIsSearchOpen(true);
+                        }}
+                        className="px-2 py-1 bg-white hover:bg-teal-50 border border-stone-200 hover:border-teal-300 text-stone-700 hover:text-[#008489] rounded-md font-bold shrink-0 transition-colors shadow-2xs"
+                      >
+                        {tag}
+                      </button>
+                    ))}
+                  </div>
+                </motion.div>
+              </>
+            )}
+          </AnimatePresence>
         </div>
 
         {/* Left side: Language, Account, Search, Cart */}
