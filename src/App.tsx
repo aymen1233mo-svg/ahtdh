@@ -258,6 +258,98 @@ function AppContent() {
 
             {/* Modal Content */}
             <div className="p-6 space-y-6 text-xs sm:text-sm">
+              {/* Special Tahseen Product Visual Hero Card matching screenshot (عند النقر علي زر جرب اداة التحسين_ .jpg) */}
+              {(selectedProduct.id === 'prod-tahseen-v3' || selectedProduct.name.includes('تحسين')) && (
+                <div className="space-y-4">
+                  <div className="bg-[#0b444b] text-white rounded-3xl p-6 sm:p-8 shadow-2xl border border-[#14565f] overflow-hidden text-center relative">
+                    <span className="text-xs text-stone-300 font-medium block mb-3 opacity-90">
+                      وزارة التعليم • التقويم الذاتي والاعتماد المدرسي
+                    </span>
+
+                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center shadow-md mx-auto mb-3">
+                      <svg className="w-9 h-9 text-white" viewBox="0 0 24 24" fill="currentColor">
+                        <rect x="4" y="10" width="3.5" height="10" rx="1.75" />
+                        <rect x="10.25" y="4" width="3.5" height="16" rx="1.75" />
+                        <rect x="16.5" y="8" width="3.5" height="12" rx="1.75" />
+                      </svg>
+                    </div>
+
+                    <h3 className="text-3xl font-black text-white tracking-wide mb-2">
+                      تحسين
+                    </h3>
+
+                    <p className="text-sm text-stone-200 leading-relaxed max-w-md mx-auto mb-4 opacity-95">
+                      حلّل نتيجة التقويم الذاتي واين خطة التحسين والتطوير في دقائق
+                    </p>
+
+                    <div className="flex flex-wrap items-center justify-center gap-2 text-xs mb-6">
+                      <span className="bg-white/10 text-white px-3 py-1 rounded-full border border-white/20 font-semibold">
+                        الإصدار الثالث 1447هـ / 1448هـ
+                      </span>
+                      <span className="bg-white/10 text-white px-3 py-1 rounded-full border border-white/20 font-semibold">
+                        52 مؤشراً
+                      </span>
+                      <span className="bg-white/10 text-white px-3 py-1 rounded-full border border-white/20 font-semibold">
+                        خطة PDF جاهزة
+                      </span>
+                    </div>
+
+                    {/* Dashboard Evaluation Mockup Card */}
+                    <div className="bg-white text-stone-800 rounded-2xl p-4 text-right shadow-2xl border border-stone-200 max-w-lg mx-auto">
+                      <div className="flex items-center justify-between border-b border-stone-100 pb-2 mb-3 text-xs text-stone-500 font-bold">
+                        <span>المملكة العربية السعودية • وزارة التعليم</span>
+                        <span className="text-[#008489]">لوحة نتائج التقويم الذاتي</span>
+                      </div>
+
+                      <div className="grid grid-cols-4 gap-2 mb-3 text-center text-xs">
+                        <div className="bg-orange-50 border border-orange-200 rounded-xl p-2">
+                          <span className="block font-black text-orange-600 text-sm">66.6%</span>
+                          <span className="text-stone-500 text-[10px]">الأداء العام</span>
+                        </div>
+                        <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-2">
+                          <span className="block font-black text-emerald-700 text-sm">39</span>
+                          <span className="text-stone-500 text-[10px]">مؤشرات متمكنة</span>
+                        </div>
+                        <div className="bg-teal-50 border border-teal-200 rounded-xl p-2">
+                          <span className="block font-black text-teal-700 text-sm">37</span>
+                          <span className="text-stone-500 text-[10px]">مؤشرات منجزة</span>
+                        </div>
+                        <div className="bg-rose-50 border border-rose-200 rounded-xl p-2">
+                          <span className="block font-black text-rose-600 text-sm">10</span>
+                          <span className="text-stone-500 text-[10px]">فرص تحسين</span>
+                        </div>
+                      </div>
+
+                      <div className="bg-rose-50 border border-rose-200 rounded-xl p-2 text-xs text-rose-800 font-bold">
+                        أولويات التحسين: تطوير استراتيجيات القياس والتقويم المستمر لرفع نواتج التعلم
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* كيف تعمل الأداة؟ Workflow Steps */}
+                  <div className="bg-stone-50 rounded-2xl p-4 border border-stone-200 space-y-3">
+                    <h4 className="font-bold text-stone-900 text-xs sm:text-sm">كيف تعمل الأداة؟</h4>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs text-right">
+                      <div className="bg-white p-3 rounded-xl border border-stone-200 space-y-1">
+                        <span className="w-5 h-5 rounded-full bg-[#008489] text-white font-mono font-bold flex items-center justify-center text-xs">1</span>
+                        <div className="font-bold text-stone-800">ارفع تقرير الأداء المدرسي</div>
+                        <div className="text-[10px] text-stone-500">من ملف إكسل أو أدخل درجات المحاور فوراً</div>
+                      </div>
+                      <div className="bg-white p-3 rounded-xl border border-stone-200 space-y-1">
+                        <span className="w-5 h-5 rounded-full bg-[#008489] text-white font-mono font-bold flex items-center justify-center text-xs">2</span>
+                        <div className="font-bold text-stone-800">الأداة تحلل وتبني الخطة</div>
+                        <div className="text-[10px] text-stone-500">احتساب النسب ومؤشرات التميز آلياً</div>
+                      </div>
+                      <div className="bg-white p-3 rounded-xl border border-stone-200 space-y-1">
+                        <span className="w-5 h-5 rounded-full bg-[#008489] text-white font-mono font-bold flex items-center justify-center text-xs">3</span>
+                        <div className="font-bold text-stone-800">تصدير خطتك PDF و Word</div>
+                        <div className="text-[10px] text-stone-500">جاهزة للاعتماد والطباعة الفورية</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* Description */}
               <div>
                 <h4 className="font-bold text-stone-900 text-sm mb-2">الوصف التفصيلي والهدف:</h4>
