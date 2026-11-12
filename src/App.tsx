@@ -230,260 +230,358 @@ function AppContent() {
         )}
       </main>
 
-      {/* Product Detail Modal */}
+      {/* Dedicated Full-Page Product View (Matching Salla product page screenshot: واجهة عرض المنتجات او الادوات عند النقر.jpg) */}
       {selectedProduct && (
-        <div className="fixed inset-0 z-50 bg-stone-950/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl border border-stone-200">
-            {/* Modal Header */}
-            <div className="p-6 border-b border-stone-200 flex items-start justify-between gap-4 sticky top-0 bg-white z-10">
-              <div>
-                <div className="flex items-center gap-2 text-xs text-stone-500 mb-1">
-                  <span className="font-bold text-emerald-800">{selectedProduct.subCategory}</span>
-                  <span>·</span>
-                  <span>موجه إلى: {selectedProduct.targetRole}</span>
-                  <span>·</span>
-                  <span className="bg-stone-100 px-2 py-0.5 rounded text-stone-800 font-semibold">{selectedProduct.format}</span>
-                </div>
-                <h3 className="text-lg sm:text-xl font-black text-stone-900">
-                  {selectedProduct.name}
-                </h3>
+        <div className="fixed inset-0 z-40 bg-[#f8fafb] overflow-y-auto flex flex-col text-right pb-28 select-text" dir="rtl">
+          {/* Top Salla Bar */}
+          <header className="bg-white border-b border-stone-200 sticky top-0 z-30 shadow-xs">
+            {/* Promo ribbon */}
+            <div className="bg-[#008489] text-white text-[11px] font-bold py-1.5 px-4 text-center flex items-center justify-center gap-2">
+              <span>⏰ لا تنسَ استخدام كود الخصم S15 للحصول على خصم إضافي</span>
+            </div>
+            
+            <div className="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+              <div className="flex items-center gap-3">
+                <button
+                  onClick={() => setSelectedProduct(null)}
+                  className="px-3.5 py-2 rounded-xl bg-teal-50 text-[#008489] hover:bg-teal-100 font-bold text-xs flex items-center gap-1.5 transition-colors border border-teal-200 shadow-2xs cursor-pointer"
+                >
+                  <ArrowLeft className="w-4 h-4 rotate-180" />
+                  <span>← العودة لمتجر المنتجات</span>
+                </button>
               </div>
-              <button
+
+              {/* Salla Store Brand Logo */}
+              <div 
+                className="flex items-center gap-2 cursor-pointer"
                 onClick={() => setSelectedProduct(null)}
-                className="w-8 h-8 rounded-full bg-stone-100 hover:bg-stone-200 flex items-center justify-center text-stone-500 transition-colors"
               >
-                <X className="w-4 h-4" />
-              </button>
+                <span className="font-black text-xl tracking-tight text-[#008489]">سلطان</span>
+                <div className="w-8 h-8 rounded-xl bg-[#008489] text-white flex items-center justify-center font-black text-sm shadow-2xs">
+                  S
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <button 
+                  onClick={() => handleShareProduct(selectedProduct)}
+                  className="p-2 text-stone-600 hover:text-[#008489] rounded-lg hover:bg-stone-100 transition-colors"
+                  title="مشاركة المنتج"
+                >
+                  {copiedLink ? <Check className="w-5 h-5 text-emerald-600" /> : <Share2 className="w-5 h-5" />}
+                </button>
+              </div>
+            </div>
+          </header>
+
+          {/* Salla Breadcrumb Navigation Bar */}
+          <div className="bg-stone-100/80 border-b border-stone-200 py-2.5 px-4">
+            <div className="max-w-6xl mx-auto flex items-center justify-between text-xs text-stone-600 font-medium">
+              <div className="flex items-center gap-2">
+                <button onClick={() => setSelectedProduct(null)} className="hover:text-[#008489] transition-colors">الرئيسية</button>
+                <span>›</span>
+                <span className="text-stone-500">
+                  {selectedProduct.category === 'smart_tools' ? 'الأدوات الذكية' : 'السجلات المدرسية'}
+                </span>
+                <span>›</span>
+                <span className="font-bold text-stone-900 truncate max-w-[200px] sm:max-w-md">{selectedProduct.name}</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Main Full Page Body Content Container */}
+          <div className="max-w-6xl mx-auto px-4 py-6 space-y-6 w-full flex-1">
+            {/* Top Product Showcase Card matching Screenshot (واجهة عرض المنتجات او الادوات عند النقر.jpg) */}
+            <div className="bg-white rounded-2xl border border-stone-200 overflow-hidden shadow-md">
+              <div className="relative aspect-[16/9] sm:aspect-[21/9] bg-[#0b444b] text-white flex flex-col justify-between p-6 sm:p-10 select-none">
+                {/* Header info bar */}
+                <div className="flex items-center justify-between border-b border-white/10 pb-4">
+                  <div className="space-y-1">
+                    <span className="text-[10px] sm:text-xs text-amber-300 font-bold block">وزارة التعليم • المملكة العربية السعودية</span>
+                    <h1 className="text-xl sm:text-3xl font-black text-white">{selectedProduct.name}</h1>
+                  </div>
+                  <span className="bg-white/15 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold border border-white/20 text-teal-200">
+                    {(selectedProduct as any).badge || 'أداة معتمدة 1448هـ'}
+                  </span>
+                </div>
+
+                {/* Body Banner content */}
+                <div className="my-auto py-6 flex flex-col sm:flex-row items-center justify-between gap-6">
+                  <div className="space-y-3 max-w-xl text-right">
+                    <p className="text-stone-200 text-xs sm:text-sm leading-relaxed">
+                      {selectedProduct.description}
+                    </p>
+                    <div className="flex flex-wrap gap-2 pt-1 text-xs">
+                      <span className="bg-emerald-500/20 text-emerald-200 border border-emerald-400/30 px-3 py-1 rounded-lg font-medium flex items-center gap-1">
+                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                        <span>توليد آلي ومعتمد بدقة 100%</span>
+                      </span>
+                      <span className="bg-amber-500/20 text-amber-200 border border-amber-400/30 px-3 py-1 rounded-lg font-medium flex items-center gap-1">
+                        <Zap className="w-3.5 h-3.5 text-amber-400" />
+                        <span>تسليم آلي ورابط فوري للواتساب</span>
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Document Thumbnail Preview Graphic */}
+                  <div className="w-36 sm:w-44 aspect-[3/4] bg-white rounded-xl shadow-2xl p-3 border-2 border-amber-400 flex flex-col justify-between shrink-0 text-stone-900 text-center">
+                    <div className="border-b border-stone-200 pb-1 text-[8px] font-bold text-stone-500">
+                      المملكة العربية السعودية • وزارة التعليم
+                    </div>
+                    <div className="my-auto space-y-1">
+                      <div className="w-8 h-8 rounded-lg bg-[#008489] text-white mx-auto flex items-center justify-center font-bold text-xs">
+                        📄
+                      </div>
+                      <div className="text-[10px] font-black text-stone-900 line-clamp-2">{selectedProduct.name}</div>
+                      <div className="text-[8px] text-[#008489] font-bold">إصدار 1448هـ المعتمد</div>
+                    </div>
+                    <div className="border-t border-stone-200 pt-1 text-[8px] font-bold text-emerald-700 bg-emerald-50 rounded">
+                      جاهز للطباعة والتحميل
+                    </div>
+                  </div>
+                </div>
+
+                {/* Bottom-Right Thumbnail Switcher Selector matching screenshot */}
+                <div className="absolute bottom-4 left-4 sm:bottom-6 sm:left-6 flex items-center gap-2 bg-stone-950/70 backdrop-blur-md p-2 rounded-xl border border-white/20 z-20">
+                  <div className="w-12 sm:w-16 h-12 sm:h-16 rounded-lg bg-white/10 border-2 border-amber-400 overflow-hidden cursor-pointer p-1 text-center text-[9px] flex flex-col justify-center text-white font-bold shadow-sm">
+                    <span>الغلاف الرسمي</span>
+                  </div>
+                  <div className="w-12 sm:w-16 h-12 sm:h-16 rounded-lg bg-white/10 border border-white/20 hover:border-amber-400 transition-all overflow-hidden cursor-pointer p-1 text-center text-[9px] flex flex-col justify-center text-white">
+                    <span>محتوى الخطة</span>
+                  </div>
+                  <div className="w-12 sm:w-16 h-12 sm:h-16 rounded-lg bg-white/10 border border-white/20 hover:border-amber-400 transition-all overflow-hidden cursor-pointer p-1 text-center text-[9px] flex flex-col justify-center text-white">
+                    <span>المعاينة الميدانية</span>
+                  </div>
+                </div>
+              </div>
             </div>
 
-            {/* Modal Content */}
-            <div className="p-6 space-y-6 text-xs sm:text-sm">
-              {/* Special Tahseen Product Visual Hero Card matching screenshot (عند النقر علي زر جرب اداة التحسين_ .jpg) */}
-              {(selectedProduct.id === 'prod-tahseen-v3' || selectedProduct.name.includes('تحسين')) && (
-                <div className="space-y-4">
-                  <div className="bg-[#0b444b] text-white rounded-3xl p-6 sm:p-8 shadow-2xl border border-[#14565f] overflow-hidden text-center relative">
-                    <span className="text-xs text-stone-300 font-medium block mb-3 opacity-90">
-                      وزارة التعليم • التقويم الذاتي والاعتماد المدرسي
-                    </span>
+            {/* Special Tahseen Hero Block if applicable */}
+            {(selectedProduct.id === 'prod-tahseen-v3' || selectedProduct.name.includes('تحسين')) && (
+              <div className="space-y-4">
+                <div className="bg-[#0b444b] text-white rounded-3xl p-6 sm:p-8 shadow-xl border border-[#14565f] overflow-hidden text-center relative">
+                  <span className="text-xs text-stone-300 font-medium block mb-3 opacity-90">
+                    وزارة التعليم • التقويم الذاتي والاعتماد المدرسي
+                  </span>
 
-                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center shadow-md mx-auto mb-3">
-                      <svg className="w-9 h-9 text-white" viewBox="0 0 24 24" fill="currentColor">
-                        <rect x="4" y="10" width="3.5" height="10" rx="1.75" />
-                        <rect x="10.25" y="4" width="3.5" height="16" rx="1.75" />
-                        <rect x="16.5" y="8" width="3.5" height="12" rx="1.75" />
-                      </svg>
-                    </div>
-
-                    <h3 className="text-3xl font-black text-white tracking-wide mb-2">
-                      تحسين
-                    </h3>
-
-                    <p className="text-sm text-stone-200 leading-relaxed max-w-md mx-auto mb-4 opacity-95">
-                      حلّل نتيجة التقويم الذاتي واين خطة التحسين والتطوير في دقائق
-                    </p>
-
-                    <div className="flex flex-wrap items-center justify-center gap-2 text-xs mb-6">
-                      <span className="bg-white/10 text-white px-3 py-1 rounded-full border border-white/20 font-semibold">
-                        الإصدار الثالث 1447هـ / 1448هـ
-                      </span>
-                      <span className="bg-white/10 text-white px-3 py-1 rounded-full border border-white/20 font-semibold">
-                        52 مؤشراً
-                      </span>
-                      <span className="bg-white/10 text-white px-3 py-1 rounded-full border border-white/20 font-semibold">
-                        خطة PDF جاهزة
-                      </span>
-                    </div>
-
-                    {/* Dashboard Evaluation Mockup Card */}
-                    <div className="bg-white text-stone-800 rounded-2xl p-4 text-right shadow-2xl border border-stone-200 max-w-lg mx-auto">
-                      <div className="flex items-center justify-between border-b border-stone-100 pb-2 mb-3 text-xs text-stone-500 font-bold">
-                        <span>المملكة العربية السعودية • وزارة التعليم</span>
-                        <span className="text-[#008489]">لوحة نتائج التقويم الذاتي</span>
-                      </div>
-
-                      <div className="grid grid-cols-4 gap-2 mb-3 text-center text-xs">
-                        <div className="bg-orange-50 border border-orange-200 rounded-xl p-2">
-                          <span className="block font-black text-orange-600 text-sm">66.6%</span>
-                          <span className="text-stone-500 text-[10px]">الأداء العام</span>
-                        </div>
-                        <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-2">
-                          <span className="block font-black text-emerald-700 text-sm">39</span>
-                          <span className="text-stone-500 text-[10px]">مؤشرات متمكنة</span>
-                        </div>
-                        <div className="bg-teal-50 border border-teal-200 rounded-xl p-2">
-                          <span className="block font-black text-teal-700 text-sm">37</span>
-                          <span className="text-stone-500 text-[10px]">مؤشرات منجزة</span>
-                        </div>
-                        <div className="bg-rose-50 border border-rose-200 rounded-xl p-2">
-                          <span className="block font-black text-rose-600 text-sm">10</span>
-                          <span className="text-stone-500 text-[10px]">فرص تحسين</span>
-                        </div>
-                      </div>
-
-                      <div className="bg-rose-50 border border-rose-200 rounded-xl p-2 text-xs text-rose-800 font-bold">
-                        أولويات التحسين: تطوير استراتيجيات القياس والتقويم المستمر لرفع نواتج التعلم
-                      </div>
-                    </div>
+                  <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-400 to-teal-500 flex items-center justify-center shadow-md mx-auto mb-3">
+                    <svg className="w-9 h-9 text-white" viewBox="0 0 24 24" fill="currentColor">
+                      <rect x="4" y="10" width="3.5" height="10" rx="1.75" />
+                      <rect x="10.25" y="4" width="3.5" height="16" rx="1.75" />
+                      <rect x="16.5" y="8" width="3.5" height="12" rx="1.75" />
+                    </svg>
                   </div>
 
-                  {/* كيف تعمل الأداة؟ Workflow Steps */}
-                  <div className="bg-stone-50 rounded-2xl p-4 border border-stone-200 space-y-3">
-                    <h4 className="font-bold text-stone-900 text-xs sm:text-sm">كيف تعمل الأداة؟</h4>
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs text-right">
-                      <div className="bg-white p-3 rounded-xl border border-stone-200 space-y-1">
-                        <span className="w-5 h-5 rounded-full bg-[#008489] text-white font-mono font-bold flex items-center justify-center text-xs">1</span>
-                        <div className="font-bold text-stone-800">ارفع تقرير الأداء المدرسي</div>
-                        <div className="text-[10px] text-stone-500">من ملف إكسل أو أدخل درجات المحاور فوراً</div>
+                  <h3 className="text-3xl font-black text-white tracking-wide mb-2">
+                    تحسين
+                  </h3>
+
+                  <p className="text-sm text-stone-200 leading-relaxed max-w-md mx-auto mb-4 opacity-95">
+                    حلّل نتيجة التقويم الذاتي واين خطة التحسين والتطوير في دقائق
+                  </p>
+
+                  <div className="flex flex-wrap items-center justify-center gap-2 text-xs mb-6">
+                    <span className="bg-white/10 text-white px-3 py-1 rounded-full border border-white/20 font-semibold">
+                      الإصدار الثالث 1447هـ / 1448هـ
+                    </span>
+                    <span className="bg-white/10 text-white px-3 py-1 rounded-full border border-white/20 font-semibold">
+                      52 مؤشراً
+                    </span>
+                    <span className="bg-white/10 text-white px-3 py-1 rounded-full border border-white/20 font-semibold">
+                      خطة PDF جاهزة
+                    </span>
+                  </div>
+
+                  {/* Dashboard Evaluation Mockup Card */}
+                  <div className="bg-white text-stone-800 rounded-2xl p-4 text-right shadow-2xl border border-stone-200 max-w-lg mx-auto">
+                    <div className="flex items-center justify-between border-b border-stone-100 pb-2 mb-3 text-xs text-stone-500 font-bold">
+                      <span>المملكة العربية السعودية • وزارة التعليم</span>
+                      <span className="text-[#008489]">لوحة نتائج التقويم الذاتي</span>
+                    </div>
+
+                    <div className="grid grid-cols-4 gap-2 mb-3 text-center text-xs">
+                      <div className="bg-orange-50 border border-orange-200 rounded-xl p-2">
+                        <span className="block font-black text-orange-600 text-sm">66.6%</span>
+                        <span className="text-stone-500 text-[10px]">الأداء العام</span>
                       </div>
-                      <div className="bg-white p-3 rounded-xl border border-stone-200 space-y-1">
-                        <span className="w-5 h-5 rounded-full bg-[#008489] text-white font-mono font-bold flex items-center justify-center text-xs">2</span>
-                        <div className="font-bold text-stone-800">الأداة تحلل وتبني الخطة</div>
-                        <div className="text-[10px] text-stone-500">احتساب النسب ومؤشرات التميز آلياً</div>
+                      <div className="bg-emerald-50 border border-emerald-200 rounded-xl p-2">
+                        <span className="block font-black text-emerald-700 text-sm">39</span>
+                        <span className="text-stone-500 text-[10px]">مؤشرات متمكنة</span>
                       </div>
-                      <div className="bg-white p-3 rounded-xl border border-stone-200 space-y-1">
-                        <span className="w-5 h-5 rounded-full bg-[#008489] text-white font-mono font-bold flex items-center justify-center text-xs">3</span>
-                        <div className="font-bold text-stone-800">تصدير خطتك PDF و Word</div>
-                        <div className="text-[10px] text-stone-500">جاهزة للاعتماد والطباعة الفورية</div>
+                      <div className="bg-teal-50 border border-teal-200 rounded-xl p-2">
+                        <span className="block font-black text-teal-700 text-sm">37</span>
+                        <span className="text-stone-500 text-[10px]">مؤشرات منجزة</span>
                       </div>
+                      <div className="bg-rose-50 border border-rose-200 rounded-xl p-2">
+                        <span className="block font-black text-rose-600 text-sm">10</span>
+                        <span className="text-stone-500 text-[10px]">فرص تحسين</span>
+                      </div>
+                    </div>
+
+                    <div className="bg-rose-50 border border-rose-200 rounded-xl p-2 text-xs text-rose-800 font-bold">
+                      أولويات التحسين: تطوير استراتيجيات القياس والتقويم المستمر لرفع نواتج التعلم
                     </div>
                   </div>
                 </div>
-              )}
 
-              {/* Description */}
-              <div>
-                <h4 className="font-bold text-stone-900 text-sm mb-2">الوصف التفصيلي والهدف:</h4>
+                {/* Workflow steps */}
+                <div className="bg-white rounded-2xl p-4 border border-stone-200 space-y-3">
+                  <h4 className="font-bold text-stone-900 text-xs sm:text-sm">كيف تعمل الأداة؟</h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs text-right">
+                    <div className="bg-stone-50 p-3 rounded-xl border border-stone-200 space-y-1">
+                      <span className="w-5 h-5 rounded-full bg-[#008489] text-white font-mono font-bold flex items-center justify-center text-xs">1</span>
+                      <div className="font-bold text-stone-800">ارفع تقرير الأداء المدرسي</div>
+                      <div className="text-[10px] text-stone-500">من ملف إكسل أو أدخل درجات المحاور فوراً</div>
+                    </div>
+                    <div className="bg-stone-50 p-3 rounded-xl border border-stone-200 space-y-1">
+                      <span className="w-5 h-5 rounded-full bg-[#008489] text-white font-mono font-bold flex items-center justify-center text-xs">2</span>
+                      <div className="font-bold text-stone-800">الأداة تحلل وتبني الخطة</div>
+                      <div className="text-[10px] text-stone-500">احتساب النسب ومؤشرات التميز آلياً</div>
+                    </div>
+                    <div className="bg-stone-50 p-3 rounded-xl border border-stone-200 space-y-1">
+                      <span className="w-5 h-5 rounded-full bg-[#008489] text-white font-mono font-bold flex items-center justify-center text-xs">3</span>
+                      <div className="font-bold text-stone-800">تصدير خطتك PDF و Word</div>
+                      <div className="text-[10px] text-stone-500">جاهزة للاعتماد والطباعة الفورية</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Description & Specifications Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs sm:text-sm">
+              <div className="bg-white p-6 rounded-2xl border border-stone-200 space-y-3 shadow-2xs">
+                <h4 className="font-bold text-stone-900 text-sm">الوصف التفصيلي والهدف:</h4>
                 <p className="text-stone-700 leading-relaxed bg-stone-50 p-4 rounded-xl border border-stone-100">
                   {selectedProduct.description}
                 </p>
               </div>
 
-              {/* Tasks Solved */}
-              <div>
-                <h4 className="font-bold text-stone-900 text-sm mb-2">المهام الميدانية والإدارية المنجزة:</h4>
+              <div className="bg-white p-6 rounded-2xl border border-stone-200 space-y-3 shadow-2xs">
+                <h4 className="font-bold text-stone-900 text-sm">المهام الميدانية والإدارية المنجزة:</h4>
                 <div className="space-y-2">
                   {(selectedProduct.tasksAccomplished || []).map((task, idx) => (
-                    <div key={idx} className="flex items-start gap-2 bg-emerald-50/50 p-3 rounded-lg border border-emerald-100/60">
+                    <div key={idx} className="flex items-start gap-2 bg-emerald-50/50 p-3 rounded-xl border border-emerald-100/60">
                       <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
                       <span className="text-stone-800 font-medium">{task}</span>
                     </div>
                   ))}
                 </div>
               </div>
+            </div>
 
-              {/* Interactive School Cover Signature Customizer (Matching Uploaded Images 1 & 2) */}
-              <div className="bg-gradient-to-br from-[#f4fafb] to-[#e8f6f7] p-5 rounded-2xl border-2 border-[#008489]/40 space-y-4">
-                <div className="flex items-center justify-between border-b border-[#008489]/20 pb-2">
-                  <div className="flex items-center gap-2">
-                    <div className="w-8 h-8 rounded-xl bg-[#008489] text-white flex items-center justify-center font-bold">
-                      <BookOpen className="w-4 h-4" />
-                    </div>
-                    <div>
-                      <h4 className="font-black text-stone-900 text-sm">تخصيص غلاف السجل المدرسي والتوقيعات الرسمية</h4>
-                      <p className="text-[11px] text-stone-600">اكتب اسم مسؤولة السجل والمديرة لتنفيذ الطباعة بالشعار الرسمي</p>
-                    </div>
+            {/* Editable School Cover Signature Customizer */}
+            <div className="bg-gradient-to-br from-[#f4fafb] to-[#e8f6f7] p-6 rounded-2xl border-2 border-[#008489]/40 space-y-4 shadow-sm">
+              <div className="flex items-center justify-between border-b border-[#008489]/20 pb-2">
+                <div className="flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-xl bg-[#008489] text-white flex items-center justify-center font-bold">
+                    <BookOpen className="w-4 h-4" />
                   </div>
-
-                  <span className="text-[10px] bg-emerald-600 text-white font-bold px-2.5 py-1 rounded-full shadow-2xs">
-                    جاهز للطباعة 1448هـ
-                  </span>
-                </div>
-
-                {/* Editable Inputs for Supervisor & Principal */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
                   <div>
-                    <label className="block font-bold text-stone-700 mb-1">الإدارة العامة للتعليم بمنطقة:</label>
-                    <input
-                      type="text"
-                      defaultValue={selectedProduct.educationRegion || 'الرياض'}
-                      id="customRegionInput"
-                      className="w-full p-2.5 bg-white border border-stone-300 rounded-xl font-bold text-stone-900"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block font-bold text-stone-700 mb-1">مدرسة:</label>
-                    <input
-                      type="text"
-                      defaultValue={selectedProduct.schoolName || 'المدرسة الأولى الابتدائية'}
-                      id="customSchoolInput"
-                      className="w-full p-2.5 bg-white border border-stone-300 rounded-xl font-bold text-stone-900"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block font-bold text-[#008489] mb-1">منسق/ة العمل التعاوني / مسؤولة السجل:</label>
-                    <input
-                      type="text"
-                      defaultValue={selectedProduct.recordSupervisor || 'أ. فاطمة العتيبي'}
-                      id="customSupervisorInput"
-                      className="w-full p-2.5 bg-white border-2 border-[#008489]/50 rounded-xl font-bold text-stone-900 focus:border-[#008489]"
-                    />
-                  </div>
-
-                  <div>
-                    <label className="block font-bold text-[#008489] mb-1">مدير/ة المدرسة:</label>
-                    <input
-                      type="text"
-                      defaultValue={selectedProduct.schoolPrincipal || 'أ. مريم الغامدي'}
-                      id="customPrincipalInput"
-                      className="w-full p-2.5 bg-white border-2 border-[#008489]/50 rounded-xl font-bold text-stone-900 focus:border-[#008489]"
-                    />
+                    <h4 className="font-black text-stone-900 text-sm">تخصيص غلاف السجل المدرسي والتوقيعات الرسمية</h4>
+                    <p className="text-[11px] text-stone-600">اكتب اسم مسؤولة السجل والمديرة لتنفيذ الطباعة بالشعار الرسمي</p>
                   </div>
                 </div>
 
-                {/* Visual Cover Preview Box matching Image 1 & 2 */}
-                <div className="bg-white border border-stone-300 rounded-xl p-4 shadow-sm text-center relative space-y-4" dir="rtl">
-                  <div className="flex items-center justify-between pb-2 border-b border-stone-200">
-                    <div className="text-right text-[9px] space-y-0.5">
-                      <div className="font-bold text-stone-800">المملكة العربية السعودية</div>
-                      <div className="font-bold text-[#008489]">وزارة التعليم</div>
-                    </div>
+                <span className="text-[10px] bg-emerald-600 text-white font-bold px-2.5 py-1 rounded-full shadow-2xs">
+                  جاهز للطباعة 1448هـ
+                </span>
+              </div>
 
-                    <div className="flex flex-col items-center">
-                      <img
-                        src="/assets/aistudio/_____________b1c4c42d.jpg"
-                        alt="Ministry Logo"
-                        className="h-9 w-auto object-contain"
-                        onError={(e) => {
-                          (e.target as HTMLElement).style.display = 'none';
-                        }}
-                      />
-                    </div>
+              {/* Input Fields */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                <div>
+                  <label className="block font-bold text-stone-700 mb-1">الإدارة العامة للتعليم بمنطقة:</label>
+                  <input
+                    type="text"
+                    defaultValue={selectedProduct.educationRegion || 'الرياض'}
+                    id="customRegionInput"
+                    className="w-full p-2.5 bg-white border border-stone-300 rounded-xl font-bold text-stone-900"
+                  />
+                </div>
 
-                    <div className="text-right text-[9px] space-y-0.5">
-                      <div className="text-stone-500">الإدارة العامة للتعليم بمنطقة : ..............</div>
-                      <div className="text-stone-500">مدرسة : ..............</div>
-                    </div>
-                  </div>
+                <div>
+                  <label className="block font-bold text-stone-700 mb-1">مدرسة:</label>
+                  <input
+                    type="text"
+                    defaultValue={selectedProduct.schoolName || 'المدرسة الأولى الابتدائية'}
+                    id="customSchoolInput"
+                    className="w-full p-2.5 bg-white border border-stone-300 rounded-xl font-bold text-stone-900"
+                  />
+                </div>
 
-                  {/* Calendar 1448h Header */}
-                  <div className="py-2 space-y-1">
-                    <div className="w-10 h-10 rounded-xl bg-teal-50 border border-teal-200 text-[#008489] mx-auto flex items-center justify-center font-bold text-sm">
-                      📅
-                    </div>
-                    <div className="text-xs font-black text-stone-800">العام الدراسي</div>
-                    <div className="text-base font-black text-[#008489] font-mono">1448هـ</div>
-                  </div>
+                <div>
+                  <label className="block font-bold text-[#008489] mb-1">منسق/ة العمل التعاوني / مسؤولة السجل:</label>
+                  <input
+                    type="text"
+                    defaultValue={selectedProduct.recordSupervisor || 'أ. فاطمة العتيبي'}
+                    id="customSupervisorInput"
+                    className="w-full p-2.5 bg-white border-2 border-[#008489]/50 rounded-xl font-bold text-stone-900 focus:border-[#008489]"
+                  />
+                </div>
 
-                  {/* Two Rounded Blue Signature Boxes matching Image 2 */}
-                  <div className="grid grid-cols-2 gap-2 pt-2 border-t border-stone-200">
-                    <div className="border-2 border-[#008489] bg-white rounded-full py-1.5 px-2 text-center shadow-2xs">
-                      <span className="text-[9px] font-bold text-[#008489] block">منسق/ة العمل التعاوني / مسؤولة السجل :</span>
-                      <span className="text-[11px] font-black text-stone-900 truncate block">أ. فاطمة العتيبي</span>
-                    </div>
-
-                    <div className="border-2 border-[#008489] bg-white rounded-full py-1.5 px-2 text-center shadow-2xs">
-                      <span className="text-[9px] font-bold text-[#008489] block">مدير/ة المدرسة :</span>
-                      <span className="text-[11px] font-black text-stone-900 truncate block">أ. مريم الغامدي</span>
-                    </div>
-                  </div>
+                <div>
+                  <label className="block font-bold text-[#008489] mb-1">مدير/ة المدرسة:</label>
+                  <input
+                    type="text"
+                    defaultValue={selectedProduct.schoolPrincipal || 'أ. مريم الغامدي'}
+                    id="customPrincipalInput"
+                    className="w-full p-2.5 bg-white border-2 border-[#008489]/50 rounded-xl font-bold text-stone-900 focus:border-[#008489]"
+                  />
                 </div>
               </div>
 
-              {/* Exact Features & File Contents */}
-              <div>
-                <h4 className="font-bold text-stone-900 text-sm mb-2">المواصفات ومكونات الحزمة الرقمية:</h4>
+              {/* Visual Cover Signature Box */}
+              <div className="bg-white border border-stone-300 rounded-xl p-4 shadow-sm text-center relative space-y-4" dir="rtl">
+                <div className="flex items-center justify-between pb-2 border-b border-stone-200">
+                  <div className="text-right text-[9px] space-y-0.5">
+                    <div className="font-bold text-stone-800">المملكة العربية السعودية</div>
+                    <div className="font-bold text-[#008489]">وزارة التعليم</div>
+                  </div>
+
+                  <div className="flex flex-col items-center">
+                    <img
+                      src="/assets/aistudio/_____________b1c4c42d.jpg"
+                      alt="Ministry Logo"
+                      className="h-9 w-auto object-contain"
+                      onError={(e) => {
+                        (e.target as HTMLElement).style.display = 'none';
+                      }}
+                    />
+                  </div>
+
+                  <div className="text-right text-[9px] space-y-0.5">
+                    <div className="text-stone-500">الإدارة العامة للتعليم بمنطقة : ..............</div>
+                    <div className="text-stone-500">مدرسة : ..............</div>
+                  </div>
+                </div>
+
+                <div className="py-2 space-y-1">
+                  <div className="w-10 h-10 rounded-xl bg-teal-50 border border-teal-200 text-[#008489] mx-auto flex items-center justify-center font-bold text-sm">
+                    📅
+                  </div>
+                  <div className="text-xs font-black text-stone-800">العام الدراسي</div>
+                  <div className="text-base font-black text-[#008489] font-mono">1448هـ</div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2 pt-2 border-t border-stone-200">
+                  <div className="border-2 border-[#008489] bg-white rounded-full py-1.5 px-2 text-center shadow-2xs">
+                    <span className="text-[9px] font-bold text-[#008489] block">منسق/ة العمل التعاوني / مسؤولة السجل :</span>
+                    <span className="text-[11px] font-black text-stone-900 truncate block">أ. فاطمة العتيبي</span>
+                  </div>
+
+                  <div className="border-2 border-[#008489] bg-white rounded-full py-1.5 px-2 text-center shadow-2xs">
+                    <span className="text-[9px] font-bold text-[#008489] block">مدير/ة المدرسة :</span>
+                    <span className="text-[11px] font-black text-stone-900 truncate block">أ. مريم الغامدي</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Specifications & Delivery Mechanism */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs sm:text-sm">
+              <div className="bg-white p-6 rounded-2xl border border-stone-200 space-y-3">
+                <h4 className="font-bold text-stone-900 text-sm">المواصفات ومكونات الحزمة الرقمية:</h4>
                 <ul className="space-y-1.5 text-stone-700 list-disc list-inside bg-stone-50 p-4 rounded-xl border border-stone-100">
                   {(selectedProduct.features || []).map((feat, idx) => (
                     <li key={idx} className="leading-relaxed">{feat}</li>
@@ -491,109 +589,83 @@ function AppContent() {
                 </ul>
               </div>
 
-              {/* Instant Delivery Mechanism Box */}
-              <div className="bg-stone-900 text-stone-200 p-4 rounded-xl space-y-2 text-xs">
+              <div className="bg-stone-900 text-stone-200 p-6 rounded-2xl space-y-3">
                 <div className="flex items-center gap-2 font-bold text-emerald-400">
                   <Zap className="w-4 h-4" />
                   <span>آلية التسليم الفوري التلقائي:</span>
                 </div>
-                <p className="text-stone-300 leading-relaxed">
+                <p className="text-stone-300 leading-relaxed text-xs">
                   بمجرد إتمام الدفع، يتم تفعيل الرابط وإرساله فوراً إلى واتساب العميل المسجل مع ظهوره الدائم في خانة "طلباتي" بالمتجر، ولا يتطلب أي انتظار لموافقة يدوية.
                 </p>
-              </div>
-
-              {/* Pricing & Guarantee Bar */}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-xl bg-amber-50/50 border border-amber-200/60">
-                <div>
-                  <div className="flex items-baseline gap-2">
-                    <span className="text-2xl font-black text-stone-900">{selectedProduct.price} ر.س</span>
-                    {selectedProduct.originalPrice && (
-                      <span className="text-sm text-stone-400 line-through">{selectedProduct.originalPrice} ر.س</span>
-                    )}
-                  </div>
-                  <span className="text-xs text-amber-800 font-medium block mt-1">
-                    يشمله الضمان الذهبي والاسترجاع خلال 3 أيام
-                  </span>
-                </div>
-
-                {selectedProduct.tamaraAvailable && (
-                  <div className="text-xs text-stone-600 sm:text-left">
-                    <span className="font-semibold text-stone-800 block">متاح التقسيط عبر تمارا وتابي:</span>
-                    <span>على 4 دفعات بدون أي فوائد</span>
-                  </div>
-                )}
-              </div>
-
-              {/* Real Reviews Section */}
-              <div className="pt-4 border-t border-stone-100">
-                <h4 className="font-bold text-stone-900 text-sm mb-4 flex items-center gap-2">
-                  <span>تقييمات العملاء</span>
-                  <div className="flex items-center gap-1 text-amber-500">
-                    <Star className="w-4 h-4 fill-current" />
-                    <span className="text-xs font-bold text-stone-900">{selectedProduct.rating}</span>
-                    <span className="text-[10px] text-stone-400 font-normal">({selectedProduct.reviewsCount} تقييم)</span>
-                  </div>
-                </h4>
-                
-                {/* Review Form (Simplified for UI) */}
-                <div className="bg-stone-50 p-4 rounded-2xl border border-stone-100 mb-6">
-                  <p className="text-[11px] font-bold text-stone-500 mb-3 text-right">أضف تقييمك للمنتج:</p>
-                  <div className="flex flex-col gap-3">
-                    <div className="flex items-center gap-1 mb-1">
-                      {[1, 2, 3, 4, 5].map((s) => (
-                        <button key={s} className="text-stone-300 hover:text-amber-400 transition-colors">
-                          <Star className="w-5 h-5 fill-current" />
-                        </button>
-                      ))}
-                    </div>
-                    <textarea 
-                      placeholder="اكتب رأيك هنا..."
-                      className="w-full p-3 text-xs bg-white border border-stone-200 rounded-xl focus:border-[#008489] outline-none h-20 resize-none"
-                    ></textarea>
-                    <button className="bg-[#008489] text-white px-6 py-2 rounded-lg text-xs font-bold self-start">إرسال التقييم</button>
-                  </div>
-                </div>
-
-                {/* Reviews List */}
-                <div className="space-y-4">
-                  <div className="flex items-start gap-3 p-3 bg-white rounded-xl border border-stone-100 shadow-2xs">
-                    <div className="w-8 h-8 rounded-full bg-teal-100 flex items-center justify-center text-teal-700 font-bold text-[10px]">م</div>
-                    <div className="flex-1">
-                      <div className="flex justify-between items-center mb-1">
-                        <span className="text-[11px] font-bold text-stone-900">محمد العتيبي</span>
-                        <div className="flex gap-0.5 text-amber-500">
-                          <Star className="w-3 h-3 fill-current" />
-                          <Star className="w-3 h-3 fill-current" />
-                          <Star className="w-3 h-3 fill-current" />
-                          <Star className="w-3 h-3 fill-current" />
-                          <Star className="w-3 h-3 fill-current" />
-                        </div>
-                      </div>
-                      <p className="text-[11px] text-stone-600 leading-relaxed">أداة رائعة جداً وفرت عليّ ساعات من العمل في تحليل التقويم الذاتي. أنصح بها وبقوة!</p>
-                    </div>
-                  </div>
+                <div className="pt-3 border-t border-stone-800 text-xs text-amber-300 font-bold">
+                  🛡️ يشمله الضمان الذهبي والاسترجاع خلال 3 أيام
                 </div>
               </div>
             </div>
 
-            {/* Modal Actions */}
-            <div className="p-6 border-t border-stone-200 bg-stone-50 rounded-b-2xl flex flex-wrap items-center justify-between gap-3">
-              <button
-                onClick={() => handleShareProduct(selectedProduct)}
-                className="px-4 py-2.5 text-xs font-semibold text-stone-700 bg-white hover:bg-stone-100 rounded-lg border border-stone-200 flex items-center gap-1.5 transition-colors"
-              >
-                {copiedLink ? <Check className="w-3.5 h-3.5 text-emerald-600" /> : <Share2 className="w-3.5 h-3.5" />}
-                <span>{copiedLink ? 'تم نسخ تفاصيل المنتج' : 'مشاركة / نسخ التفاصيل'}</span>
-              </button>
+            {/* Customer Reviews Section */}
+            <div className="bg-white p-6 rounded-2xl border border-stone-200 space-y-4">
+              <h4 className="font-bold text-stone-900 text-sm flex items-center justify-between">
+                <span>تقييمات وآراء العملاء</span>
+                <div className="flex items-center gap-1 text-amber-500 text-xs">
+                  <Star className="w-4 h-4 fill-current" />
+                  <span className="font-bold text-stone-900">{selectedProduct.rating}</span>
+                  <span className="text-stone-400 font-normal">({selectedProduct.reviewsCount} تقييم)</span>
+                </div>
+              </h4>
 
+              <div className="bg-stone-50 p-4 rounded-xl border border-stone-200 space-y-3">
+                <p className="text-xs font-bold text-stone-700">أضف تقييمك ورأيك في المنتج:</p>
+                <div className="flex items-center gap-1 text-amber-400">
+                  {[1, 2, 3, 4, 5].map((s) => (
+                    <button key={s} className="hover:scale-110 transition-transform">
+                      <Star className="w-5 h-5 fill-current" />
+                    </button>
+                  ))}
+                </div>
+                <textarea
+                  placeholder="اكتب تعليقك وانطباعك الميداني..."
+                  className="w-full p-3 text-xs bg-white border border-stone-200 rounded-xl focus:border-[#008489] outline-none h-20 resize-none"
+                ></textarea>
+                <button className="bg-[#008489] text-white px-5 py-2 rounded-xl text-xs font-bold shadow-2xs hover:bg-[#007478]">
+                  إرسال التقييم
+                </button>
+              </div>
+
+              <div className="space-y-3">
+                <div className="p-4 bg-stone-50 rounded-xl border border-stone-200 space-y-1">
+                  <div className="flex justify-between items-center text-xs">
+                    <span className="font-bold text-stone-900">أ. محمد العتيبي</span>
+                    <div className="flex gap-0.5 text-amber-500">
+                      {[1, 2, 3, 4, 5].map(s => <Star key={s} className="w-3.5 h-3.5 fill-current" />)}
+                    </div>
+                  </div>
+                  <p className="text-xs text-stone-600 leading-relaxed">أداة فائقة الدقة وفرت عليّ ساعات من العمل التوثيقي والإداري، التنسيق ممتاز والتوقيعات مجهزة بطريقة احترافية جداً.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Fixed Sticky Bottom Action Bar for Purchase & Features (Matching Salla product page) */}
+          <div className="fixed bottom-0 inset-x-0 bg-white/95 backdrop-blur-md border-t border-stone-200 p-4 z-40 shadow-2xl">
+            <div className="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-4">
+              {/* Price */}
+              <div className="flex items-baseline gap-2">
+                <span className="text-2xl font-black text-stone-900">{selectedProduct.price} ر.س</span>
+                {selectedProduct.originalPrice && (
+                  <span className="text-sm text-stone-400 line-through font-semibold">{selectedProduct.originalPrice} ر.س</span>
+                )}
+              </div>
+
+              {/* Actions row */}
               <div className="flex flex-wrap items-center gap-2">
                 {/* Protected Full-Screen Preview Button */}
                 <button
                   onClick={() => setFullScreenProductPreview(selectedProduct)}
-                  className="px-4 py-2.5 text-xs font-bold text-amber-900 bg-amber-100 hover:bg-amber-200 rounded-lg transition-colors flex items-center gap-1.5 border border-amber-300 shadow-2xs cursor-pointer"
+                  className="px-4 py-2.5 text-xs font-bold text-amber-900 bg-amber-100 hover:bg-amber-200 rounded-xl transition-colors flex items-center gap-1.5 border border-amber-300 shadow-2xs cursor-pointer"
                   title="فتح الشاشة الكاملة المحمية للعرض بدون إمكانية التحميل أو التصدير"
                 >
-                  <Maximize2 className="w-3.5 h-3.5 text-amber-700" />
+                  <Maximize2 className="w-4 h-4 text-amber-700" />
                   <span>معاينة بشاشة كاملة (محمية)</span>
                 </button>
 
@@ -604,10 +676,10 @@ function AppContent() {
                     setSelectedProduct(null);
                     setEditingProduct(prod);
                   }}
-                  className="px-4 py-2.5 text-xs font-bold text-[#008489] bg-[#e6f3f4] hover:bg-[#cce8eb] rounded-lg transition-colors flex items-center gap-1.5 border border-[#c2e2e5] shadow-2xs"
+                  className="px-4 py-2.5 text-xs font-bold text-[#008489] bg-[#e6f3f4] hover:bg-[#cce8eb] rounded-xl transition-colors flex items-center gap-1.5 border border-[#c2e2e5] shadow-2xs cursor-pointer"
                   title="فتح وتعديل المستند مباشرة في المتصفح"
                 >
-                  <Edit3 className="w-3.5 h-3.5" />
+                  <Edit3 className="w-4 h-4" />
                   <span>تعديل حي في المتصفح</span>
                 </button>
 
@@ -618,9 +690,9 @@ function AppContent() {
                       setSelectedProduct(null);
                       handleOpenTool(id);
                     }}
-                    className="px-4 py-2.5 text-xs font-bold text-white bg-emerald-700 hover:bg-emerald-800 rounded-lg transition-colors flex items-center gap-1.5"
+                    className="px-4 py-2.5 text-xs font-bold text-white bg-emerald-700 hover:bg-emerald-800 rounded-xl transition-colors flex items-center gap-1.5 shadow-md cursor-pointer"
                   >
-                    <Sparkles className="w-3.5 h-3.5" />
+                    <Sparkles className="w-4 h-4" />
                     <span>تشغيل الأداة الذكية</span>
                   </button>
                 )}
@@ -629,10 +701,10 @@ function AppContent() {
                   href={STORE_INFO.fullUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-5 py-2.5 text-xs font-bold text-white bg-stone-900 hover:bg-stone-800 rounded-lg shadow-sm transition-colors flex items-center gap-1.5"
+                  className="px-6 py-2.5 text-xs font-bold text-white bg-[#008489] hover:bg-[#007478] rounded-xl shadow-md transition-colors flex items-center gap-2 cursor-pointer"
                 >
-                  <span>شراء المنتج من المتجر الأصلي</span>
-                  <ExternalLink className="w-3.5 h-3.5" />
+                  <span>أضف إلى السلة</span>
+                  <ExternalLink className="w-4 h-4" />
                 </a>
               </div>
             </div>
