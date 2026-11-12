@@ -547,6 +547,7 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
 
     if (selectedSubCategory && selectedSubCategory !== 'عرض الكل') {
       const q = selectedSubCategory.toLowerCase();
+      if (q.includes('الأدوات الذكية') || q.includes('ادوات ذكية')) return prod.category === 'smart_tools' || prod.subCategory.includes('الذكية');
       if (q.includes('لوحات مدرسية')) return prod.subCategory.includes('لوحات') || prod.category === 'school_records';
       if (q.includes('ملفات الإنجاز')) return prod.category === 'portfolios_guides' || prod.subCategory.includes('إنجاز');
       if (q.includes('مدير المدرسة') || q.includes('مدير مدرسة')) return prod.targetRole.includes('مدير');
@@ -1726,16 +1727,22 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
       {/* ============================================================== */}
       {sectionVisibility.showProductsSection && (
         <section id="products-section" className="pt-8 px-4 max-w-7xl mx-auto sm:px-6 lg:px-8 scroll-mt-20">
-        {/* Breadcrumb & Header matching Screenshots (VideoCapture 6fd8c07a & d55bd980) */}
+        {/* Breadcrumb & Header matching Screenshots (VideoCapture & واجهة تصفح كل الادوات الذكيه.jpg) */}
         <div className="mb-6 space-y-3">
           <div className="flex items-center gap-2 text-xs text-stone-500 font-medium">
             <button onClick={() => { setSelectedSubCategory(null); setActiveTab('جميع المنتجات'); }} className="hover:text-[#008489] transition-colors">الرئيسية</button>
             <span>›</span>
-            <span className="text-stone-700">السجلات المدرسية</span>
-            {selectedSubCategory && (
+            {selectedSubCategory === 'الأدوات الذكية' ? (
+              <span className="text-[#008489] font-bold">الأدوات الذكية</span>
+            ) : (
               <>
-                <span>›</span>
-                <span className="text-[#008489] font-bold">{selectedSubCategory}</span>
+                <span className="text-stone-700">السجلات المدرسية</span>
+                {selectedSubCategory && (
+                  <>
+                    <span>›</span>
+                    <span className="text-[#008489] font-bold">{selectedSubCategory}</span>
+                  </>
+                )}
               </>
             )}
           </div>
