@@ -418,35 +418,49 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
   );
   const cartCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
-  // Exact Persona Categories from Image 10 & Video
+  // Exact Persona Categories matching user screenshots & Salla store layout
   const personaCards = [
     {
       id: 'director',
-      title: 'مدير مدرسة',
+      title: 'مدير المدرسة',
       icon: '👨‍💼',
       label: 'مكتب القيادة',
       role: 'مدير مدرسة'
     },
     {
+      id: 'deputy',
+      title: 'وكيل المدرسة',
+      icon: '📋',
+      label: 'الشؤون المدرسية',
+      role: 'وكيل مدرسة'
+    },
+    {
       id: 'activity',
-      title: 'رائد نشاط',
+      title: 'النشاط الطلابي',
       icon: '🏃‍♂️',
       label: 'الأنشطة والفعاليات',
       role: 'رائد نشاط'
     },
     {
       id: 'counselor',
-      title: 'موجه طلابي',
+      title: 'الموجه الطلابي',
       icon: '🤝',
       label: 'التوجيه والإرشاد',
       role: 'موجه طلابي'
     },
     {
-      id: 'deputy',
-      title: 'وكيل مدرسة',
-      icon: '📋',
-      label: 'الشؤون المدرسية',
-      role: 'وكيل مدرسة'
+      id: 'tahseen_eval',
+      title: 'التقويم الذاتي',
+      icon: '⭐',
+      label: 'منصة تميز',
+      role: 'التقويم الذاتي'
+    },
+    {
+      id: 'smart_tools',
+      title: 'الأدوات الذكية',
+      icon: '⚡',
+      label: 'مولدات وتحليل',
+      role: 'الأدوات الذكية'
     },
     {
       id: 'teacher',
@@ -1495,17 +1509,26 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
       {/* ============================================================== */}
       {sectionVisibility.showCategoriesSection && (
         <section className="pt-8 px-4 max-w-7xl mx-auto sm:px-6 lg:px-8">
-        <div className="text-center mb-4">
+        <div className="text-center mb-6">
           <div className="inline-flex items-center gap-1.5 text-xs text-[#008489] font-bold mb-1">
             <span className="w-2 h-2 rounded-full bg-[#008489]"></span>
             <span>أقسام المتجر</span>
           </div>
-          <h3 className="text-base font-black text-stone-900">
+          <h3 className="text-lg sm:text-2xl font-black text-stone-900">
             {settings.categoriesTitle || 'تصنيفات وسجلات المتجر المدرسية'}
           </h3>
-          <p className="text-xs text-stone-500 mt-0.5">
-            {settings.categoriesSubtitle || 'تصفح كافة السجلات الإدارية وملفات الإنجاز والخطط المأتمتة المعتمدة'}
+          <p className="text-xs sm:text-sm text-stone-500 mt-1 max-w-2xl mx-auto">
+            {settings.categoriesSubtitle || 'تصفح كافة السجلات الإدارية وملفات الإنجاز والخطط المأتمتة المعتمدة لتكون أقسامنا'}
           </p>
+
+          <div className="mt-5 pt-3 border-t border-stone-100">
+            <h4 className="text-sm sm:text-lg font-black text-[#093c42]">
+              اكتشف مجموعاتنا المتنوعة
+            </h4>
+            <p className="text-xs text-stone-500 mt-0.5">
+              أفضل وأجود المنتجات المدرسية المميزة
+            </p>
+          </div>
         </div>
 
         {/* Carousel with cards matching Image 8 & Video */}
@@ -1516,7 +1539,7 @@ export const StorefrontView: React.FC<StorefrontViewProps> = ({
               key={persona.id}
               whileHover={{ y: -3, scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
-              onClick={() => setActiveTab('الأكثر مبيعاً')}
+              onClick={() => handleSelectDrawerSubCategory(persona.title)}
               className="bg-white border border-stone-200 rounded-2xl p-3 min-w-[150px] max-w-[160px] shrink-0 text-center shadow-2xs hover:border-[#008489] transition-colors cursor-pointer flex flex-col justify-between"
             >
               <div className="h-32 bg-[#f4f7f9] rounded-xl flex items-center justify-center p-1.5 mb-2 relative overflow-hidden border border-[#e2edf1]">
